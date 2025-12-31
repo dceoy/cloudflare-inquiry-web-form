@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+
 - `src/` holds the React + TypeScript app (`main.tsx` bootstraps, `App.tsx` is the top-level UI).
 - `src/assets/` contains bundled assets (example: `react.svg`).
 - `src/*.css` holds component and global styles (`index.css`, `App.css`).
@@ -8,27 +9,33 @@
 - Build/config files live at the repo root (`vite.config.ts`, `tsconfig*.json`, `eslint.config.js`).
 
 ## Build, Test, and Development Commands
+
 Use pnpm (lockfile is `pnpm-lock.yaml`).
+
 - `pnpm dev`: start the Vite dev server with HMR.
 - `pnpm build`: type-check (`tsc -b`) and produce a production build via Vite.
 - `pnpm lint`: run ESLint across the repo.
 - `pnpm preview`: serve the production build locally for verification.
 
 ## Coding Style & Naming Conventions
+
 - Language: TypeScript + React (TSX).
 - Formatting/linting: follow `eslint.config.js` (ESLint + TypeScript ESLint + React Hooks/Refresh rules).
 - Naming: use PascalCase for components (`App.tsx`) and camelCase for functions/variables.
 - Prefer colocating component styles in `src/` (e.g., `App.css`).
 
 ## Testing Guidelines
+
 - No test framework is configured yet (no `test` script or test dependencies).
 - If you add tests, document the framework and the command in `package.json` and update this guide.
 
 ## Commit & Pull Request Guidelines
+
 - Commit messages are short, imperative, sentence-case (e.g., “Create a scaffold using pnpm and vite”).
 - PRs should include: a clear summary, relevant context or linked issue, and screenshots for UI changes.
 
 ## Configuration Tips
+
 - Vite config lives in `vite.config.ts`; TypeScript settings in `tsconfig*.json`.
 - The app is set up for modern React with the React Compiler enabled by the Vite template.
 
