@@ -44,9 +44,91 @@ Use pnpm (lockfile is `pnpm-lock.yaml`).
 - **If Serena MCP is available, use it first.** Treat Serena MCP tools as the primary interface over local commands or ad-hoc scripts.
 - **Glance at the Serena MCP docs/help before calling a tool** to confirm tool names, required args, and limits.
 - **Use the MCP-exposed tools for supported actions** (e.g., reading/writing files, running tasks, fetching data) instead of re-implementing workflows.
-- **Never hardcode secrets.** Reference environment variables or the MCP’s configured credential store; avoid printing tokens or sensitive paths.
-- **If Serena MCP isn’t enabled or lacks a needed capability, say so and propose a safe fallback.** Mention enabling it via `.mcp.json` when relevant.
+- **Never hardcode secrets.** Reference environment variables or the MCP's configured credential store; avoid printing tokens or sensitive paths.
+- **If Serena MCP isn't enabled or lacks a needed capability, say so and propose a safe fallback.** Mention enabling it via `.mcp.json` when relevant.
 - **Be explicit and reproducible.** Name the exact MCP tool and arguments you intend to use in your steps.
+
+## Codex CLI Integration (Optional)
+
+OpenAI Codex CLI integration provides two interfaces for enhanced development workflows:
+
+### Skills (Model-Invoked)
+Claude automatically uses these when appropriate based on your request:
+- **codex-ask** - Ask questions about code (read-only analysis)
+- **codex-exec** - Execute development tasks (modifies code)
+- **codex-review** - Perform code reviews (read-only analysis)
+
+Located in `.claude/skills/` - Claude invokes these automatically when your request matches their descriptions.
+
+### Agents (Task-Launched)
+Autonomous multi-phase agents for complex workflows:
+- **codex-ask** - Deep code analysis with detailed explanations
+- **codex-exec** - Comprehensive task execution with verification
+- **codex-review** - Thorough code review with categorized findings
+
+Located in `.claude/agents/` - Launch explicitly for multi-step autonomous execution.
+
+**Prerequisites:** Codex CLI must be installed (`npm install -g @openai/codex`)
+
+**Documentation:**
+- `.claude/skills/*/SKILL.md` - Individual skill guides
+- `.claude/agents/README.md` - Agent usage and workflow patterns
+
+## Spec-Kit Feature Development Workflow
+
+Spec-Kit provides a structured workflow for feature development from specification to implementation:
+
+### Core Workflow Skills (Model-Invoked)
+
+Claude automatically uses these skills when you describe features or ask about planning:
+
+1. **spec-kit-specify** - Create feature specifications from natural language
+   - Generates structured spec.md with user stories, acceptance criteria
+   - Auto-invokes when you describe a new feature to build
+
+2. **spec-kit-plan** - Create technical implementation plans
+   - Generates plan.md with architecture, data models, API contracts
+   - Auto-invokes when you ask "how should we implement this?"
+
+3. **spec-kit-tasks** - Generate actionable task lists
+   - Creates tasks.md with dependency-ordered, parallelizable tasks
+   - Auto-invokes when you ask "what needs to be done?"
+
+4. **spec-kit-implement** - Execute implementation plan
+   - Processes tasks phase-by-phase with testing and verification
+   - Auto-invokes when you say "let's build this" or "implement the feature"
+
+### Supporting Skills (Model-Invoked)
+
+Quality and validation tools Claude uses automatically:
+
+5. **spec-kit-clarify** - Resolve specification ambiguities
+   - Interactive questioning to clarify vague requirements
+   - Auto-invokes when spec has ambiguities or missing decisions
+
+6. **spec-kit-analyze** - Cross-artifact consistency analysis
+   - Validates spec.md, plan.md, tasks.md consistency
+   - Auto-invokes when you ask to "check consistency" or "validate artifacts"
+
+7. **spec-kit-checklist** - Generate requirement quality validation checklists
+   - Creates "unit tests for requirements" to validate completeness and clarity
+   - Auto-invokes when you ask for "quality checklist" or "requirements validation"
+
+### Typical Workflow
+
+```
+1. Describe Feature → spec-kit-specify generates spec.md
+2. Clarify (optional) → spec-kit-clarify resolves ambiguities
+3. Create Plan → spec-kit-plan generates plan.md
+4. Generate Tasks → spec-kit-tasks creates tasks.md
+5. Validate (optional) → spec-kit-analyze checks consistency
+6. Quality Gate (optional) → spec-kit-checklist validates requirements
+7. Implement → spec-kit-implement executes tasks phase-by-phase
+```
+
+**Location:** `.claude/skills/spec-kit/*/SKILL.md` - Individual skill documentation
+
+**Prerequisites:** Spec-kit initialized in repository (`.specify/` directory exists)
 
 ## Code Design Principles
 
