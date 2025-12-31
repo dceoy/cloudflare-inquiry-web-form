@@ -1,12 +1,12 @@
 ---
-name: codex-review
-description: Perform code reviews using OpenAI Codex CLI to identify bugs, security vulnerabilities, performance issues, and code quality problems. Use when the user asks to review code, check for issues, security audit, or before committing. Requires Codex CLI installed.
+name: copilot-review
+description: Perform code reviews using GitHub Copilot CLI to identify bugs, security vulnerabilities, performance issues, and code quality problems. Use when the user asks to review code, check for issues, security audit, or before committing. Requires Copilot CLI installed.
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
-# Codex Review Skill
+# Copilot Review Skill
 
-Use OpenAI Codex CLI to perform automated code reviews that identify issues and suggest improvements. This is a **read-only** analysis skill.
+Use GitHub Copilot CLI to perform automated code reviews that identify issues and suggest improvements. This is a **read-only** analysis skill.
 
 ## When to Use
 
@@ -19,11 +19,32 @@ Use OpenAI Codex CLI to perform automated code reviews that identify issues and 
 
 ## Prerequisites
 
-Verify Codex CLI is available:
+Verify GitHub Copilot CLI is available:
 
 ```bash
-codex --version  # Should display installed version
+copilot --version  # Should display installed version
 ```
+
+Or check if the command exists:
+
+```bash
+which copilot
+```
+
+### Authentication
+
+Ensure you're authenticated:
+
+```bash
+copilot
+# Then run: /login
+# Follow on-screen instructions to authenticate with GitHub
+```
+
+**Requirements:**
+
+- Active GitHub Copilot subscription
+- Node.js v22+ (for Copilot CLI itself)
 
 ## Basic Usage
 
@@ -45,12 +66,21 @@ git diff --stat     # Summary of changes
 git diff            # Detailed changes
 ```
 
-### Step 3: Execute Codex Review
+### Step 3: Launch Copilot CLI
 
-Run Codex with review-focused prompt:
+Navigate to the project and launch:
 
 ```bash
-codex exec "Perform comprehensive code review of [SCOPE].
+cd /path/to/project
+copilot
+```
+
+### Step 4: Execute Review
+
+Provide a comprehensive review prompt:
+
+```
+Perform comprehensive code review of [SCOPE].
 
 Check for:
 1. CRITICAL ISSUES (must fix):
@@ -82,10 +112,10 @@ For each issue:
 - Why it's a problem
 - How to fix it
 
-Do NOT make any changes - this is review only."
+Do NOT make any changes - this is review only.
 ```
 
-### Step 4: Present Findings
+### Step 5: Present Findings
 
 Organize results by severity:
 
@@ -98,82 +128,103 @@ Organize results by severity:
 
 ### Review Uncommitted Changes
 
-```bash
-codex exec "Review all uncommitted changes for:
+```
+Review all uncommitted changes for:
 - Bugs and logic errors
 - Security vulnerabilities
 - Performance issues
 - Code quality problems
 - Missing error handling
-Do NOT modify code."
+
+Do NOT modify code.
 ```
 
 ### Security-Focused Review
 
-```bash
-codex exec "Security review of src/auth/*.ts:
+```
+Security review of src/auth/*.ts:
 - SQL injection vulnerabilities
 - XSS vulnerabilities
 - Authentication bypass
 - Authorization flaws
 - Secrets in code
 - Input validation gaps
-Provide severity level and fix suggestions. Do NOT modify code."
+
+Provide severity level and fix suggestions. Do NOT modify code.
 ```
 
 ### Performance Review
 
-```bash
-codex exec "Performance review of src/components/*.tsx:
+```
+Performance review of src/components/*.tsx:
 - Unnecessary re-renders
 - Missing React.memo, useMemo, useCallback
 - Inefficient algorithms
 - Memory leaks
 - Large bundle impacts
-Provide specific optimization suggestions. Do NOT modify code."
+
+Provide specific optimization suggestions. Do NOT modify code.
 ```
 
 ### Pre-Commit Review
 
-```bash
-codex exec "Quick review of staged changes for:
+```
+Quick review of staged changes for:
 - console.log statements
 - Commented-out code
 - Unused imports
 - TODO comments
 - Missing error handling
 - Type errors
-Exit with error if critical issues found. Do NOT modify code."
+
+Do NOT modify code.
+```
+
+### Pull Request Review
+
+```
+Review PR #[NUMBER] for:
+- Code quality and best practices
+- Security issues
+- Performance concerns
+- Test coverage
+- Documentation completeness
+
+Do NOT modify code.
 ```
 
 ## Review Focus Areas
 
 ### General Review
 
-```bash
-# Comprehensive review of all aspects
-codex exec "Comprehensive review covering: security, performance, code quality, architecture, testing, accessibility. Do NOT modify code."
+```
+Comprehensive review covering: security, performance, code quality, architecture, testing, accessibility.
+
+Do NOT modify code.
 ```
 
 ### Security Audit
 
-```bash
-# OWASP Top 10 and security best practices
-codex exec "Security audit focusing on: SQL injection, XSS, CSRF, authentication, authorization, secrets, input validation. Do NOT modify code."
+```
+Security audit focusing on: SQL injection, XSS, CSRF, authentication, authorization, secrets, input validation, OWASP Top 10.
+
+Do NOT modify code.
 ```
 
 ### Architecture Review
 
-```bash
-# SOLID principles and design patterns
-codex exec "Architecture review: SOLID principles, separation of concerns, dependency management, code organization, design patterns. Do NOT modify code."
+```
+Architecture review: SOLID principles, separation of concerns, dependency management, code organization, design patterns.
+
+Do NOT modify code.
 ```
 
 ### Accessibility Review
 
-```bash
-# WCAG compliance
-codex exec "Accessibility review: ARIA labels, keyboard navigation, screen reader support, color contrast, semantic HTML. Do NOT modify code."
+```
+Accessibility review: ARIA labels, keyboard navigation, screen reader support, color contrast, semantic HTML, WCAG compliance.
+
+Do NOT modify code.
 ```
 
 ## Output Format
@@ -212,7 +263,6 @@ db.query(`SELECT * FROM users WHERE email = '${email}'`);
 // After (safe)
 db.query("SELECT * FROM users WHERE email = ?", [email]);
 ```
-````
 
 ---
 
@@ -240,27 +290,44 @@ db.query("SELECT * FROM users WHERE email = ?", [email]);
 1. **Immediate:** Fix SQL injection in auth/login.ts:45
 2. **Soon:** Address performance issue in components/UserList.tsx
 3. **Consider:** Refactor large function at utils/helpers.ts:120
-
-```
+````
 
 ## Best Practices
 
 ✅ **DO:**
+
 - Categorize by severity (Critical/Important/Suggestion)
 - Include specific file paths and line numbers
 - Explain WHY something is a problem
 - Provide clear fix suggestions
 - Note positive observations too
+- Verify findings before reporting
 
 ❌ **DON'T:**
-- Make code modifications (use codex-exec for that)
+
+- Make code modifications (use copilot-exec for that)
 - Skip verification of findings
 - Report false positives without investigation
 - Be purely negative without noting good practices
 
+## Model Selection
+
+GitHub Copilot CLI defaults to Claude Sonnet 4.5 but supports other models:
+
+```
+/model
+```
+
+Then choose from:
+
+- Claude Sonnet 4.5 (default, excellent for reviews)
+- Claude Sonnet 4
+- GPT-5
+
 ## Verification
 
-After getting Codex's review:
+After getting Copilot's review:
+
 1. Verify file paths and line numbers are correct
 2. Check if issues are real (not false positives)
 3. Assess severity appropriately
@@ -268,41 +335,46 @@ After getting Codex's review:
 
 ## Error Handling
 
-**If Codex not found:**
+**If Copilot not found:**
+
+```
+GitHub Copilot CLI is not available.
+
+Ensure it's installed and available in your PATH:
+- Check: which copilot
+- Verify: copilot --version
 ```
 
-Codex CLI is not available. Ensure it's installed and in your PATH.
-
-````
-
 **If too many issues:**
+
 - Focus on critical issues first
 - Group related issues
 - Break into multiple focused reviews
 
 **If false positives:**
+
 - Manually verify each issue
 - Filter out non-issues
 - Clarify with more specific review scope
 
-## Integration Patterns
+## GitHub Integration
 
-### Pre-Commit Hook
-```bash
-#!/bin/bash
-# .git/hooks/pre-commit
-codex exec "Quick review of staged changes for critical issues" --yes
-exit $?
-````
+Copilot CLI can review GitHub PRs directly:
 
-### CI/CD Pipeline
-
-```yaml
-# GitHub Actions example
-- name: Codex Review
-  run: |
-    codex exec "Review PR changes for security and quality" > review.md
 ```
+Review the changes in pull request #123
+```
+
+```
+What issues exist in issue #456?
+```
+
+This provides access to:
+
+- PR diff
+- Issue description
+- Comments and discussion
+- Linked commits
 
 ## Review Checklist Templates
 
@@ -314,7 +386,7 @@ exit $?
 - [ ] All imports are used
 - [ ] No TODO comments (or tracked in issues)
 - [ ] Error handling present
-- [ ] TypeScript types complete
+- [ ] Types complete
 - [ ] No security vulnerabilities
 - [ ] Tests pass
 ```
@@ -331,10 +403,19 @@ exit $?
 - [ ] CSRF protection enabled
 ```
 
+## Quota Management
+
+Each prompt uses one premium request from your monthly quota:
+
+- Be thorough in your review request
+- Combine multiple concerns into one prompt
+- Focus on specific areas when quota is limited
+- See GitHub docs for quota limits
+
 ## Related Skills
 
-- **codex-ask**: For understanding code before reviewing
-- **codex-exec**: For fixing issues found in review
+- **copilot-ask**: For understanding code before reviewing
+- **copilot-exec**: For fixing issues found in review
 
 ## Tips for Better Reviews
 
@@ -342,16 +423,73 @@ exit $?
 2. **Define scope**: Specific files > entire codebase
 3. **Choose focus**: Security audit vs general review
 4. **Iterate**: Review → Fix → Re-review
-5. **Combine skills**: codex-ask → codex-review → codex-exec
+5. **Combine skills**: copilot-ask → copilot-review → copilot-exec
+
+## Interactive Workflow
+
+Since Copilot CLI is interactive:
+
+1. **Launch**: `copilot` in project directory
+2. **Describe**: Explain what to review and focus areas
+3. **Review**: Copilot analyzes and provides feedback
+4. **Clarify**: Ask follow-up questions
+5. **Document**: Save findings for the team
+6. **Exit**: Use Ctrl+C or exit command
+
+## Advanced Review Scenarios
+
+### Diff-Based Review
+
+```
+Review the diff between main and feature-branch for:
+- Breaking changes
+- Migration concerns
+- Documentation updates needed
+```
+
+### Security Compliance
+
+```
+Review for SOC 2 compliance:
+- Audit logging
+- Data encryption
+- Access controls
+- PII handling
+```
+
+### Performance Optimization
+
+```
+Identify performance bottlenecks in:
+- Database queries (N+1 problems)
+- Rendering performance
+- Memory usage
+- Network requests
+```
 
 ## Limitations
 
+- Interactive mode only (no direct scripting)
 - Static analysis only (cannot run code)
 - May generate false positives
 - Cannot understand business logic
 - Cannot test runtime behavior
 - Limited by context window size
+- Uses quota per prompt
+
+## Integration with Claude Code
+
+When using this skill from Claude Code:
+
+1. Check git status to understand scope
+2. Guide users to open a terminal
+3. Navigate to the project directory
+4. Launch `copilot`
+5. Provide the formatted review request
+6. Users interact with Copilot to review findings
+7. Summarize key findings and recommendations
+8. Create action items for critical issues
 
 ---
 
-**Remember**: This skill is READ-ONLY. To fix issues found, use the `codex-exec` skill.
+**Remember**: This skill is READ-ONLY. To fix issues found, use the `copilot-exec` skill.
