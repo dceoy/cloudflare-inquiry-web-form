@@ -58,6 +58,7 @@ Perform a thorough, professional code review that helps improve code quality, se
 ### Phase 2: Context Gathering
 
 1. **Check what's changed**
+
    ```bash
    git status
    git diff --stat
@@ -75,6 +76,7 @@ Perform a thorough, professional code review that helps improve code quality, se
    - Check existing patterns and conventions
 
 3. **Check existing issues**
+
    ```bash
    npm run lint 2>&1 | head -20
    npx tsc --noEmit 2>&1 | head -20
@@ -130,6 +132,7 @@ Do NOT make any changes - this is review only."
 **Review depth options:**
 
 **Quick scan:**
+
 ```bash
 codex exec "Quick review for obvious issues:
 - console.log statements
@@ -140,6 +143,7 @@ codex exec "Quick review for obvious issues:
 ```
 
 **Focused review:**
+
 ```bash
 codex exec "Security-focused review:
 - SQL injection vulnerabilities
@@ -151,6 +155,7 @@ codex exec "Security-focused review:
 ```
 
 **Comprehensive review:**
+
 ```bash
 codex exec "Comprehensive review covering all aspects:
 security, performance, architecture, testing, accessibility,
@@ -184,10 +189,11 @@ code quality, best practices, documentation"
 
 Format review results clearly:
 
-```markdown
+````markdown
 # Code Review: [Scope]
 
 ## Summary
+
 - Files reviewed: X
 - Issues found: Y (Critical: A, Important: B, Suggestions: C)
 - Estimated fix time: Z hours
@@ -195,6 +201,7 @@ Format review results clearly:
 ## 🔴 Critical Issues (Fix Immediately)
 
 ### [FILE:LINE] - [Issue Title]
+
 **Severity:** Critical
 **Category:** [Security/Bugs/Data Loss]
 
@@ -208,6 +215,7 @@ Format review results clearly:
 [Step-by-step fix instructions]
 
 **Code example:**
+
 ```[language]
 // Before (problematic)
 [bad code]
@@ -215,6 +223,7 @@ Format review results clearly:
 // After (fixed)
 [good code]
 ```
+````
 
 ---
 
@@ -240,14 +249,17 @@ Format review results clearly:
 ## Review Checklist
 
 Security:
+
 - [x] No SQL injection vulnerabilities
 - [ ] XSS vulnerability in line 45
 
 Performance:
+
 - [x] Algorithms are efficient
 - [ ] N+1 query issue in user service
 
 Code Quality:
+
 - [x] Follows coding standards
 - [ ] Extract function at line 120
 
@@ -260,10 +272,12 @@ Code Quality:
 3. **Consider:** Refactor large function at component.tsx:120
 
 ## Next Steps
+
 - Fix critical issues first
 - Run tests after each fix
 - Re-review after changes
-```
+
+````
 
 ### Phase 6: Follow-Up Recommendations
 
@@ -302,7 +316,7 @@ Check for:
 - Session management issues
 
 For each issue: file, line, description, risk level, fix"
-```
+````
 
 ### Performance Review
 
@@ -443,6 +457,7 @@ codex exec "Pre-deployment security and stability review:
 ## Review Checklist Templates
 
 ### General Review Checklist
+
 ```
 Code Quality:
 - [ ] Follows project coding standards
@@ -478,16 +493,19 @@ Documentation:
 ## Error Handling
 
 **If Codex review is unclear:**
+
 - Re-run with more specific focus
 - Break into smaller review scopes
 - Ask for structured output format
 
 **If too many issues found:**
+
 - Prioritize by severity
 - Group related issues
 - Fix critical first, then iterate
 
 **If false positives:**
+
 - Verify each issue manually
 - Filter out non-issues
 - Note patterns of false positives
@@ -495,6 +513,7 @@ Documentation:
 ## Verification Steps
 
 Before presenting review:
+
 - [ ] All file paths are correct
 - [ ] Line numbers are accurate
 - [ ] Issues are real (not false positives)

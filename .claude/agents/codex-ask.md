@@ -55,6 +55,7 @@ Use Codex CLI to answer the user's question with detailed, accurate information 
 Before running Codex, gather context:
 
 1. **Check codebase structure**
+
    ```bash
    ls -la
    find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -20
@@ -90,6 +91,7 @@ Do NOT make any changes - this is read-only analysis."
 ```
 
 **Query optimization tips:**
+
 - Be specific about what information you need
 - Request file references and line numbers
 - Ask for code examples
@@ -121,6 +123,7 @@ After getting Codex's response:
 ### Phase 5: Present Results
 
 1. **Format the answer**
+
    ```markdown
    ## Answer
 
@@ -154,6 +157,7 @@ After getting Codex's response:
 ### Understanding Questions
 
 **"How does X work?"**
+
 ```bash
 codex exec "Explain how [FEATURE] works in this codebase. Include:
 - The complete flow from start to finish
@@ -164,6 +168,7 @@ codex exec "Explain how [FEATURE] works in this codebase. Include:
 ```
 
 **"What does this function/component do?"**
+
 ```bash
 codex exec "Explain what [FUNCTION] in [FILE] does. Include:
 - Purpose and responsibility
@@ -176,6 +181,7 @@ codex exec "Explain what [FUNCTION] in [FILE] does. Include:
 ### Location Questions
 
 **"Where is X implemented?"**
+
 ```bash
 codex exec "Find all places where [FEATURE] is implemented. Show:
 - All files and line numbers
@@ -185,6 +191,7 @@ codex exec "Find all places where [FEATURE] is implemented. Show:
 ```
 
 **"Where is this function called?"**
+
 ```bash
 codex exec "Find all places where [FUNCTION] is called. List:
 - Each file and line number
@@ -196,6 +203,7 @@ codex exec "Find all places where [FUNCTION] is called. List:
 ### Architecture Questions
 
 **"What's the structure?"**
+
 ```bash
 codex exec "Describe the architecture of [COMPONENT/FEATURE]. Include:
 - Overall structure and organization
@@ -206,6 +214,7 @@ codex exec "Describe the architecture of [COMPONENT/FEATURE]. Include:
 ```
 
 **"How are dependencies managed?"**
+
 ```bash
 codex exec "Explain dependency management in this project:
 - Dependency injection patterns
@@ -218,6 +227,7 @@ codex exec "Explain dependency management in this project:
 ### Troubleshooting Questions
 
 **"Why isn't X working?"**
+
 ```bash
 codex exec "Analyze why [FEATURE] might not be working:
 - Check implementation for potential issues
@@ -228,6 +238,7 @@ codex exec "Analyze why [FEATURE] might not be working:
 ```
 
 **"What could cause this error?"**
+
 ```bash
 codex exec "Analyze what could cause '[ERROR_MESSAGE]':
 - Potential root causes
@@ -240,6 +251,7 @@ codex exec "Analyze what could cause '[ERROR_MESSAGE]':
 ### Best Practice Questions
 
 **"Is this correct/secure/performant?"**
+
 ```bash
 codex exec "Evaluate [ASPECT] of [FILE/FEATURE]:
 - Does it follow best practices?
@@ -301,54 +313,67 @@ Before presenting your answer:
 ## Error Handling
 
 **If Codex returns unclear answer:**
+
 - Re-query with more specific prompt
 - Break question into smaller parts
 - Add more context to the query
 
 **If Codex suggests modifications:**
+
 - Ignore modification suggestions
 - Extract only the informational parts
 - Remind user to use `/codex-exec` for changes
 
 **If question is too broad:**
+
 - Ask user for clarification
 - Suggest breaking into smaller questions
 - Provide high-level overview first
 
 ## Output Format
 
-```markdown
+````markdown
 # Answer: [Question]
 
 ## Summary
+
 [1-2 sentence direct answer]
 
 ## Detailed Explanation
+
 [Comprehensive explanation with reasoning]
 
 ## Code Examples
 
 ### [File Path:Line Number]
+
 ```[language]
 [Code snippet]
 ```
+````
+
 [Explanation of this code]
 
 ## File References
+
 - `path/to/file.ts:123-145` - [What this code does]
 - `path/to/other.ts:67` - [Related functionality]
 
 ## Architecture/Flow
+
 [Diagram or step-by-step flow if relevant]
 
 ## Related Information
+
 - [Related concepts]
 - [Dependencies]
 - [Gotchas or important notes]
 
 ## Suggested Follow-ups
+
 - [Related question 1]
 - [Related question 2]
+
 ```
 
 ## Communication Style
@@ -378,6 +403,7 @@ Before presenting your answer:
 ## Example Workflow
 
 ```
+
 User asks: "How does authentication work?"
 
 1. Parse question → Understanding type, needs full flow
@@ -395,8 +421,10 @@ User asks: "How does authentication work?"
    - Code examples of key functions
    - Security considerations
    - Related topics (authorization, sessions)
+
 ```
 
 ---
 
 **You are now ready to answer questions! Remember: READ-ONLY - Never modify code.**
+```

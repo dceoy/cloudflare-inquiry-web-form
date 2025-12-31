@@ -19,11 +19,13 @@ Use OpenAI Codex CLI to execute development tasks that involve code modification
 ## Prerequisites
 
 Codex CLI must be installed:
+
 ```bash
 codex --version  # Verify installation
 ```
 
 If not installed, inform user to run:
+
 ```bash
 npm install -g @openai/codex
 ```
@@ -33,6 +35,7 @@ npm install -g @openai/codex
 ### Step 1: Understand the Task
 
 Parse what needs to be done:
+
 - What to create/modify?
 - Which files are affected?
 - What's the expected outcome?
@@ -41,6 +44,7 @@ Parse what needs to be done:
 ### Step 2: Gather Context
 
 Before executing, understand current state:
+
 ```bash
 git status  # Check for uncommitted changes
 git diff    # See existing modifications
@@ -73,6 +77,7 @@ Project context:
 ### Step 4: Verify Changes
 
 After execution:
+
 ```bash
 git status              # See what changed
 git diff                # Review modifications
@@ -84,6 +89,7 @@ npm test                # Run tests
 ### Step 5: Report Results
 
 Provide clear summary:
+
 - What files were modified/created
 - What changes were made
 - Verification results (lint, types, tests)
@@ -92,6 +98,7 @@ Provide clear summary:
 ## Example Tasks
 
 ### Generate New Code
+
 ```bash
 codex exec "Create a UserProfile component in src/components/ with:
 - Props: name (string), email (string), avatar (string optional)
@@ -102,6 +109,7 @@ codex exec "Create a UserProfile component in src/components/ with:
 ```
 
 ### Refactor Code
+
 ```bash
 codex exec "Refactor the validation logic in src/components/LoginForm.tsx:
 - Extract validation into separate src/utils/validation.ts file
@@ -111,6 +119,7 @@ codex exec "Refactor the validation logic in src/components/LoginForm.tsx:
 ```
 
 ### Fix Bugs
+
 ```bash
 codex exec "Fix the memory leak in src/hooks/useWebSocket.ts:
 - The WebSocket connection is not being cleaned up
@@ -119,6 +128,7 @@ codex exec "Fix the memory leak in src/hooks/useWebSocket.ts:
 ```
 
 ### Add Features
+
 ```bash
 codex exec "Add email validation to ContactForm.tsx:
 - Use regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -129,6 +139,7 @@ codex exec "Add email validation to ContactForm.tsx:
 ```
 
 ### Create Tests
+
 ```bash
 codex exec "Create unit tests for src/utils/validation.ts:
 - Test validateEmail with valid/invalid inputs
@@ -141,29 +152,34 @@ codex exec "Create unit tests for src/utils/validation.ts:
 ## Execution Modes
 
 ### Safe Mode (Default)
+
 ```bash
 codex exec "[TASK]"
 # Prompts for approval before each action
 ```
 
 ### Preview Mode
+
 ```bash
 codex exec "[TASK]" --dry-run
 # Shows what would be done without executing
 ```
 
 ### Automated Mode ⚠️
+
 ```bash
 codex exec "[TASK]" --yes
 # Auto-approves all actions - use with caution!
 ```
 
 **Only use `--yes` for:**
+
 - Low-risk tasks (formatting, comments)
 - Isolated environments
 - Well-tested operations
 
 **Never use `--yes` for:**
+
 - Production code
 - Security-sensitive changes
 - Database operations
@@ -174,22 +190,26 @@ codex exec "[TASK]" --yes
 After Codex executes, ALWAYS:
 
 1. **Review changes**:
+
    ```bash
    git diff
    ```
 
 2. **Check syntax and types**:
+
    ```bash
    npm run lint
    npx tsc --noEmit
    ```
 
 3. **Run tests**:
+
    ```bash
    npm test
    ```
 
 4. **Manual testing**:
+
    ```bash
    npm run dev
    # Test the functionality
@@ -205,6 +225,7 @@ After Codex executes, ALWAYS:
 ## Best Practices
 
 ✅ **DO:**
+
 - Be specific in task descriptions
 - Include file paths
 - Specify expected behavior
@@ -213,6 +234,7 @@ After Codex executes, ALWAYS:
 - Test manually before declaring success
 
 ❌ **DON'T:**
+
 - Use vague instructions like "make it better"
 - Skip verification steps
 - Use `--yes` for critical code
@@ -222,17 +244,20 @@ After Codex executes, ALWAYS:
 ## Error Handling
 
 **If execution fails:**
+
 1. Check the error message
 2. Verify Codex authentication
 3. Try with more specific instructions
 4. Break task into smaller steps
 
 **If changes are incorrect:**
+
 1. Revert: `git restore .` or `git restore <file>`
 2. Re-execute with better instructions
 3. Or fix manually
 
 **If tests fail:**
+
 1. Review what broke
 2. Ask Codex to fix the test failures
 3. Or fix manually
@@ -240,6 +265,7 @@ After Codex executes, ALWAYS:
 ## Writing Effective Tasks
 
 ### Good Task Description
+
 ```
 "Add email validation to ContactForm.tsx using regex pattern.
 Show error message below the input field on blur.
@@ -249,6 +275,7 @@ Follow existing form validation patterns."
 ```
 
 ### Poor Task Description
+
 ```
 "Add validation"  # Too vague
 "Fix the form"    # No specifics
@@ -257,12 +284,14 @@ Follow existing form validation patterns."
 ## Safety Checklist
 
 Before using codex-exec:
+
 - [ ] Understand what will be modified
 - [ ] Have clean git state (can rollback)
 - [ ] Know which files will be affected
 - [ ] Have tests to verify correctness
 
 After using codex-exec:
+
 - [ ] Reviewed changes with `git diff`
 - [ ] Ran linter (`npm run lint`)
 - [ ] Ran type checker (`npx tsc --noEmit`)

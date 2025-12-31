@@ -53,7 +53,9 @@ Use pnpm (lockfile is `pnpm-lock.yaml`).
 OpenAI Codex CLI integration provides two interfaces for enhanced development workflows:
 
 ### Skills (Model-Invoked)
+
 Claude automatically uses these when appropriate based on your request:
+
 - **codex-ask** - Ask questions about code (read-only analysis)
 - **codex-exec** - Execute development tasks (modifies code)
 - **codex-review** - Perform code reviews (read-only analysis)
@@ -61,7 +63,9 @@ Claude automatically uses these when appropriate based on your request:
 Located in `.claude/skills/` - Claude invokes these automatically when your request matches their descriptions.
 
 ### Agents (Task-Launched)
+
 Autonomous multi-phase agents for complex workflows:
+
 - **codex-ask** - Deep code analysis with detailed explanations
 - **codex-exec** - Comprehensive task execution with verification
 - **codex-review** - Thorough code review with categorized findings
@@ -71,6 +75,7 @@ Located in `.claude/agents/` - Launch explicitly for multi-step autonomous execu
 **Prerequisites:** Codex CLI must be installed (`npm install -g @openai/codex`)
 
 **Documentation:**
+
 - `.claude/skills/*/SKILL.md` - Individual skill guides
 - `.claude/agents/README.md` - Agent usage and workflow patterns
 

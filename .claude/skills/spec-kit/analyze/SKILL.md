@@ -37,16 +37,19 @@ Cross-artifact consistency and quality analysis for feature specifications. This
 ### Step 1: Initialize Analysis
 
 Run prerequisites check:
+
 ```bash
 .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
 ```
 
 Provides:
+
 - FEATURE_DIR path
 - AVAILABLE_DOCS list
 - Tasks content
 
 Derives paths:
+
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md
 - TASKS = FEATURE_DIR/tasks.md
@@ -57,6 +60,7 @@ Derives paths:
 Loads only necessary context:
 
 **From spec.md:**
+
 - Overview/Context
 - Functional Requirements
 - Non-Functional Requirements
@@ -64,12 +68,14 @@ Loads only necessary context:
 - Edge Cases
 
 **From plan.md:**
+
 - Architecture/stack choices
 - Data Model references
 - Phases
 - Technical constraints
 
 **From tasks.md:**
+
 - Task IDs
 - Descriptions
 - Phase grouping
@@ -77,6 +83,7 @@ Loads only necessary context:
 - File paths
 
 **From constitution.md:**
+
 - Project principles
 - MUST/SHOULD requirements
 
@@ -92,28 +99,34 @@ Creates internal representations (not shown in output):
 ### Step 4: Detection Passes
 
 **A. Duplication Detection**
+
 - Near-duplicate requirements
 - Lower-quality phrasing
 
 **B. Ambiguity Detection**
+
 - Vague adjectives: "fast", "scalable", "secure", "intuitive", "robust"
 - Unresolved placeholders: TODO, TKTK, ???, `<placeholder>`
 
 **C. Underspecification**
+
 - Requirements missing object or measurable outcome
 - User stories missing acceptance criteria
 - Tasks referencing undefined files/components
 
 **D. Constitution Alignment**
+
 - Conflicts with MUST principles (always CRITICAL)
 - Missing mandated sections/gates
 
 **E. Coverage Gaps**
+
 - Requirements with zero tasks
 - Tasks with no mapped requirement
 - Non-functional requirements not reflected in tasks
 
 **F. Inconsistency**
+
 - Terminology drift (same concept, different names)
 - Data entities in plan but not spec (or vice versa)
 - Task ordering contradictions
@@ -124,21 +137,25 @@ Creates internal representations (not shown in output):
 ### Step 5: Severity Assignment
 
 **CRITICAL:**
+
 - Violates constitution MUST
 - Missing core spec artifact
 - Requirement with zero coverage blocking baseline functionality
 
 **HIGH:**
+
 - Duplicate or conflicting requirement
 - Ambiguous security/performance attribute
 - Untestable acceptance criterion
 
 **MEDIUM:**
+
 - Terminology drift
 - Missing non-functional task coverage
 - Underspecified edge case
 
 **LOW:**
+
 - Style/wording improvements
 - Minor redundancy not affecting execution
 
@@ -149,34 +166,34 @@ Outputs Markdown report (no file writes):
 ```markdown
 ## Specification Analysis Report
 
-| ID | Category | Severity | Location(s) | Summary | Recommendation |
-|----|----------|----------|-------------|---------|----------------|
-| A1 | Duplication | HIGH | spec.md:L120-134 | Two similar requirements for auth | Merge; keep clearer version |
-| U2 | Underspec | MEDIUM | plan.md:L45 | User model references undefined "role" field | Add role definition to data model |
-| C3 | Coverage | HIGH | spec.md:FR-5 | Performance requirement has no tasks | Add performance testing tasks |
-| I4 | Inconsistency | MEDIUM | Multiple | "User" vs "Account" terminology | Normalize to single term |
-| B5 | Ambiguity | HIGH | spec.md:NFR-2 | "Fast response" not quantified | Define specific latency threshold |
+| ID  | Category      | Severity | Location(s)      | Summary                                      | Recommendation                    |
+| --- | ------------- | -------- | ---------------- | -------------------------------------------- | --------------------------------- |
+| A1  | Duplication   | HIGH     | spec.md:L120-134 | Two similar requirements for auth            | Merge; keep clearer version       |
+| U2  | Underspec     | MEDIUM   | plan.md:L45      | User model references undefined "role" field | Add role definition to data model |
+| C3  | Coverage      | HIGH     | spec.md:FR-5     | Performance requirement has no tasks         | Add performance testing tasks     |
+| I4  | Inconsistency | MEDIUM   | Multiple         | "User" vs "Account" terminology              | Normalize to single term          |
+| B5  | Ambiguity     | HIGH     | spec.md:NFR-2    | "Fast response" not quantified               | Define specific latency threshold |
 
 **Coverage Summary:**
 
-| Requirement Key | Has Task? | Task IDs | Notes |
-|-----------------|-----------|----------|-------|
-| user-can-register | Yes | T007-T014 | Complete |
-| user-can-login | Yes | T015-T022 | Complete |
-| performance-metrics | No | - | Missing tasks |
-| security-audit-log | Yes | T030 | Partial coverage |
+| Requirement Key     | Has Task? | Task IDs  | Notes            |
+| ------------------- | --------- | --------- | ---------------- |
+| user-can-register   | Yes       | T007-T014 | Complete         |
+| user-can-login      | Yes       | T015-T022 | Complete         |
+| performance-metrics | No        | -         | Missing tasks    |
+| security-audit-log  | Yes       | T030      | Partial coverage |
 
 **Constitution Alignment Issues:**
 
-| Principle | Violation | Severity | Location |
-|-----------|-----------|----------|----------|
+| Principle                      | Violation                     | Severity | Location     |
+| ------------------------------ | ----------------------------- | -------- | ------------ |
 | "All APIs must use versioning" | No version in endpoint design | CRITICAL | plan.md:L120 |
 
 **Unmapped Tasks:**
 
-| Task ID | Description | Issue |
-|---------|-------------|-------|
-| T025 | Create analytics dashboard | No requirement found |
+| Task ID | Description                | Issue                |
+| ------- | -------------------------- | -------------------- |
+| T025    | Create analytics dashboard | No requirement found |
 
 **Metrics:**
 
@@ -194,6 +211,7 @@ Outputs Markdown report (no file writes):
 ### Step 7: Next Actions
 
 **If CRITICAL issues:**
+
 ```
 ⚠️ CRITICAL ISSUES FOUND
 
@@ -206,6 +224,7 @@ Recommended actions:
 ```
 
 **If only LOW/MEDIUM:**
+
 ```
 ✅ READY TO IMPLEMENT (with improvements recommended)
 
@@ -219,6 +238,7 @@ You may proceed with spec-kit-implement
 ### Step 8: Remediation Offer
 
 After report:
+
 ```
 Would you like me to suggest concrete remediation edits for the top 5 issues?
 (I will NOT apply them automatically - you must approve first)
@@ -227,12 +247,14 @@ Would you like me to suggest concrete remediation edits for the top 5 issues?
 ## Best Practices
 
 ✅ **DO:**
+
 - Run after tasks.md creation
 - Review all CRITICAL issues before implementation
 - Use for pre-implementation validation
 - Check constitution alignment
 
 ❌ **DON'T:**
+
 - Modify files (this is read-only)
 - Ignore CRITICAL issues
 - Skip if constitution exists
@@ -288,12 +310,14 @@ User: "Analyze my feature artifacts for consistency"
 ## Report Interpretation
 
 **Coverage % Guidelines:**
+
 - **100%**: Perfect coverage (rare)
 - **80-99%**: Excellent (some optional requirements unmapped)
 - **60-79%**: Good (review gaps)
 - **< 60%**: Poor (significant gaps, review tasks.md)
 
 **Issue Count Guidelines:**
+
 - **0 CRITICAL**: Safe to proceed
 - **1+ CRITICAL**: Must fix before implementation
 - **< 5 HIGH**: Normal for first pass
@@ -307,6 +331,7 @@ User: "Analyze my feature artifacts for consistency"
 Constitution violations are **ALWAYS CRITICAL** and **NON-NEGOTIABLE**.
 
 ✅ **Correct Response:**
+
 ```
 CRITICAL: Constitution violation detected
 Principle: "All data must be encrypted at rest"
@@ -315,6 +340,7 @@ Action: Update plan.md to add encryption
 ```
 
 ❌ **WRONG Response:**
+
 ```
 Maybe we can relax the encryption principle for this feature?
 ```
@@ -324,12 +350,14 @@ Maybe we can relax the encryption principle for this feature?
 ## Token Efficiency
 
 **Progressive Disclosure:**
+
 - Load artifacts incrementally
 - Summarize long sections
 - Focus on actionable findings
 - Limit to 50 findings max
 
 **Minimal Output:**
+
 - Tables over prose
 - Stable IDs for findings
 - Aggregate overflow
@@ -338,6 +366,7 @@ Maybe we can relax the encryption principle for this feature?
 ## Next Steps
 
 After analysis:
+
 - **Fix CRITICAL**: Update spec/plan/tasks
 - **Start implementation**: Use `spec-kit-implement`
 - **Re-analyze**: After fixes to verify
@@ -351,11 +380,13 @@ After analysis:
 ## Common Issues
 
 **Missing tasks.md:**
+
 ```
 Run spec-kit-tasks first to generate task list
 ```
 
 **No issues found:**
+
 ```
 ✅ All artifacts consistent
 - 100% coverage
@@ -365,6 +396,7 @@ Run spec-kit-tasks first to generate task list
 ```
 
 **Too many findings:**
+
 ```
 50+ issues detected, showing top 50 by severity
 Consider running spec-kit-clarify to reduce ambiguities

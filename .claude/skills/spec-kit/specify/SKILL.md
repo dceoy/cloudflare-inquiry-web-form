@@ -30,6 +30,7 @@ Create structured feature specifications from natural language descriptions. Thi
 ## Prerequisites
 
 Spec-kit should be initialized in the repository:
+
 ```bash
 ls .specify/  # Check if spec-kit is set up
 ```
@@ -39,6 +40,7 @@ ls .specify/  # Check if spec-kit is set up
 ### Step 1: Get Feature Description
 
 The feature description is what the user wants to build. Examples:
+
 - "Add user authentication with email/password"
 - "Create a dashboard with analytics"
 - "Implement file upload with drag and drop"
@@ -46,11 +48,13 @@ The feature description is what the user wants to build. Examples:
 ### Step 2: Generate Specification
 
 Run the specify script:
+
 ```bash
 .specify/scripts/bash/setup-spec.sh --json
 ```
 
 This creates:
+
 - Feature branch
 - spec.md with structured requirements
 - Feature directory in .specify/features/
@@ -60,26 +64,32 @@ This creates:
 Generate comprehensive spec.md with:
 
 **Feature Overview:**
+
 - What: Brief description
 - Why: Business value
 - Who: Target users
 
 **User Stories:**
+
 ```markdown
 ## User Stories
 
 ### P1 (Must Have)
+
 **US1: [Story Title]**
+
 - **As a** [user type]
 - **I want** [goal/desire]
 - **So that** [benefit/value]
 
 **Acceptance Criteria:**
+
 - [ ] Criterion 1
 - [ ] Criterion 2
 ```
 
 **Requirements:**
+
 - Functional requirements
 - Non-functional requirements (performance, security, UX)
 - Technical constraints
@@ -92,35 +102,43 @@ The spec.md follows this structure:
 # Feature: [Name]
 
 ## Overview
+
 [Brief description of the feature]
 
 ## User Stories
 
 ### Priority 1 (Must Have)
+
 **US1: User Login**
+
 - **As a** registered user
 - **I want** to log in with email/password
 - **So that** I can access my account
 
 **Acceptance Criteria:**
+
 - [ ] Email validation works
 - [ ] Password is hashed
 - [ ] Session management implemented
 
 ### Priority 2 (Should Have)
+
 [Additional stories...]
 
 ## Requirements
 
 ### Functional
+
 - FR1: System must validate email format
 - FR2: Password must be 8+ characters
 
 ### Non-Functional
+
 - NFR1: Login response time < 2 seconds
 - NFR2: Passwords stored with bcrypt
 
 ### Constraints
+
 - Must use existing authentication library
 - Must comply with GDPR
 ```
@@ -128,6 +146,7 @@ The spec.md follows this structure:
 ## Best Practices
 
 ✅ **DO:**
+
 - Write user stories from user perspective
 - Include clear acceptance criteria
 - Prioritize stories (P1, P2, P3)
@@ -135,6 +154,7 @@ The spec.md follows this structure:
 - Consider edge cases
 
 ❌ **DON'T:**
+
 - Skip acceptance criteria
 - Make stories too large
 - Mix technical implementation with requirements
@@ -160,6 +180,7 @@ User: "I want to add user authentication with email/password and social login"
 ## Next Steps
 
 After creating spec.md:
+
 - **Clarify** ambiguities with `spec-kit-clarify`
 - **Plan** implementation with `spec-kit-plan`
 - **Generate tasks** with `spec-kit-tasks`
@@ -173,11 +194,13 @@ After creating spec.md:
 ## Common Issues
 
 **Feature description too vague:**
+
 - Ask clarifying questions
 - Identify key user goals
 - Break into smaller features
 
 **Too many features at once:**
+
 - Focus on one feature per specification
 - Create separate specs for distinct features
 

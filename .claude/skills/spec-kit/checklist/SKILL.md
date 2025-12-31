@@ -13,12 +13,14 @@ Generate requirement quality validation checklists. **"Unit Tests for English"**
 **CRITICAL:** Checklists test **REQUIREMENTS QUALITY**, not implementation.
 
 **❌ NOT for verification/testing:**
+
 - "Verify button clicks correctly"
 - "Test error handling works"
 - "Confirm API returns 200"
 - Checking if code matches spec
 
 **✅ FOR requirements quality:**
+
 - "Are visual hierarchy requirements defined for all card types?" [Completeness]
 - "Is 'prominent display' quantified with specific sizing?" [Clarity]
 - "Are hover state requirements consistent across interactive elements?" [Consistency]
@@ -54,11 +56,13 @@ Generate requirement quality validation checklists. **"Unit Tests for English"**
 ### Step 1: Initialize
 
 Run prerequisites check:
+
 ```bash
 .specify/scripts/bash/check-prerequisites.sh --json
 ```
 
 Provides:
+
 - FEATURE_DIR path
 - AVAILABLE_DOCS list
 
@@ -67,6 +71,7 @@ Provides:
 Asks 1-5 questions based on user request and feature context:
 
 **Sample Q1 - Scope:**
+
 ```
 Should this checklist include integration touchpoints with external APIs
 or stay limited to local module correctness?
@@ -79,6 +84,7 @@ or stay limited to local module correctness?
 ```
 
 **Sample Q2 - Risk:**
+
 ```
 Which risk areas should receive mandatory gating checks?
 
@@ -88,6 +94,7 @@ Options: Security, Performance, Accessibility, Data integrity, Scalability
 ```
 
 **Sample Q3 - Depth:**
+
 ```
 Is this a lightweight pre-commit sanity list or a formal release gate?
 
@@ -99,6 +106,7 @@ Is this a lightweight pre-commit sanity list or a formal release gate?
 ```
 
 **Sample Q4 - Audience:**
+
 ```
 Who will use this checklist?
 
@@ -113,6 +121,7 @@ Who will use this checklist?
 ```
 
 **Sample Q5 - Exclusions:**
+
 ```
 Should we explicitly exclude performance tuning items this round?
 
@@ -120,6 +129,7 @@ Answer: Yes/No (short answer)
 ```
 
 **Question Limits:**
+
 - Maximum 5 questions
 - Skip if already clear from user request
 - Stop if user says "done" or "skip"
@@ -129,6 +139,7 @@ Answer: Yes/No (short answer)
 Creates checklist file in `FEATURE_DIR/checklists/`:
 
 **Filename Format:**
+
 - `[domain].md` - e.g., `ux.md`, `api.md`, `security.md`
 - Short, descriptive names
 - Each run creates NEW file (never overwrites)
@@ -205,11 +216,13 @@ Every checklist item validates requirements across:
 ### Writing Checklist Items
 
 **Required Pattern:**
+
 ```
 - [ ] CHK### - [Question about requirement quality]? [Dimension, Reference]
 ```
 
 **Components:**
+
 - Question format
 - Focus on what's WRITTEN (or missing) in spec
 - Quality dimension marker: [Completeness/Clarity/Consistency/Coverage/...]
@@ -246,11 +259,13 @@ Check requirements exist for:
 - **Non-functional scenarios**: Performance, security, accessibility requirements
 
 For each:
+
 ```
 - [ ] CHK### - Are [scenario type] requirements complete, clear, and consistent? [Coverage]
 ```
 
 If missing:
+
 ```
 - [ ] CHK### - Are [scenario type] requirements intentionally excluded or missing? [Gap]
 ```
@@ -271,6 +286,7 @@ If missing:
 **Soft cap:** 40 items
 
 **If > 40 items:**
+
 - Prioritize by risk/impact
 - Merge near-duplicates
 - Consolidate low-impact edge cases:
@@ -281,6 +297,7 @@ If missing:
 ## Best Practices
 
 ✅ **DO:**
+
 - Test requirement quality, not implementation
 - Use question format
 - Include traceability (≥80%)
@@ -289,6 +306,7 @@ If missing:
 - Mark gaps and ambiguities
 
 ❌ **DON'T:**
+
 - Write implementation verification steps
 - Use "Verify", "Test", "Confirm" + behavior
 - Check code execution
@@ -346,6 +364,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 ## Common Checklist Types
 
 **ux.md** - Visual/interaction requirements quality:
+
 - Visual hierarchy requirements defined?
 - Interaction states consistently specified?
 - Accessibility requirements complete?
@@ -353,6 +372,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 - Responsive breakpoints clear?
 
 **api.md** - API requirements quality:
+
 - Error response formats specified?
 - Rate limiting quantified?
 - Authentication consistent?
@@ -360,6 +380,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 - Timeout/retry requirements defined?
 
 **security.md** - Security requirements quality:
+
 - Authentication requirements specified?
 - Data protection requirements defined?
 - Threat model documented?
@@ -367,6 +388,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 - Security failure responses defined?
 
 **performance.md** - Performance requirements quality:
+
 - Performance metrics quantified?
 - Targets for all critical journeys?
 - Load conditions specified?
@@ -374,6 +396,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 - Degradation scenarios defined?
 
 **test.md** - Test requirements quality:
+
 - Acceptance criteria testable?
 - Test scenarios for all flows?
 - Edge case testing requirements?
@@ -383,6 +406,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 ## Validation Metrics
 
 **Good checklist:**
+
 - ≥80% items with traceability
 - All items question requirement quality
 - No implementation verification steps
@@ -390,6 +414,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 - 15-40 items (focused scope)
 
 **Poor checklist:**
+
 - < 50% items with traceability
 - Implementation testing mixed in
 - "Verify X works" language
@@ -399,6 +424,7 @@ Output: .specify/features/podcast-api/checklists/api.md
 ## Next Steps
 
 After creating checklist:
+
 - **Use for PR reviews**: Validate spec/plan before approval
 - **Self-review**: Author validates own requirements
 - **QA validation**: Ensure testable acceptance criteria
@@ -414,17 +440,20 @@ After creating checklist:
 ## Common Issues
 
 **Checklist tests implementation:**
+
 ```
 WRONG: "Verify login button works"
 RIGHT: "Are button interaction requirements defined for all states?" [Completeness]
 ```
 
 **Missing traceability:**
+
 ```
 Add [Spec §X.Y] or [Gap] markers to 80%+ of items
 ```
 
 **Too broad:**
+
 ```
 Focus on 2-3 quality dimensions, not all 9
 Use 15-40 items per checklist

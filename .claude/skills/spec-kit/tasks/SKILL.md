@@ -18,6 +18,7 @@ Generate actionable, dependency-ordered tasks from design artifacts. This is the
 ## What It Does
 
 Creates tasks.md with:
+
 1. **Dependency-ordered tasks** organized by user story
 2. **Parallel execution opportunities** marked with [P]
 3. **Independent test criteria** for each story
@@ -35,17 +36,20 @@ Creates tasks.md with:
 ### Step 1: Load Design Artifacts
 
 Run prerequisites check:
+
 ```bash
 .specify/scripts/bash/check-prerequisites.sh --json
 ```
 
 Reads from FEATURE_DIR:
+
 - **Required**: plan.md, spec.md
 - **Optional**: data-model.md, contracts/, research.md
 
 ### Step 2: Generate Tasks
 
 Creates tasks.md organized by:
+
 - Phase 1: Setup (project initialization)
 - Phase 2: Foundational (blocking prerequisites)
 - Phase 3+: User Stories (one phase per story, priority order)
@@ -54,6 +58,7 @@ Creates tasks.md organized by:
 ### Step 3: Validate Tasks
 
 Ensures:
+
 - Each user story has complete tasks
 - Tasks are independently testable
 - Dependencies are clear
@@ -63,12 +68,13 @@ Ensures:
 
 ### tasks.md Structure
 
-```markdown
+````markdown
 # Tasks: [Feature Name]
 
 ## Implementation Strategy
 
 **Approach:** MVP-first, incremental delivery
+
 - Phase 3 (US1) is MVP
 - Phases 4-6 are incremental additions
 - Each phase is independently testable
@@ -82,6 +88,7 @@ graph LR
   Foundation --> US2
   US1 --> US3
 ```
+````
 
 ## Phase 1: Setup
 
@@ -102,6 +109,7 @@ graph LR
 **Independent Test:** Create account, verify in database, receive JWT
 
 ### Implementation Tasks
+
 - [ ] T007 [P] [US1] Create registration endpoint POST /api/auth/register
 - [ ] T008 [P] [US1] Implement email validation in src/utils/validation.ts
 - [ ] T009 [US1] Hash password with bcrypt in registration handler
@@ -109,6 +117,7 @@ graph LR
 - [ ] T011 [P] [US1] Create registration form component
 
 ### Tests
+
 - [ ] T012 [P] [US1] Unit test: Email validation
 - [ ] T013 [P] [US1] Unit test: Password hashing
 - [ ] T014 [US1] Integration test: Registration flow
@@ -120,18 +129,23 @@ graph LR
 ## Parallel Execution Examples
 
 **Phase 3 (US1) - Can run in parallel:**
+
 - T007, T008 (different files, no dependencies)
 - T012, T013 (independent tests)
 
 **Cannot parallelize:**
+
 - T009 → T010 (T010 depends on T009 completion)
+
 ```
 
 ## Task Format Requirements
 
 Every task MUST follow:
 ```
+
 - [ ] [TaskID] [P?] [Story?] Description with file path
+
 ```
 
 **Components:**
@@ -182,9 +196,11 @@ Every task MUST follow:
 ## Example Workflow
 
 ```
+
 Input: plan.md with auth design, spec.md with 3 user stories
 
 Task Generation:
+
 1. Setup Phase:
    - T001: Project structure
    - T002-T003: Dependencies
@@ -205,6 +221,7 @@ Task Generation:
    - T028-T030: Tests
 
 Output: tasks.md with 30 dependency-ordered tasks
+
 ```
 
 ## Dependency Management
@@ -237,18 +254,24 @@ After creating tasks.md:
 
 **Missing plan.md:**
 ```
+
 Run spec-kit-plan first to create implementation plan
+
 ```
 
 **Tasks too vague:**
 ```
+
 Include specific file paths and clear actions
+
 ```
 
 **Too many tasks:**
 ```
+
 Each user story should have 5-15 tasks typically
 Break large stories into smaller ones
+
 ```
 
 ## Tips for Good Task Lists
@@ -262,3 +285,4 @@ Break large stories into smaller ones
 ---
 
 **Remember**: Good tasks make implementation smooth. After tasks, use `spec-kit-implement` to execute them.
+```

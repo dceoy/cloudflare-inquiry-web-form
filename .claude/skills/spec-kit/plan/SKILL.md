@@ -18,6 +18,7 @@ Generate comprehensive technical implementation plan from feature specification.
 ## What It Does
 
 Creates plan.md with:
+
 1. **Technical Context**: Tech stack, dependencies, integrations
 2. **Architecture**: Design patterns, component structure
 3. **Data Model**: Entities, relationships, validation
@@ -35,11 +36,13 @@ Creates plan.md with:
 ### Step 1: Load Specification
 
 Read the existing spec.md:
+
 ```bash
 .specify/scripts/bash/setup-plan.sh --json
 ```
 
 This provides:
+
 - FEATURE_SPEC path
 - IMPL_PLAN path
 - SPECS_DIR location
@@ -49,11 +52,13 @@ This provides:
 Follow structured phases:
 
 **Phase 0: Research & Outline**
+
 - Extract unknowns from requirements
 - Research best practices
 - Document technical decisions
 
 **Phase 1: Design & Contracts**
+
 - Define data model
 - Design API contracts
 - Create quickstart guide
@@ -68,39 +73,45 @@ Follow structured phases:
 ## Technical Context
 
 ### Tech Stack
+
 - Frontend: React 18 + TypeScript + Vite
 - Backend: Node.js + Express
 - Database: PostgreSQL
 - Authentication: JWT
 
 ### Dependencies
+
 - New: bcrypt, jsonwebtoken
 - Existing: express, pg
 
 ### Integrations
+
 - Email service (SendGrid)
 - OAuth providers (Google, GitHub)
 
 ## Architecture
 
 ### Design Patterns
+
 - Repository pattern for data access
 - Middleware for authentication
 - Service layer for business logic
 
 ### Component Structure
 ```
+
 src/
 ├── components/
-│   ├── auth/
-│   │   ├── LoginForm.tsx
-│   │   └── RegisterForm.tsx
+│ ├── auth/
+│ │ ├── LoginForm.tsx
+│ │ └── RegisterForm.tsx
 ├── services/
-│   ├── authService.ts
-│   └── userService.ts
+│ ├── authService.ts
+│ └── userService.ts
 └── middleware/
-    └── auth.ts
-```
+└── auth.ts
+
+````
 
 ## Data Model
 
@@ -113,16 +124,19 @@ interface User {
   createdAt: Date
   lastLogin: Date?
 }
-```
+````
 
 ### Relationships
+
 - User 1:N Session
 - User 1:N RefreshToken
 
 ## API Contracts
 
 ### POST /api/auth/register
+
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -131,6 +145,7 @@ interface User {
 ```
 
 **Response (201):**
+
 ```json
 {
   "user": { "id": "123", "email": "user@example.com" },
@@ -141,9 +156,11 @@ interface User {
 ## Technical Decisions
 
 ### Decision: JWT vs Session
+
 **Chosen:** JWT
 **Rationale:** Stateless, scalable, works with mobile apps
 **Alternatives:** Cookie sessions (simpler, more secure)
+
 ```
 
 ## Phase Workflow
@@ -194,6 +211,7 @@ interface User {
 ## Example Workflow
 
 ```
+
 Input: spec.md with user authentication stories
 
 Phase 0 - Research:
@@ -203,22 +221,26 @@ Phase 0 - Research:
 
 Phase 1 - Design:
 → Create data-model.md:
-  - User entity
-  - Session entity
-  - RefreshToken entity
+
+- User entity
+- Session entity
+- RefreshToken entity
 
 → Create contracts/:
-  - POST /api/auth/register
-  - POST /api/auth/login
-  - POST /api/auth/refresh
-  - POST /api/auth/logout
+
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/refresh
+- POST /api/auth/logout
 
 → Create quickstart.md:
-  - Registration test
-  - Login test
-  - Protected route test
+
+- Registration test
+- Login test
+- Protected route test
 
 Output: Complete plan.md with all design artifacts
+
 ```
 
 ## Constitution Check
@@ -246,17 +268,23 @@ After creating plan.md:
 
 **Missing spec.md:**
 ```
+
 Run spec-kit-specify first to create the feature specification
+
 ```
 
 **Unclear requirements:**
 ```
+
 Use spec-kit-clarify to resolve ambiguities before planning
+
 ```
 
 **Too broad:**
 ```
+
 Break into smaller features and plan separately
+
 ```
 
 ## Tips for Good Plans
@@ -270,3 +298,4 @@ Break into smaller features and plan separately
 ---
 
 **Remember**: Planning before coding saves time. After plan, use `spec-kit-tasks` to create actionable task list.
+```

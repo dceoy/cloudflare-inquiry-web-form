@@ -35,11 +35,13 @@ Detect and reduce ambiguity in feature specifications through targeted questioni
 ### Step 1: Load Specification
 
 Run prerequisites check:
+
 ```bash
 .specify/scripts/bash/check-prerequisites.sh --json --paths-only
 ```
 
 Provides:
+
 - FEATURE_DIR path
 - FEATURE_SPEC path
 
@@ -48,49 +50,59 @@ Provides:
 Scans spec across these categories:
 
 **Functional Scope & Behavior:**
+
 - Core user goals & success criteria
 - Explicit out-of-scope declarations
 - User roles / personas
 
 **Domain & Data Model:**
+
 - Entities, attributes, relationships
 - Data volume / scale assumptions
 - Lifecycle states
 
 **Interaction & UX:**
+
 - Critical user journeys
 - Error/empty/loading states
 - Accessibility requirements
 
 **Non-Functional:**
+
 - Performance (latency, throughput)
 - Scalability limits
 - Security & privacy
 - Observability signals
 
 **Integration:**
+
 - External services/APIs
 - Failure modes
 - Data formats
 
 **Edge Cases:**
+
 - Negative scenarios
 - Rate limiting
 - Conflict resolution
 
 **Constraints:**
+
 - Technical constraints
 - Tradeoffs / rejected alternatives
 
 **Terminology:**
+
 - Canonical terms
 - Avoided synonyms
 
 **Completion Signals:**
+
 - Testable acceptance criteria
 - Definition of Done
 
 **Placeholders:**
+
 - TODO markers
 - Vague adjectives
 
@@ -99,6 +111,7 @@ Scans spec across these categories:
 **Question Format:**
 
 Multiple-choice questions:
+
 ```
 **Recommended:** Option B - JWT tokens for stateless auth
 
@@ -113,6 +126,7 @@ by saying "yes" or "recommended", or provide your own short answer.
 ```
 
 Short-answer questions:
+
 ```
 **Suggested:** < 2 seconds - Industry standard for interactive responses
 
@@ -121,6 +135,7 @@ Format: Short answer (<=5 words). You can accept the suggestion by saying
 ```
 
 **Question Rules:**
+
 - **Maximum 5 questions** per session
 - One question at a time (never batch)
 - Only high-impact questions (affects architecture, data model, testing, UX, security)
@@ -132,10 +147,12 @@ Format: Short answer (<=5 words). You can accept the suggestion by saying
 After EACH accepted answer:
 
 1. **Create/update Clarifications section** in spec.md:
+
    ```markdown
    ## Clarifications
 
    ### Session 2025-01-15
+
    - Q: What authentication method? → A: JWT tokens
    ```
 
@@ -154,6 +171,7 @@ After EACH accepted answer:
 After questioning completes:
 
 **Completion Summary:**
+
 ```
 Clarification Summary:
 - Questions asked: 3
@@ -177,6 +195,7 @@ Next: Run spec-kit-plan to create technical implementation plan
 Questions selected by **(Impact × Uncertainty)** heuristic:
 
 **High Impact:**
+
 - Security/auth approach
 - Data model changes
 - API contracts
@@ -184,12 +203,14 @@ Questions selected by **(Impact × Uncertainty)** heuristic:
 - Acceptance criteria
 
 **High Uncertainty:**
+
 - Vague adjectives ("fast", "secure")
 - Multiple valid approaches
 - Missing constraints
 - Undefined terms
 
 **Low Priority (skipped):**
+
 - Stylistic preferences
 - Implementation details
 - Already answered
@@ -197,6 +218,7 @@ Questions selected by **(Impact × Uncertainty)** heuristic:
 ## Early Termination
 
 User can stop at any time:
+
 - "stop" - End questioning, save progress
 - "done" - End questioning, proceed
 - "proceed" - Skip remaining questions
@@ -204,6 +226,7 @@ User can stop at any time:
 ## Best Practices
 
 ✅ **DO:**
+
 - Ask one question at a time
 - Provide recommendations based on best practices
 - Accept "yes" to use recommendation
@@ -211,6 +234,7 @@ User can stop at any time:
 - Focus on high-impact ambiguities
 
 ❌ **DON'T:**
+
 - Ask more than 5 questions
 - Batch multiple questions
 - Ask about implementation details
@@ -274,16 +298,19 @@ User: "Run spec-kit-clarify on my auth feature"
 ## Integration Details
 
 **Clarifications Section Format:**
+
 ```markdown
 ## Clarifications
 
 ### Session 2025-01-15
+
 - Q: Password hashing algorithm? → A: bcrypt with cost 12
 - Q: Session duration? → A: 30 days
 - Q: "Fast login" threshold? → A: < 2 seconds p95
 ```
 
 **Section Updates:**
+
 - Replaces vague terms with specific values
 - Adds missing constraints
 - Normalizes terminology
@@ -293,6 +320,7 @@ User: "Run spec-kit-clarify on my auth feature"
 ## Validation
 
 After each write:
+
 - One bullet per answer in Clarifications
 - No duplicate entries
 - No contradictory statements
@@ -302,6 +330,7 @@ After each write:
 ## Next Steps
 
 After clarification:
+
 - **Plan** with `spec-kit-plan` - Create technical design
 - **Re-clarify** if new ambiguities emerge during planning
 - **Skip to tasks** if urgent (increases rework risk)
@@ -315,16 +344,19 @@ After clarification:
 ## Common Issues
 
 **No ambiguities found:**
+
 ```
 "No critical ambiguities detected. Proceed to spec-kit-plan."
 ```
 
 **Missing spec.md:**
+
 ```
 Run spec-kit-specify first to create feature specification
 ```
 
 **Too many questions:**
+
 ```
 Limited to 5 questions maximum per session
 Run clarify multiple times if needed

@@ -59,6 +59,7 @@ Use Codex CLI to execute the requested task, making necessary code changes while
    - Identify dependencies and related code
 
 2. **Check current state**
+
    ```bash
    git status
    git diff
@@ -100,18 +101,21 @@ Project context:
 **Execution modes:**
 
 **Safe mode (default):**
+
 ```bash
 codex exec "$TASK"
 # Prompts for approval before each action
 ```
 
 **Preview mode (for verification):**
+
 ```bash
 codex exec "$TASK" --dry-run
 # Shows what would be done without executing
 ```
 
 **Automated mode (use with caution):**
+
 ```bash
 codex exec "$TASK" --yes
 # Auto-approves all actions
@@ -123,6 +127,7 @@ codex exec "$TASK" --yes
 After Codex executes:
 
 1. **Review changes**
+
    ```bash
    git status
    git diff
@@ -133,6 +138,7 @@ After Codex executes:
    - Any unexpected modifications?
 
 2. **Check syntax and types**
+
    ```bash
    npm run lint
    npx tsc --noEmit
@@ -143,6 +149,7 @@ After Codex executes:
    - Ensure code compiles
 
 3. **Run tests**
+
    ```bash
    npm test
    ```
@@ -152,6 +159,7 @@ After Codex executes:
    - Run related tests specifically
 
 4. **Test manually**
+
    ```bash
    npm run dev
    ```
@@ -192,23 +200,28 @@ Provide clear summary:
 ## Task Completed: [Task Description]
 
 ### Changes Made
+
 - Created: [list of new files]
 - Modified: [list of changed files]
 - Deleted: [list of removed files]
 
 ### Summary
+
 [Brief explanation of what was done]
 
 ### Details
+
 [Detailed breakdown of changes with file paths]
 
 ### Verification
+
 - [✓] Lint passed
 - [✓] Type check passed
 - [✓] Tests passed
 - [✓] Manual testing confirmed
 
 ### Next Steps
+
 - [Recommended follow-up actions]
 - [Suggested tests to add]
 - [Documentation to update]
@@ -219,6 +232,7 @@ Provide clear summary:
 ### Code Generation
 
 **Create new components:**
+
 ```bash
 codex exec "Create a UserProfile component in src/components/ with:
 - Props: name (string), email (string), avatar (string optional)
@@ -229,6 +243,7 @@ codex exec "Create a UserProfile component in src/components/ with:
 ```
 
 **Generate utilities:**
+
 ```bash
 codex exec "Create date formatting utilities in src/utils/date.ts:
 - formatISO(date): Format as ISO 8601
@@ -239,6 +254,7 @@ codex exec "Create date formatting utilities in src/utils/date.ts:
 ```
 
 **Create API endpoints:**
+
 ```bash
 codex exec "Add GET /api/users/:id endpoint:
 - Validate user ID parameter
@@ -252,16 +268,19 @@ codex exec "Add GET /api/users/:id endpoint:
 ### Refactoring
 
 **Extract functions:**
+
 ```bash
 codex exec "In src/components/LoginForm.tsx, extract the validation logic into a separate validateCredentials function in src/utils/validation.ts. Maintain all existing functionality."
 ```
 
 **Convert to async/await:**
+
 ```bash
 codex exec "Refactor all promise chains in src/services/api.ts to use async/await syntax. Add proper try-catch error handling."
 ```
 
 **Improve structure:**
+
 ```bash
 codex exec "Split UserService in src/services/user.ts into two services:
 - AuthService: login, logout, resetPassword
@@ -272,6 +291,7 @@ Maintain all existing functionality and update imports."
 ### Feature Addition
 
 **Add validation:**
+
 ```bash
 codex exec "Add comprehensive input validation to the registration form in src/components/RegisterForm.tsx:
 - Email: valid format, required
@@ -282,6 +302,7 @@ codex exec "Add comprehensive input validation to the registration form in src/c
 ```
 
 **Implement caching:**
+
 ```bash
 codex exec "Add Redis caching to the getUser endpoint in src/api/users.ts:
 - Cache user data for 5 minutes
@@ -291,6 +312,7 @@ codex exec "Add Redis caching to the getUser endpoint in src/api/users.ts:
 ```
 
 **Add error handling:**
+
 ```bash
 codex exec "Improve error handling in src/services/payment.ts:
 - Add try-catch blocks
@@ -303,16 +325,19 @@ codex exec "Improve error handling in src/services/payment.ts:
 ### Bug Fixes
 
 **Fix specific issues:**
+
 ```bash
 codex exec "Fix the memory leak in src/hooks/useWebSocket.ts caused by not cleaning up the WebSocket connection. Ensure cleanup happens in useEffect cleanup function."
 ```
 
 **Address edge cases:**
+
 ```bash
 codex exec "Fix the race condition in src/services/auth.ts where concurrent login attempts can create duplicate sessions. Add proper locking or queueing mechanism."
 ```
 
 **Resolve errors:**
+
 ```bash
 codex exec "Fix the 'Cannot read property of undefined' error in UserProfile component at line 45. Add null checks and default values."
 ```
@@ -320,6 +345,7 @@ codex exec "Fix the 'Cannot read property of undefined' error in UserProfile com
 ### Testing
 
 **Generate unit tests:**
+
 ```bash
 codex exec "Create comprehensive unit tests for all functions in src/utils/validation.ts:
 - Test valid inputs
@@ -331,6 +357,7 @@ codex exec "Create comprehensive unit tests for all functions in src/utils/valid
 ```
 
 **Add integration tests:**
+
 ```bash
 codex exec "Create integration tests for the authentication flow:
 - Test successful login
@@ -343,6 +370,7 @@ codex exec "Create integration tests for the authentication flow:
 ### Updates & Migrations
 
 **Update dependencies:**
+
 ```bash
 codex exec "Update React from v17 to v18:
 - Update package.json
@@ -357,6 +385,7 @@ codex exec "Update React from v17 to v18:
 ### Pre-Execution Checklist
 
 Before running Codex:
+
 - [ ] Understand the task clearly
 - [ ] Know which files will be affected
 - [ ] Have clean git state (can rollback)
@@ -365,22 +394,26 @@ Before running Codex:
 ### During Execution
 
 **Use safe mode by default:**
+
 ```bash
 codex exec "$TASK"  # Prompts for approval
 ```
 
 **Use preview for critical tasks:**
+
 ```bash
 codex exec "$TASK" --dry-run  # See changes first
 ```
 
 **Only use --yes for:**
+
 - Formatting code
 - Adding comments/documentation
 - Fixing linting errors
 - Low-risk, well-tested operations
 
 **Never use --yes for:**
+
 - Database migrations
 - Security-sensitive code
 - Production deployments
@@ -390,6 +423,7 @@ codex exec "$TASK" --dry-run  # See changes first
 ### Post-Execution Checklist
 
 After Codex executes:
+
 - [ ] Review all changes with `git diff`
 - [ ] Run linter and fix errors
 - [ ] Run type checker
@@ -413,6 +447,7 @@ After Codex executes:
    - Provide more context
 
 3. **Try different approach**
+
    ```bash
    codex exec "$TASK" --model o1-mini  # Better reasoning
    codex exec "$TASK" --verbose        # More details
@@ -425,6 +460,7 @@ After Codex executes:
 **If changes are incorrect:**
 
 1. **Revert changes**
+
    ```bash
    git restore .
    # or
@@ -441,6 +477,7 @@ After Codex executes:
 ### Writing Effective Task Descriptions
 
 **✅ Good:**
+
 ```
 "Add email validation to ContactForm.tsx:
 - Use regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -451,6 +488,7 @@ After Codex executes:
 ```
 
 **❌ Poor:**
+
 ```
 "Add validation"  # Too vague
 "Fix ContactForm"  # No specifics
@@ -460,17 +498,20 @@ After Codex executes:
 ### Task Sizing
 
 **Optimal task size:**
+
 - One feature or fix
 - Affects 1-5 files
 - Takes 5-15 minutes
 - Easy to verify
 
 **Too small:**
+
 - One-line changes
 - Trivial fixes
 - Better done manually
 
 **Too large:**
+
 - Multiple unrelated changes
 - Affects 20+ files
 - Requires architectural decisions
@@ -499,18 +540,21 @@ codex exec "Create tests for authentication system"
 Keep user informed:
 
 1. **Before execution:**
+
    ```
    "I'll use Codex to [task]. This will modify [files].
    Here's my plan: [steps]"
    ```
 
 2. **During execution:**
+
    ```
    "Executing task...
    Codex is making changes to [file]..."
    ```
 
 3. **After execution:**
+
    ```
    "Task completed! Changes:
    - [summary]

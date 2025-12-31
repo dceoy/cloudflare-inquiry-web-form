@@ -19,11 +19,13 @@ Use OpenAI Codex CLI to answer questions about code without making modifications
 ## Prerequisites
 
 Codex CLI must be installed:
+
 ```bash
 codex --version  # Verify installation
 ```
 
 If not installed, inform user to run:
+
 ```bash
 npm install -g @openai/codex
 ```
@@ -33,6 +35,7 @@ npm install -g @openai/codex
 ### Step 1: Parse the Question
 
 Extract what the user wants to know. Good questions include:
+
 - File/component context
 - Specific functionality
 - Desired answer format
@@ -56,6 +59,7 @@ Do NOT make any changes - this is read-only analysis."
 ### Step 3: Present Answer
 
 Format the response with:
+
 - **Summary**: 1-2 sentence direct answer
 - **Details**: In-depth explanation
 - **File References**: Specific paths with line numbers
@@ -65,21 +69,25 @@ Format the response with:
 ## Example Queries
 
 ### Understanding Flow
+
 ```bash
 codex exec "Explain how user authentication works in this app. Include all files involved, the complete flow, and security measures. Do NOT modify code."
 ```
 
 ### Finding Implementation
+
 ```bash
 codex exec "Where is email validation implemented? Show all locations with file paths and line numbers. Do NOT modify code."
 ```
 
 ### Architecture Questions
+
 ```bash
 codex exec "What's the overall architecture of this application? Describe patterns used, component organization, and data flow. Do NOT modify code."
 ```
 
 ### Debugging
+
 ```bash
 codex exec "What could cause 'Cannot read property of undefined' in UserProfile component? Analyze potential causes with specific line references. Do NOT modify code."
 ```
@@ -88,31 +96,38 @@ codex exec "What could cause 'Cannot read property of undefined' in UserProfile 
 
 Structure answers like this:
 
-```markdown
+````markdown
 ## Answer: [Question]
 
 ### Summary
+
 [Direct answer in 1-2 sentences]
 
 ### Details
+
 [Comprehensive explanation]
 
 ### File References
+
 - `src/auth/login.ts:45-67` - Login handler implementation
 - `src/middleware/auth.ts:23` - Authentication middleware
 
 ### Code Examples
+
 ```typescript
 // From src/auth/login.ts:45
 export async function handleLogin(credentials: Credentials) {
   // ... code snippet ...
 }
 ```
+````
 
 ### Related Information
+
 - Uses JWT for token management
 - Session timeout is 24 hours
 - See `src/config/auth.ts` for configuration
+
 ```
 
 ## Best Practices
@@ -142,16 +157,20 @@ After getting Codex's response:
 
 **If Codex not found:**
 ```
+
 Codex CLI is not installed. Please install it:
 npm install -g @openai/codex
+
 ```
 
 **If authentication fails:**
 ```
+
 Codex CLI needs authentication. Run:
 codex
 
 Then follow the prompts to sign in with ChatGPT or configure API key.
+
 ```
 
 **If answer is unclear:**
@@ -182,3 +201,4 @@ Then follow the prompts to sign in with ChatGPT or configure API key.
 ---
 
 **Remember**: This skill is READ-ONLY. For code modifications, use the `codex-exec` skill.
+```

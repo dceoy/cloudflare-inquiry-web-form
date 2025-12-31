@@ -9,14 +9,17 @@ These are **autonomous Claude Code agents** that can be launched using the Task 
 ## Available Agents
 
 ### 1. codex-ask
+
 **Purpose:** Answer questions about code (read-only)
 
 **Launch:**
+
 ```
 I'll launch the codex-ask agent to find out how authentication works
 ```
 
 **What it does:**
+
 - Uses Codex to analyze code
 - Provides detailed answers
 - Includes file references and line numbers
@@ -24,6 +27,7 @@ I'll launch the codex-ask agent to find out how authentication works
 - NEVER modifies code
 
 **When to use:**
+
 - Understanding existing code
 - Exploring architecture
 - Finding implementations
@@ -31,6 +35,7 @@ I'll launch the codex-ask agent to find out how authentication works
 - Debugging assistance
 
 **Example queries:**
+
 - "How does authentication work?"
 - "Where is email validation implemented?"
 - "What's the database schema?"
@@ -39,14 +44,17 @@ I'll launch the codex-ask agent to find out how authentication works
 ---
 
 ### 2. codex-exec
+
 **Purpose:** Execute development tasks with code modifications
 
 **Launch:**
+
 ```
 I'll launch the codex-exec agent to add email validation to the form
 ```
 
 **What it does:**
+
 - Generates new code
 - Refactors existing code
 - Adds features
@@ -55,6 +63,7 @@ I'll launch the codex-exec agent to add email validation to the form
 - MODIFIES code files
 
 **When to use:**
+
 - Code generation
 - Refactoring
 - Feature implementation
@@ -62,6 +71,7 @@ I'll launch the codex-exec agent to add email validation to the form
 - Test creation
 
 **Example tasks:**
+
 - "Add email validation to ContactForm"
 - "Refactor UserService for better separation"
 - "Fix the memory leak in useWebSocket hook"
@@ -70,14 +80,17 @@ I'll launch the codex-exec agent to add email validation to the form
 ---
 
 ### 3. codex-review
+
 **Purpose:** Perform comprehensive code reviews
 
 **Launch:**
+
 ```
 I'll launch the codex-review agent to review the uncommitted changes
 ```
 
 **What it does:**
+
 - Identifies bugs and issues
 - Finds security vulnerabilities
 - Detects performance problems
@@ -86,6 +99,7 @@ I'll launch the codex-review agent to review the uncommitted changes
 - NEVER modifies code
 
 **When to use:**
+
 - Pre-commit checks
 - Pull request reviews
 - Security audits
@@ -93,6 +107,7 @@ I'll launch the codex-review agent to review the uncommitted changes
 - Code quality assessment
 
 **Review types:**
+
 - General comprehensive review
 - Security-focused review
 - Performance-focused review
@@ -161,12 +176,12 @@ You can also explicitly request an agent by name if desired.
 
 These agents can work together seamlessly:
 
-| First Agent | Then Agent | Purpose |
-|-------------|------------|---------|
-| codex-ask | codex-exec | Understand, then modify |
-| codex-exec | codex-review | Implement, then verify |
-| codex-review | codex-exec | Identify issues, then fix |
-| codex-ask | codex-review | Explore, then assess quality |
+| First Agent  | Then Agent   | Purpose                      |
+| ------------ | ------------ | ---------------------------- |
+| codex-ask    | codex-exec   | Understand, then modify      |
+| codex-exec   | codex-review | Implement, then verify       |
+| codex-review | codex-exec   | Identify issues, then fix    |
+| codex-ask    | codex-review | Explore, then assess quality |
 
 ## Prerequisites
 
@@ -189,6 +204,7 @@ Before using these agents:
 ### Global Config
 
 `~/.codex/config.toml`:
+
 ```toml
 [general]
 model = "gpt-4o"
@@ -204,6 +220,7 @@ auto_approve = false
 ### Project Config
 
 `.codex/config.toml` (optional):
+
 ```toml
 [project]
 name = "cloudflare-pages-react-form"
@@ -232,11 +249,13 @@ language = "typescript"
 ## Safety Features
 
 ### codex-ask Agent
+
 - **Read-only** - Never modifies code
 - Verifies file references
 - Provides evidence-based answers
 
 ### codex-exec Agent
+
 - Reviews changes before declaring success
 - Runs linter and type checker
 - Executes tests
@@ -244,11 +263,11 @@ language = "typescript"
 - Shows git diff
 
 ### codex-review Agent
+
 - **Read-only** - Never modifies code
 - Categorizes issues by severity
 - Provides fix suggestions
 - Includes positive observations
-
 
 ## Tips for Best Results
 
@@ -282,6 +301,7 @@ Use ask → exec → review cycle for complex tasks
 ### "Codex CLI not found"
 
 **Solution:** Install Codex CLI first
+
 ```bash
 npm install -g @openai/codex
 # or
@@ -291,6 +311,7 @@ brew install --cask codex
 ### "Authentication failed"
 
 **Solution:**
+
 1. Run `codex` and follow authentication flow
 2. Check ChatGPT subscription at https://chatgpt.com
 3. Or configure API key in `~/.codex/config.toml`
@@ -298,6 +319,7 @@ brew install --cask codex
 ### "Agent not responding"
 
 **Solution:**
+
 - Check internet connection
 - Verify Codex CLI is working: `codex --version`
 - Check for API rate limits
@@ -305,6 +327,7 @@ brew install --cask codex
 ### "Unexpected results"
 
 **Solution:**
+
 - Provide more specific instructions
 - Break task into smaller steps
 - Review agent's output for errors
@@ -432,10 +455,10 @@ Step 4: Verification
 
 ## Comparison: Agents vs Direct CLI
 
-| Approach | When to Use | Pros | Cons |
-|----------|-------------|------|------|
-| **Agents** | Multi-step tasks via Claude | Autonomous, thorough, structured | More verbose |
-| **Direct CLI** | Manual terminal control | Full control, fastest | Requires Codex expertise |
+| Approach       | When to Use                 | Pros                             | Cons                     |
+| -------------- | --------------------------- | -------------------------------- | ------------------------ |
+| **Agents**     | Multi-step tasks via Claude | Autonomous, thorough, structured | More verbose             |
+| **Direct CLI** | Manual terminal control     | Full control, fastest            | Requires Codex expertise |
 
 **Recommendation:** Use agents when working within Claude Code for autonomous, multi-phase task execution.
 
@@ -459,6 +482,7 @@ To create a new agent:
 ## Support
 
 For issues:
+
 - **Codex CLI:** https://github.com/openai/codex/issues
 - **Claude Code:** https://github.com/anthropics/claude-code/issues
 - **These agents:** File issue in this repository

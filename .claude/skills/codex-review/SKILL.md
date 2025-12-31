@@ -20,11 +20,13 @@ Use OpenAI Codex CLI to perform automated code reviews that identify issues and 
 ## Prerequisites
 
 Codex CLI must be installed:
+
 ```bash
 codex --version  # Verify installation
 ```
 
 If not installed, inform user to run:
+
 ```bash
 npm install -g @openai/codex
 ```
@@ -34,6 +36,7 @@ npm install -g @openai/codex
 ### Step 1: Determine Scope
 
 What to review:
+
 - Uncommitted changes (default)
 - Specific file(s)
 - Last commit
@@ -91,6 +94,7 @@ Do NOT make any changes - this is review only."
 ### Step 4: Present Findings
 
 Organize results by severity:
+
 - 🔴 Critical Issues
 - 🟡 Important Issues
 - 🟢 Suggestions
@@ -99,6 +103,7 @@ Organize results by severity:
 ## Example Reviews
 
 ### Review Uncommitted Changes
+
 ```bash
 codex exec "Review all uncommitted changes for:
 - Bugs and logic errors
@@ -110,6 +115,7 @@ Do NOT modify code."
 ```
 
 ### Security-Focused Review
+
 ```bash
 codex exec "Security review of src/auth/*.ts:
 - SQL injection vulnerabilities
@@ -122,6 +128,7 @@ Provide severity level and fix suggestions. Do NOT modify code."
 ```
 
 ### Performance Review
+
 ```bash
 codex exec "Performance review of src/components/*.tsx:
 - Unnecessary re-renders
@@ -133,6 +140,7 @@ Provide specific optimization suggestions. Do NOT modify code."
 ```
 
 ### Pre-Commit Review
+
 ```bash
 codex exec "Quick review of staged changes for:
 - console.log statements
@@ -147,24 +155,28 @@ Exit with error if critical issues found. Do NOT modify code."
 ## Review Focus Areas
 
 ### General Review
+
 ```bash
 # Comprehensive review of all aspects
 codex exec "Comprehensive review covering: security, performance, code quality, architecture, testing, accessibility. Do NOT modify code."
 ```
 
 ### Security Audit
+
 ```bash
 # OWASP Top 10 and security best practices
 codex exec "Security audit focusing on: SQL injection, XSS, CSRF, authentication, authorization, secrets, input validation. Do NOT modify code."
 ```
 
 ### Architecture Review
+
 ```bash
 # SOLID principles and design patterns
 codex exec "Architecture review: SOLID principles, separation of concerns, dependency management, code organization, design patterns. Do NOT modify code."
 ```
 
 ### Accessibility Review
+
 ```bash
 # WCAG compliance
 codex exec "Accessibility review: ARIA labels, keyboard navigation, screen reader support, color contrast, semantic HTML. Do NOT modify code."
@@ -174,10 +186,11 @@ codex exec "Accessibility review: ARIA labels, keyboard navigation, screen reade
 
 Structure review results:
 
-```markdown
+````markdown
 # Code Review: [Scope]
 
 ## Summary
+
 - Files reviewed: 3
 - Issues found: 5 (Critical: 1, Important: 2, Suggestions: 2)
 - Estimated fix time: 2 hours
@@ -185,6 +198,7 @@ Structure review results:
 ## 🔴 Critical Issues (Fix Immediately)
 
 ### src/auth/login.ts:45 - SQL Injection Vulnerability
+
 **Severity:** Critical
 **Category:** Security
 
@@ -196,13 +210,15 @@ Attacker can execute arbitrary SQL commands, steal data, or drop tables.
 
 **How to fix:**
 Use parameterized queries:
+
 ```typescript
 // Before (vulnerable)
-db.query(`SELECT * FROM users WHERE email = '${email}'`)
+db.query(`SELECT * FROM users WHERE email = '${email}'`);
 
 // After (safe)
-db.query('SELECT * FROM users WHERE email = ?', [email])
+db.query("SELECT * FROM users WHERE email = ?", [email]);
 ```
+````
 
 ---
 
@@ -230,6 +246,7 @@ db.query('SELECT * FROM users WHERE email = ?', [email])
 1. **Immediate:** Fix SQL injection in auth/login.ts:45
 2. **Soon:** Address performance issue in components/UserList.tsx
 3. **Consider:** Refactor large function at utils/helpers.ts:120
+
 ```
 
 ## Best Practices
@@ -259,9 +276,11 @@ After getting Codex's review:
 
 **If Codex not found:**
 ```
+
 Codex CLI is not installed. Please install it:
 npm install -g @openai/codex
-```
+
+````
 
 **If too many issues:**
 - Focus on critical issues first
@@ -281,9 +300,10 @@ npm install -g @openai/codex
 # .git/hooks/pre-commit
 codex exec "Quick review of staged changes for critical issues" --yes
 exit $?
-```
+````
 
 ### CI/CD Pipeline
+
 ```yaml
 # GitHub Actions example
 - name: Codex Review
@@ -294,6 +314,7 @@ exit $?
 ## Review Checklist Templates
 
 ### General Checklist
+
 ```
 - [ ] No console.log or debug statements
 - [ ] No commented-out code
@@ -306,6 +327,7 @@ exit $?
 ```
 
 ### Security Checklist
+
 ```
 - [ ] No SQL injection risks
 - [ ] No XSS vulnerabilities
