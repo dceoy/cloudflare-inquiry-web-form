@@ -70,3 +70,9 @@ After implementation:
 - Manual testing and QA
 - Code review
 - Deployment planning
+
+## See Also
+
+- `speckit-tasks` - Break plan into actionable tasks
+- `speckit-checklist` - Generate custom validation checklists
+- `speckit-analyze` - Validate cross-artifact consistency

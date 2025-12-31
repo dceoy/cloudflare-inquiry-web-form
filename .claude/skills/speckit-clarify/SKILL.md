@@ -92,3 +92,8 @@ After clarification:
 
 - **Plan** with `speckit-plan` - Create technical design
 - **Re-clarify** if new ambiguities emerge during planning
+
+## See Also
+
+- `speckit-specify` - Create feature specifications
+- `speckit-plan` - Create technical implementation strategy

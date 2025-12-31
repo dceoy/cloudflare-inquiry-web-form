@@ -82,3 +82,8 @@ After creating/updating constitution:
 - **Specify** features with `speckit-specify` (aligned with principles)
 - **Plan** implementations with `speckit-plan` (validates against constitution)
 - **Review** existing specs for compliance with new principles
+
+## See Also
+
+- `speckit-specify` - Create feature specifications
+- `speckit-plan` - Build implementation plans

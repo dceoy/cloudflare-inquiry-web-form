@@ -67,3 +67,9 @@ After creating spec.md:
 
 - **Clarify** ambiguities with `speckit-clarify` (optional)
 - **Plan** implementation with `speckit-plan`
+
+## See Also
+
+- `speckit-constitution` - Define project principles
+- `speckit-clarify` - Resolve specification ambiguities
+- `speckit-plan` - Create technical implementation strategy

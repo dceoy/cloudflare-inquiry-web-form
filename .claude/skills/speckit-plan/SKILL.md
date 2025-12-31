@@ -62,3 +62,10 @@ After creating plan.md:
 - **Generate tasks** with `speckit-tasks`
 - **Analyze** for consistency with `speckit-analyze`
 - **Create checklist** for quality validation
+
+## See Also
+
+- `speckit-specify` - Create feature specifications
+- `speckit-tasks` - Break plan into actionable tasks
+- `speckit-analyze` - Validate cross-artifact consistency
+- `speckit-checklist` - Generate custom validation checklists

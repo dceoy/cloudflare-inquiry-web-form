@@ -67,6 +67,13 @@ Generate actionable, dependency-ordered tasks from design artifacts. Third step 
 
 After creating tasks.md:
 
-- **Analyze** for consistency with `speckit-analyze`
+- **Analyze** for consistency with `speckit-analyze` (optional)
 - **Start implementation** with `speckit-implement`
 - **Convert to issues** with `speckit-taskstoissues` (optional)
+
+## See Also
+
+- `speckit-plan` - Create technical implementation strategy
+- `speckit-analyze` - Validate cross-artifact consistency
+- `speckit-implement` - Execute implementation plan
+- `speckit-taskstoissues` - Convert tasks to GitHub issues

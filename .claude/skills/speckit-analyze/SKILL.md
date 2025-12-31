@@ -78,3 +78,9 @@ After analysis:
 - **Fix CRITICAL** - Update spec/plan/tasks
 - **Start implementation** - Use `speckit-implement`
 - **Re-analyze** - After fixes to verify
+
+## See Also
+
+- `speckit-plan` - Create technical implementation strategy
+- `speckit-tasks` - Break plan into actionable tasks
+- `speckit-implement` - Execute implementation plan

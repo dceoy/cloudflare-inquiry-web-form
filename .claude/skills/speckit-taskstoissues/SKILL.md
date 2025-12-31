@@ -124,3 +124,8 @@ After creating issues:
 - **Track** progress via issue updates
 - **Link** PRs to issues (closes #123)
 - **Update** issue status as tasks complete
+
+## See Also
+
+- `speckit-tasks` - Break plan into actionable tasks
+- `speckit-implement` - Execute implementation plan

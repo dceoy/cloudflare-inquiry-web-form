@@ -98,3 +98,9 @@ After creating checklist:
 - **Self-review** - Author validates own requirements
 - **QA validation** - Ensure testable acceptance criteria
 - **Implementation** - Use `speckit-implement` after validation
+
+## See Also
+
+- `speckit-specify` - Create feature specifications
+- `speckit-plan` - Create technical implementation strategy
+- `speckit-implement` - Execute implementation plan
