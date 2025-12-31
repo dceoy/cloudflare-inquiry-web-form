@@ -1,0 +1,102 @@
+---
+name: CI/CD
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+  issue_comment:
+    types:
+      - created
+  pull_request_review_comment:
+    types:
+      - created
+  issues:
+    types:
+      - opened
+      - assigned
+  pull_request_review:
+    types:
+      - submitted
+  workflow_dispatch:
+    inputs:
+      workflow:
+        required: true
+        type: choice
+        options:
+          - lint-and-test
+        description: Choose the workflow to run
+        default: lint-and-test
+jobs:
+  typescript-lint-and-scan:
+    if: >
+      github.event_name == 'push'
+      || github.event_name == 'pull_request'
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    permissions:
+      contents: read
+    uses: dceoy/gh-actions-for-devops/.github/workflows/typescript-lint-and-scan.yml@main
+    with:
+      package-path: .
+  github-codeql-analysis:
+    if: >
+      github.event_name == 'push'
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    uses: dceoy/gh-actions-for-devops/.github/workflows/github-codeql-analysis.yml@main
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    with:
+      language: >
+        ["javascript"]
+  claude-code-review:
+    if: >
+      github.event_name == 'pull_request'
+      && github.event.pull_request.draft == false
+      && (! endswith(github.event.pull_request.user.login, '[bot]'))
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    uses: dceoy/gh-actions-for-devops/.github/workflows/claude-code-review.yml@main
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  claude-code-bot:
+    if: >
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
+      || (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    uses: dceoy/gh-actions-for-devops/.github/workflows/claude-code-bot.yml@main
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  dependabot-auto-merge:
+    if: >
+      github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+    needs:
+      - typescript-lint-and-scan
+    uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    with:
+      unconditional: true
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
