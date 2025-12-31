@@ -48,11 +48,15 @@ Use pnpm (lockfile is `pnpm-lock.yaml`).
 - **If Serena MCP isn't enabled or lacks a needed capability, say so and propose a safe fallback.** Mention enabling it via `.mcp.json` when relevant.
 - **Be explicit and reproducible.** Name the exact MCP tool and arguments you intend to use in your steps.
 
-## Codex CLI Integration (Optional)
+## AI-Assisted Development Tools
+
+**Note:** Spec-Kit (below) is REQUIRED for all feature development. Codex and Copilot integrations are optional supplementary tools.
+
+### Codex CLI Integration (Optional)
 
 OpenAI Codex CLI integration provides two interfaces for enhanced development workflows:
 
-### Skills (Model-Invoked)
+#### Skills (Model-Invoked)
 
 Claude automatically uses these when appropriate based on your request:
 
@@ -62,7 +66,7 @@ Claude automatically uses these when appropriate based on your request:
 
 Located in `.claude/skills/` - Claude invokes these automatically when your request matches their descriptions.
 
-### Agents (Task-Launched)
+#### Agents (Task-Launched)
 
 Autonomous multi-phase agents for complex workflows:
 
@@ -76,30 +80,59 @@ Located in `.claude/agents/` - Launch explicitly for multi-step autonomous execu
 
 **Documentation:**
 
-- `.claude/skills/*/SKILL.md` - Individual skill guides
+- `.claude/skills/codex-*/SKILL.md` - Individual skill guides
 - `.claude/agents/README.md` - Agent usage and workflow patterns
 
-## Spec-Kit Feature Development Workflow
+### GitHub Copilot CLI Integration (Optional)
 
-Spec-Kit provides a structured workflow for feature development from specification to implementation:
+GitHub Copilot CLI integration provides similar capabilities using GitHub Copilot:
+
+#### Skills (Model-Invoked)
+
+Claude automatically uses these when appropriate based on your request:
+
+- **copilot-ask** - Ask questions about code (read-only analysis)
+- **copilot-exec** - Execute development tasks (modifies code)
+- **copilot-review** - Perform code reviews (read-only analysis)
+
+Located in `.claude/skills/` - Claude invokes these automatically when your request matches their descriptions.
+
+**Prerequisites:** GitHub Copilot CLI must be installed with active subscription
+
+**Documentation:**
+
+- `.claude/skills/copilot-*/SKILL.md` - Individual skill guides
+
+## Spec-Kit Feature Development Workflow (Required)
+
+**IMPORTANT: Always use Spec-Kit for all feature development.** This structured workflow ensures consistency, quality, and maintainability from specification through implementation.
+
+### Foundation Skills (Model-Invoked)
+
+Project governance and setup tools Claude uses to establish project principles:
+
+1. **speckit-constitution** - Create or update project constitution
+   - Defines versioned principles and governance rules
+   - Ensures spec/plan/task templates align with project values
+   - Auto-invokes when you need to establish or update project principles
 
 ### Core Workflow Skills (Model-Invoked)
 
 Claude automatically uses these skills when you describe features or ask about planning:
 
-1. **spec-kit-specify** - Create feature specifications from natural language
+2. **speckit-specify** - Create feature specifications from natural language
    - Generates structured spec.md with user stories, acceptance criteria
    - Auto-invokes when you describe a new feature to build
 
-2. **spec-kit-plan** - Create technical implementation plans
+3. **speckit-plan** - Create technical implementation plans
    - Generates plan.md with architecture, data models, API contracts
    - Auto-invokes when you ask "how should we implement this?"
 
-3. **spec-kit-tasks** - Generate actionable task lists
+4. **speckit-tasks** - Generate actionable task lists
    - Creates tasks.md with dependency-ordered, parallelizable tasks
    - Auto-invokes when you ask "what needs to be done?"
 
-4. **spec-kit-implement** - Execute implementation plan
+5. **speckit-implement** - Execute implementation plan
    - Processes tasks phase-by-phase with testing and verification
    - Auto-invokes when you say "let's build this" or "implement the feature"
 
@@ -107,31 +140,42 @@ Claude automatically uses these skills when you describe features or ask about p
 
 Quality and validation tools Claude uses automatically:
 
-5. **spec-kit-clarify** - Resolve specification ambiguities
+6. **speckit-clarify** - Resolve specification ambiguities
    - Interactive questioning to clarify vague requirements
    - Auto-invokes when spec has ambiguities or missing decisions
 
-6. **spec-kit-analyze** - Cross-artifact consistency analysis
+7. **speckit-analyze** - Cross-artifact consistency analysis
    - Validates spec.md, plan.md, tasks.md consistency
    - Auto-invokes when you ask to "check consistency" or "validate artifacts"
 
-7. **spec-kit-checklist** - Generate requirement quality validation checklists
+8. **speckit-checklist** - Generate requirement quality validation checklists
    - Creates "unit tests for requirements" to validate completeness and clarity
    - Auto-invokes when you ask for "quality checklist" or "requirements validation"
 
-### Typical Workflow
+9. **speckit-taskstoissues** - Convert tasks to GitHub issues
+   - Transforms tasks.md into GitHub issues with dependencies and labels
+   - Auto-invokes when you ask to "create issues" or "sync tasks to GitHub"
+
+### Required Workflow
+
+**All feature development must follow this workflow:**
 
 ```
-1. Describe Feature → spec-kit-specify generates spec.md
-2. Clarify (optional) → spec-kit-clarify resolves ambiguities
-3. Create Plan → spec-kit-plan generates plan.md
-4. Generate Tasks → spec-kit-tasks creates tasks.md
-5. Validate (optional) → spec-kit-analyze checks consistency
-6. Quality Gate (optional) → spec-kit-checklist validates requirements
-7. Implement → spec-kit-implement executes tasks phase-by-phase
+1. Describe Feature → speckit-specify generates spec.md (REQUIRED)
+2. Clarify → speckit-clarify resolves ambiguities (AUTO-INVOKED as needed)
+3. Create Plan → speckit-plan generates plan.md (REQUIRED)
+4. Generate Tasks → speckit-tasks creates tasks.md (REQUIRED)
+5. Validate → speckit-analyze checks consistency (RECOMMENDED)
+6. Quality Gate → speckit-checklist validates requirements (RECOMMENDED)
+7. Implement → speckit-implement executes tasks phase-by-phase (REQUIRED)
 ```
 
-**Location:** `.claude/skills/spec-kit/*/SKILL.md` - Individual skill documentation
+**Optional steps:**
+
+- Step 0: Define Principles → speckit-constitution (only for initial project setup or governance changes)
+- Step 8: Sync to GitHub → speckit-taskstoissues (use when GitHub issue tracking is needed)
+
+**Location:** `.claude/skills/speckit-*/SKILL.md` - Individual skill documentation
 
 **Prerequisites:** Spec-kit initialized in repository (`.specify/` directory exists)
 
