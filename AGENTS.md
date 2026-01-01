@@ -45,6 +45,7 @@ pnpm test
 ## Commit & Pull Request Guidelines
 
 - Commit messages are short, imperative, sentence-case (e.g., “Create a scaffold using pnpm and vite”).
+- Branch names use appropriate prefixes on creation (e.g., `feature/short-description`, `bugfix/short-description`).
 - PRs should include: a clear summary, relevant context or linked issue, and screenshots for UI changes.
 - When instructed to create a PR, create it as a draft with appropriate labels by default.
 
