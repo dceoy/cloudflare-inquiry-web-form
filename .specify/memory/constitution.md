@@ -1,73 +1,41 @@
-# [PROJECT_NAME] Constitution
-
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# cloudflare-pages-react-form Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
+### I. Spec-Driven Delivery
 
-<!-- Example: I. Library-First -->
+All feature work follows Spec Kit end-to-end (spec → plan → tasks → implement). Artifacts live under `specs/` and are the source of truth for scope, acceptance criteria, and delivery.
 
-[PRINCIPLE_1_DESCRIPTION]
+### II. Secure by Default
 
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+No secrets in git history. All sensitive values are provided via environment variables or secret bindings. Public APIs validate inputs server-side and avoid leaking sensitive error details.
 
-### [PRINCIPLE_2_NAME]
+### III. Cloudflare-Native Architecture
 
-<!-- Example: II. CLI Interface -->
+Frontend is static on Cloudflare Pages. Server logic runs in Pages Functions (Hono) and delegates email sending to a separate Worker via Service Binding. Direct email sending from Pages Functions is not allowed.
 
-[PRINCIPLE_2_DESCRIPTION]
+### IV. Minimal, Type-Safe Dependencies
 
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Prefer small, well-supported libraries. Type safety is required at the API boundary and UI forms. Do not introduce frameworks or abstractions beyond what the feature needs.
 
-### [PRINCIPLE_3_NAME]
+### V. Documented Operations
 
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+Every deployable feature includes clear local-dev steps, production setup, and rationale for key design decisions in the README.
 
-[PRINCIPLE_3_DESCRIPTION]
+## Constraints & Standards
 
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- **Tech stack**: Vite + React + TypeScript on the frontend; Hono + Zod on the backend; Wrangler for local dev and deployment.
+- **Accessibility**: Form UI must be accessible, keyboard-friendly, and provide clear validation errors.
+- **Error handling**: Client receives actionable messages for expected failures; server logs avoid exposing secrets.
 
-### [PRINCIPLE_4_NAME]
+## Workflow & Quality Gates
 
-<!-- Example: IV. Integration Testing -->
-
-[PRINCIPLE_4_DESCRIPTION]
-
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-
-[PRINCIPLE_5_DESCRIPTION]
-
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-## [SECTION_2_NAME]
-
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Use small, reviewable changes and keep refactors separate from new behavior.
+- Run lint/typecheck when introducing new TS/React code.
+- Update documentation alongside code changes.
 
 ## Governance
 
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+The constitution supersedes other guidance. Amendments require updating this file and noting any impacted templates or workflows.
 
-[GOVERNANCE_RULES]
-
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
