@@ -107,7 +107,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
 
 TurnstileWidget.displayName = "TurnstileWidget";
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern = /^[^\s@]{1,64}@[^\s@]{1,255}$/;
 
 const initialFormState: FormState = {
   name: "",
