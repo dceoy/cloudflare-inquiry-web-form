@@ -10,7 +10,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md,html,htm}'",
     "typecheck": "tsc -b",
     "preview": "vite preview"
   },
