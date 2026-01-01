@@ -24,6 +24,12 @@ type TurnstileMock = {
 
 type WindowWithTurnstile = Window & { turnstile?: TurnstileMock };
 
+const LENGTH_LIMITS = {
+  name: 100,
+  subject: 150,
+  message: 2000,
+};
+
 const setSiteKey = (value: string) => {
   vi.stubEnv("VITE_TURNSTILE_SITE_KEY", value);
 };
@@ -129,10 +135,10 @@ describe("App", () => {
 
     await triggerToken(options, "token-123");
 
-    fillField("Name", "a".repeat(101));
+    fillField("Name", "a".repeat(LENGTH_LIMITS.name + 1));
     fillField("Email *", "invalid-email");
-    fillField("Subject *", "b".repeat(151));
-    fillField("Message *", "c".repeat(2001));
+    fillField("Subject *", "b".repeat(LENGTH_LIMITS.subject + 1));
+    fillField("Message *", "c".repeat(LENGTH_LIMITS.message + 1));
 
     fireEvent.click(screen.getByRole("button", { name: /send message/i }));
 
@@ -426,6 +432,13 @@ describe("App", () => {
     await act(async () => {});
 
     expect(vi.getTimerCount()).toBeGreaterThan(0);
+
+    const { turnstile } = setupTurnstile();
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+
+    expect(turnstile.render).toHaveBeenCalled();
 
     unmount();
     act(() => {

@@ -56,6 +56,11 @@ pnpm test
 pnpm test:coverage
 ```
 
+Notes:
+
+- Run `pnpm test -- --watch` for watch mode.
+- Coverage reports are generated in `coverage/` (open `coverage/index.html`).
+
 ## Configuration & Secrets
 
 ### Frontend (Vite)
