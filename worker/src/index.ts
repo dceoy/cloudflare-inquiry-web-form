@@ -45,8 +45,7 @@ const isNonEmpty = (value: string | undefined, max: number) =>
   value.trim().length <= max;
 
 const isEmail = (value: string | undefined) =>
-  typeof value === "string" &&
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
