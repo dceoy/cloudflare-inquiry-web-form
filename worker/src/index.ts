@@ -26,6 +26,19 @@ const jsonResponse = (body: Record<string, unknown>, status = 200) =>
     },
   });
 
+const timingSafeEqual = (a: string, b: string) => {
+  const maxLength = Math.max(a.length, b.length);
+  let result = a.length ^ b.length;
+
+  for (let i = 0; i < maxLength; i += 1) {
+    const aCode = a.charCodeAt(i) || 0;
+    const bCode = b.charCodeAt(i) || 0;
+    result |= aCode ^ bCode;
+  }
+
+  return result === 0;
+};
+
 const isNonEmpty = (value: string | undefined, max: number) =>
   typeof value === "string" &&
   value.trim().length > 0 &&
@@ -41,7 +54,7 @@ export default {
     }
 
     const authHeader = request.headers.get("x-worker-auth");
-    if (!authHeader || authHeader !== env.WORKER_SHARED_SECRET) {
+    if (!authHeader || !timingSafeEqual(authHeader, env.WORKER_SHARED_SECRET)) {
       return jsonResponse({ ok: false, error: "Unauthorized" }, 401);
     }
 
@@ -90,7 +103,8 @@ export default {
 
     try {
       await env.SEND_EMAIL.send(emailMessage);
-    } catch {
+    } catch (error) {
+      console.error("Email send failed:", error);
       return jsonResponse({ ok: false, error: "Email send failed" }, 500);
     }
 
