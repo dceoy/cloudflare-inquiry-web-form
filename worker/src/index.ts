@@ -44,6 +44,10 @@ const isNonEmpty = (value: string | undefined, max: number) =>
   value.trim().length > 0 &&
   value.trim().length <= max;
 
+const isEmail = (value: string | undefined) =>
+  typeof value === "string" &&
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (
@@ -67,9 +71,14 @@ export default {
 
     if (
       !isNonEmpty(payload.email, 320) ||
+      !isEmail(payload.email) ||
       !isNonEmpty(payload.subject, 150) ||
       !isNonEmpty(payload.message, 2000)
     ) {
+      return jsonResponse({ ok: false, error: "Invalid payload" }, 400);
+    }
+
+    if (payload.name && !isNonEmpty(payload.name, 100)) {
       return jsonResponse({ ok: false, error: "Invalid payload" }, 400);
     }
 

@@ -44,6 +44,7 @@ Notes:
 - `pnpm dev:worker` runs the email Worker locally.
 - `pnpm dev:pages` serves Pages Functions (and static build output) on port `8788` and connects to the worker via `--service`.
 - `VITE_API_BASE_URL` should point to `http://localhost:8788` when using the Vite dev server.
+- For Vite dev server + Pages API, set `CORS_ALLOWED_ORIGINS` to `http://localhost:5173` in `.dev.vars`.
 
 ## Configuration & Secrets
 
@@ -58,6 +59,7 @@ Set via Cloudflare Pages env vars/secrets or `.dev.vars`:
 
 - `TURNSTILE_SECRET_KEY`: Turnstile secret key
 - `WORKER_SHARED_SECRET`: Shared secret used to authenticate the Worker call
+- `CORS_ALLOWED_ORIGINS`: Optional comma-separated list of allowed origins (useful for local dev)
 
 ### Email Worker
 
