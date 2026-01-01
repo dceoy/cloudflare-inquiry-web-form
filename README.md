@@ -122,6 +122,8 @@ Docs:
 - Pages Functions uses Hono’s Cloudflare Pages adapter (`handle(app)`) in `functions/api/[[route]].ts`.
 - Service bindings are used to call the email worker from Pages Functions.
 - Turnstile tokens are verified server-side and are short-lived, single-use tokens.
+- The frontend typography uses the Ubuntu font loaded in `src/index.css`.
+- UI styling is centralized in `src/App.css` and aligns with a minimal, typography-first layout inspired by dceoy.com.
 
 References:
 
