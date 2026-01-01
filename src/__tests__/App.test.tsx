@@ -79,6 +79,8 @@ const triggerError = async (options: TurnstileOptions) => {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  vi.useRealTimers();
+  vi.clearAllTimers();
   vi.restoreAllMocks();
   delete (window as WindowWithTurnstile).turnstile;
 });
@@ -445,6 +447,22 @@ describe("App", () => {
       vi.runOnlyPendingTimers();
     });
     vi.useRealTimers();
+  });
+
+  it("stops retrying after max attempts when turnstile is unavailable", () => {
+    setSiteKey("test-site-key");
+    const timeoutSpy = vi
+      .spyOn(window, "setTimeout")
+      .mockImplementation((handler: TimerHandler) => {
+        if (typeof handler === "function") {
+          handler();
+        }
+        return 0;
+      });
+
+    render(<App />);
+
+    expect(timeoutSpy).toHaveBeenCalledTimes(50);
   });
 
   it("removes the turnstile widget on rerender and cleanup", async () => {
