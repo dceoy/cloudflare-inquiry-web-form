@@ -70,34 +70,34 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
       [],
     );
 
-  useEffect(() => {
-    let cancelled = false;
-    let attempts = 0;
-    const maxAttempts = 50;
+    useEffect(() => {
+      let cancelled = false;
+      let attempts = 0;
+      const maxAttempts = 50;
 
-    const ensureWidget = () => {
-      if (cancelled || attempts >= maxAttempts) {
-        return;
-      }
+      const ensureWidget = () => {
+        if (cancelled || attempts >= maxAttempts) {
+          return;
+        }
 
-      attempts += 1;
+        attempts += 1;
 
-      if (renderWidget()) {
-        return;
-      }
+        if (renderWidget()) {
+          return;
+        }
 
-      window.setTimeout(ensureWidget, 200);
-    };
+        window.setTimeout(ensureWidget, 200);
+      };
 
-    ensureWidget();
+      ensureWidget();
 
-    return () => {
-      cancelled = true;
-      if (window.turnstile && widgetIdRef.current) {
-        window.turnstile.remove(widgetIdRef.current);
-      }
-    };
-  }, [renderWidget]);
+      return () => {
+        cancelled = true;
+        if (window.turnstile && widgetIdRef.current) {
+          window.turnstile.remove(widgetIdRef.current);
+        }
+      };
+    }, [renderWidget]);
 
     return <div className="turnstile" ref={containerRef} />;
   },
