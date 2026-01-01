@@ -6,6 +6,7 @@ import { z } from "zod";
 type Bindings = {
   TURNSTILE_SECRET_KEY: string;
   WORKER_SHARED_SECRET: string;
+  CORS_ALLOWED_ORIGINS?: string;
   EMAIL_WORKER: {
     fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   };
@@ -35,6 +36,27 @@ const turnstileResponseSchema = z.object({
 const jsonError = (c: Context, status: number, error: string) =>
   c.json({ ok: false, error }, status as 400 | 401 | 422 | 500 | 502);
 
+const applyCors = (c: Context) => {
+  const origin = c.req.header("origin");
+  if (!origin) {
+    return;
+  }
+
+  const allowed = (c.env.CORS_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (allowed.length === 0 || !allowed.includes(origin)) {
+    return;
+  }
+
+  c.header("Access-Control-Allow-Origin", origin);
+  c.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type");
+  c.header("Vary", "Origin");
+};
+
 const verifyTurnstile = async (
   secret: string,
   token: string,
@@ -55,6 +77,9 @@ const verifyTurnstile = async (
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
       {
         method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
         body,
       },
     );
@@ -77,6 +102,7 @@ const verifyTurnstile = async (
 };
 
 app.post("/contact", async (c) => {
+  applyCors(c);
   c.header("Cache-Control", "no-store");
   const contentType = c.req.header("content-type");
   if (!contentType?.includes("application/json")) {
@@ -142,12 +168,16 @@ app.post("/contact", async (c) => {
   }
 
   if (!workerResponse.ok) {
-    const errorText = await workerResponse.text().catch(() => "unknown error");
-    console.error("Email worker failed:", errorText);
+    console.error("Email worker failed:", workerResponse.status);
     return jsonError(c, 502, "Unable to deliver message right now.");
   }
 
   return c.json({ ok: true });
+});
+
+app.options("/contact", (c) => {
+  applyCors(c);
+  return c.body(null, 204);
 });
 
 export const onRequest = handle(app);
