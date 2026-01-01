@@ -10,6 +10,8 @@ on:
     types:
       - opened
       - synchronize
+      - reopened
+      - ready_for_review
   issue_comment:
     types:
       - created
@@ -36,7 +38,7 @@ jobs:
   typescript-lint-and-scan:
     if: >
       github.event_name == 'push'
-      || github.event_name == 'pull_request'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
@@ -105,7 +107,7 @@ jobs:
   typescript-test:
     if: >
       github.event_name == 'push'
-      || github.event_name == 'pull_request'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
