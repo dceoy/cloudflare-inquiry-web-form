@@ -6,12 +6,12 @@
   "send_email": [
     {
       "name": "SEND_EMAIL",
-      "destination_address": "contact@example.com"
+      "destination_address": "REPLACE_WITH_DESTINATION@yourdomain.com"
     }
   ],
   "vars": {
-    "SENDER_ADDRESS": "no-reply@example.com",
+    "SENDER_ADDRESS": "REPLACE_WITH_SENDER@yourdomain.com",
     "SENDER_NAME": "Contact Form",
-    "DESTINATION_ADDRESS": "contact@example.com"
+    "DESTINATION_ADDRESS": "REPLACE_WITH_DESTINATION@yourdomain.com"
   }
 }

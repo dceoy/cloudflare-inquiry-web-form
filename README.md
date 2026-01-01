@@ -107,6 +107,14 @@ Docs:
 - https://developers.cloudflare.com/pages/functions/bindings/
 - https://developers.cloudflare.com/pages/functions/wrangler-configuration/
 
+### Deployment Checklist
+
+- [ ] Replace placeholder addresses in `worker/wrangler.jsonc`
+- [ ] Set `VITE_TURNSTILE_SITE_KEY` in Pages environment variables
+- [ ] Set `TURNSTILE_SECRET_KEY` in Pages secrets
+- [ ] Set `WORKER_SHARED_SECRET` in Pages + Worker secrets
+- [ ] Create Service Binding `EMAIL_WORKER` → `contact-form-email-worker`
+
 ## Implementation Notes
 
 - Pages Functions uses Hono’s Cloudflare Pages adapter (`handle(app)`) in `functions/api/[[route]].ts`.

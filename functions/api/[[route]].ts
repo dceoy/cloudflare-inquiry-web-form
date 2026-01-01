@@ -27,6 +27,11 @@ type TurnstileResponse = {
   "error-codes"?: string[];
 };
 
+const turnstileResponseSchema = z.object({
+  success: z.boolean(),
+  "error-codes": z.array(z.string()).optional(),
+});
+
 const jsonError = (c: Context, status: number, error: string) =>
   c.json({ ok: false, error }, status as 400 | 401 | 422 | 500 | 502);
 
@@ -61,10 +66,23 @@ const verifyTurnstile = async (
     return { success: false, "error-codes": ["siteverify_unavailable"] };
   }
 
-  return (await response.json()) as TurnstileResponse;
+  const data = await response.json();
+  const parsed = turnstileResponseSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return { success: false, "error-codes": ["invalid_siteverify_response"] };
+  }
+
+  return parsed.data;
 };
 
 app.post("/contact", async (c) => {
+  c.header("Cache-Control", "no-store");
+  const contentType = c.req.header("content-type");
+  if (!contentType?.includes("application/json")) {
+    return jsonError(c, 400, "Content-Type must be application/json.");
+  }
+
   let payload: unknown;
 
   try {
@@ -124,6 +142,8 @@ app.post("/contact", async (c) => {
   }
 
   if (!workerResponse.ok) {
+    const errorText = await workerResponse.text().catch(() => "unknown error");
+    console.error("Email worker failed:", errorText);
     return jsonError(c, 502, "Unable to deliver message right now.");
   }
 
