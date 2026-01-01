@@ -21,23 +21,6 @@ Note: This will impact Vite dev & build performances.
 
 This project includes Claude Code integrations for enhanced development workflows:
 
-### Codex CLI Integration
-
-OpenAI Codex CLI provides AI-powered code assistance:
-
-- **Skills** (`.claude/skills/codex-*`) - Auto-invoked for questions, execution, and reviews
-- **Agents** (`.claude/agents/`) - Multi-phase autonomous workflows
-
-See `.claude/agents/README.md` for detailed usage.
-
-### GitHub Copilot CLI Integration
-
-GitHub Copilot CLI provides similar AI-powered assistance:
-
-- **Skills** (`.claude/skills/copilot-*`) - Auto-invoked for questions, execution, and reviews
-
-See individual SKILL.md files for usage details.
-
 ### Spec-Kit Feature Development
 
 Structured workflow for feature development from specification to implementation:
