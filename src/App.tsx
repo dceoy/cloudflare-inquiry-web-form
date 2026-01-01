@@ -262,92 +262,99 @@ function App() {
           <p className="subhead">
             Share the details and we will reply within one business day.
           </p>
+          <ul className="header-list">
+            <li>Required fields are marked with *</li>
+          </ul>
         </header>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
-          <div className="field">
-            <label htmlFor="name">Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              maxLength={100}
-              value={formState.name}
-              onChange={handleChange("name")}
-              className={errors.name ? "error" : ""}
-              placeholder="Jane Doe"
-            />
-            {errors.name && (
-              <p className="field-error" role="alert">
-                {errors.name}
-              </p>
-            )}
-          </div>
+          <fieldset className="fieldset">
+            <legend>Message details</legend>
 
-          <div className="field">
-            <label htmlFor="email">Email *</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              maxLength={320}
-              value={formState.email}
-              onChange={handleChange("email")}
-              className={errors.email ? "error" : ""}
-              placeholder="jane@example.com"
-              required
-            />
-            {errors.email && (
-              <p className="field-error" role="alert">
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="subject">Subject *</label>
-            <input
-              id="subject"
-              name="subject"
-              type="text"
-              maxLength={150}
-              value={formState.subject}
-              onChange={handleChange("subject")}
-              className={errors.subject ? "error" : ""}
-              placeholder="How can we help?"
-              required
-            />
-            {errors.subject && (
-              <p className="field-error" role="alert">
-                {errors.subject}
-              </p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="message">Message *</label>
-            <textarea
-              id="message"
-              name="message"
-              rows={6}
-              maxLength={2000}
-              value={formState.message}
-              onChange={handleChange("message")}
-              className={errors.message ? "error" : ""}
-              placeholder="Tell us about your inquiry..."
-              required
-            />
-            <div className="field-meta">
-              <span>{formState.message.length}/2000</span>
+            <div className="field">
+              <label htmlFor="name">Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                maxLength={100}
+                value={formState.name}
+                onChange={handleChange("name")}
+                className={errors.name ? "error" : ""}
+                placeholder="Jane Doe"
+              />
+              {errors.name && (
+                <p className="field-error" role="alert">
+                  {errors.name}
+                </p>
+              )}
             </div>
-            {errors.message && (
-              <p className="field-error" role="alert">
-                {errors.message}
-              </p>
-            )}
-          </div>
+
+            <div className="field">
+              <label htmlFor="email">Email *</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                maxLength={320}
+                value={formState.email}
+                onChange={handleChange("email")}
+                className={errors.email ? "error" : ""}
+                placeholder="jane@example.com"
+                required
+              />
+              {errors.email && (
+                <p className="field-error" role="alert">
+                  {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div className="field">
+              <label htmlFor="subject">Subject *</label>
+              <input
+                id="subject"
+                name="subject"
+                type="text"
+                maxLength={150}
+                value={formState.subject}
+                onChange={handleChange("subject")}
+                className={errors.subject ? "error" : ""}
+                placeholder="How can we help?"
+                required
+              />
+              {errors.subject && (
+                <p className="field-error" role="alert">
+                  {errors.subject}
+                </p>
+              )}
+            </div>
+
+            <div className="field">
+              <label htmlFor="message">Message *</label>
+              <textarea
+                id="message"
+                name="message"
+                rows={6}
+                maxLength={2000}
+                value={formState.message}
+                onChange={handleChange("message")}
+                className={errors.message ? "error" : ""}
+                placeholder="Tell us about your inquiry..."
+                required
+              />
+              <div className="field-meta">
+                <span>{formState.message.length}/2000</span>
+              </div>
+              {errors.message && (
+                <p className="field-error" role="alert">
+                  {errors.message}
+                </p>
+              )}
+            </div>
+          </fieldset>
 
           <div className="honeypot" aria-hidden="true">
             <label htmlFor="company">Company</label>
@@ -362,41 +369,43 @@ function App() {
             />
           </div>
 
-          {siteKey ? (
-            <div className="turnstile-wrapper">
-              <TurnstileWidget
-                ref={turnstileRef}
-                siteKey={siteKey}
-                onToken={handleTurnstileToken}
-                onExpire={handleTurnstileExpire}
-                onError={handleTurnstileError}
-              />
-              {errors.turnstileToken && (
-                <p className="field-error" role="alert">
-                  {errors.turnstileToken}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p className="field-error" role="alert">
-              Turnstile site key is missing. Set VITE_TURNSTILE_SITE_KEY to
-              enable submissions.
-            </p>
-          )}
+          <div className="form-footer">
+            {siteKey ? (
+              <div className="turnstile-wrapper">
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  siteKey={siteKey}
+                  onToken={handleTurnstileToken}
+                  onExpire={handleTurnstileExpire}
+                  onError={handleTurnstileError}
+                />
+                {errors.turnstileToken && (
+                  <p className="field-error" role="alert">
+                    {errors.turnstileToken}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="field-error" role="alert">
+                Turnstile site key is missing. Set VITE_TURNSTILE_SITE_KEY to
+                enable submissions.
+              </p>
+            )}
 
-          <button
-            type="submit"
-            className="submit"
-            disabled={isSubmitting || !siteKey}
-          >
-            {isSubmitting ? "Sending..." : "Send message"}
-          </button>
+            <button
+              type="submit"
+              className="submit"
+              disabled={isSubmitting || !siteKey}
+            >
+              {isSubmitting ? "Sending..." : "Send message"}
+            </button>
 
-          {statusMessage && (
-            <p className={`status ${status}`} role="status" aria-live="polite">
-              {statusMessage}
-            </p>
-          )}
+            {statusMessage && (
+              <p className={`status ${status}`} role="status" aria-live="polite">
+                {statusMessage}
+              </p>
+            )}
+          </div>
         </form>
       </main>
     </div>
