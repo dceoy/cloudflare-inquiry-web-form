@@ -1,6 +1,7 @@
 # Research: dceoy.com visual style
 
 ## Sources
+
 - https://dceoy.com/ (accessed 2026-01-01)
 
 ## Observations

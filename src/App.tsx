@@ -401,7 +401,11 @@ function App() {
             </button>
 
             {statusMessage && (
-              <p className={`status ${status}`} role="status" aria-live="polite">
+              <p
+                className={`status ${status}`}
+                role="status"
+                aria-live="polite"
+              >
                 {statusMessage}
               </p>
             )}
