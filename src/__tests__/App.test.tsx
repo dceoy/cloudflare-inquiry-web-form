@@ -457,7 +457,7 @@ describe("App", () => {
         if (typeof handler === "function") {
           handler();
         }
-        return 0;
+        return 0 as unknown as ReturnType<typeof setTimeout>;
       });
 
     render(<App />);
