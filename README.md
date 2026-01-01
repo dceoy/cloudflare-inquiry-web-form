@@ -39,6 +39,7 @@ pnpm dev:pages
 ```
 
 Notes:
+
 - `pnpm dev` serves the React app.
 - `pnpm dev:worker` runs the email Worker locally.
 - `pnpm dev:pages` serves Pages Functions (and static build output) on port `8788` and connects to the worker via `--service`.
@@ -102,6 +103,7 @@ In the Pages project settings:
   - `VITE_TURNSTILE_SITE_KEY`
 
 Docs:
+
 - https://developers.cloudflare.com/pages/functions/bindings/
 - https://developers.cloudflare.com/pages/functions/wrangler-configuration/
 
@@ -112,6 +114,7 @@ Docs:
 - Turnstile tokens are verified server-side and are short-lived, single-use tokens.
 
 References:
+
 - https://hono.dev/docs/getting-started/cloudflare-pages
 - https://developers.cloudflare.com/pages/functions/bindings/
 - https://developers.cloudflare.com/turnstile/get-started/server-side-validation/

@@ -190,7 +190,9 @@ Follow Martin Fowler's Refactoring, Kent Beck's Tidy Code, and t_wada's TDD prin
 > "Make the change easy, then make the easy change." - Kent Beck
 
 ## Active Technologies
+
 - TypeScript (React + Hono) + React, Hono, Zod, mimetext (for MIME construction) (001-contact-form-email)
 
 ## Recent Changes
+
 - 001-contact-form-email: Added TypeScript (React + Hono) + React, Hono, Zod, mimetext (for MIME construction)

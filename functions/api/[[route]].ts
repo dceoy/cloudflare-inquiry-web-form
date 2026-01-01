@@ -33,7 +33,7 @@ const jsonError = (c: Context, status: number, error: string) =>
 const verifyTurnstile = async (
   secret: string,
   token: string,
-  remoteIp?: string | null
+  remoteIp?: string | null,
 ): Promise<TurnstileResponse> => {
   const body = new URLSearchParams({
     secret,
@@ -51,7 +51,7 @@ const verifyTurnstile = async (
       {
         method: "POST",
         body,
-      }
+      },
     );
   } catch {
     return { success: false, "error-codes": ["siteverify_unavailable"] };
@@ -78,7 +78,8 @@ app.post("/contact", async (c) => {
     return jsonError(c, 422, "Please provide valid contact details.");
   }
 
-  const { name, email, subject, message, turnstileToken, honeypot } = parsed.data;
+  const { name, email, subject, message, turnstileToken, honeypot } =
+    parsed.data;
 
   if (honeypot && honeypot.trim().length > 0) {
     return jsonError(c, 400, "Submission rejected.");
@@ -88,11 +89,12 @@ app.post("/contact", async (c) => {
     return jsonError(c, 500, "Server configuration error.");
   }
 
-  const remoteIp = c.req.header("CF-Connecting-IP") ?? c.req.header("cf-connecting-ip");
+  const remoteIp =
+    c.req.header("CF-Connecting-IP") ?? c.req.header("cf-connecting-ip");
   const turnstileResult = await verifyTurnstile(
     c.env.TURNSTILE_SECRET_KEY,
     turnstileToken,
-    remoteIp
+    remoteIp,
   );
 
   if (!turnstileResult.success) {
@@ -115,7 +117,7 @@ app.post("/contact", async (c) => {
           subject,
           message,
         }),
-      }
+      },
     );
   } catch {
     return jsonError(c, 502, "Unable to deliver message right now.");
