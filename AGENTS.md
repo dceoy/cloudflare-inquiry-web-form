@@ -46,7 +46,7 @@ pnpm test
 
 - Commit messages are short, imperative, sentence-case (e.g., “Create a scaffold using pnpm and vite”).
 - PRs should include: a clear summary, relevant context or linked issue, and screenshots for UI changes.
-- When instructed to create a PR, create it as a **draft** by default (unless explicitly asked for a ready-for-review PR).
+- When instructed to create a PR, create it as a draft with appropriate labels by default.
 
 ## Configuration Tips
 
