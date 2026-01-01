@@ -103,13 +103,27 @@ Docs: https://developers.cloudflare.com/turnstile/get-started/server-side-valida
 
 Docs: https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/
 
-### 3) Worker deployment
+### 3) Pages deployment
+
+Cloudflare Pages should deploy the `dist/` output automatically. In the Pages build settings:
+
+- Build command: `pnpm run build`
+- Build output directory: `dist`
+- Deploy command: leave blank (do not use `wrangler deploy` in a Pages project)
+
+If you are deploying from CI outside Pages, use:
 
 ```bash
-wrangler deploy --config worker/wrangler.jsonc
+pnpm run deploy:pages
 ```
 
-### 4) Pages project bindings
+### 4) Worker deployment
+
+```bash
+pnpm run deploy:worker
+```
+
+### 5) Pages project bindings
 
 In the Pages project settings:
 
