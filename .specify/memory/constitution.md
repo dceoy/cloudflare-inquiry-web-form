@@ -1,4 +1,4 @@
-# cloudflare-pages-react-form Constitution
+# cloudflare-inquiry-web-form Constitution
 
 ## Core Principles
 
