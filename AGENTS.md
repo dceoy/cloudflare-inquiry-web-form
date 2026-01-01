@@ -15,7 +15,20 @@ Use pnpm (lockfile is `pnpm-lock.yaml`).
 - `pnpm dev`: start the Vite dev server with HMR.
 - `pnpm build`: type-check (`tsc -b`) and produce a production build via Vite.
 - `pnpm lint`: run ESLint across the repo.
+- `pnpm test`: run Vitest once.
+- `pnpm test:coverage`: run Vitest with coverage enforcement.
 - `pnpm preview`: serve the production build locally for verification.
+
+## Change Checklist
+
+For each change, run formatting, lint, typecheck, and tests:
+
+```bash
+pnpm format
+pnpm lint
+pnpm typecheck
+pnpm test
+```
 
 ## Coding Style & Naming Conventions
 
@@ -26,8 +39,8 @@ Use pnpm (lockfile is `pnpm-lock.yaml`).
 
 ## Testing Guidelines
 
-- No test framework is configured yet (no `test` script or test dependencies).
-- If you add tests, document the framework and the command in `package.json` and update this guide.
+- Use Vitest for unit tests.
+- Prefer tests in `src/__tests__/`.
 
 ## Commit & Pull Request Guidelines
 
@@ -190,6 +203,8 @@ Follow Martin Fowler's Refactoring, Kent Beck's Tidy Code, and t_wada's TDD prin
 > "Make the change easy, then make the easy change." - Kent Beck
 
 ## Active Technologies
+
+- TypeScript (Vite + React 19) + Vite, React, Cloudflare Pages Functions (Hono) (003-unit-tests-coverage)
 
 - TypeScript, React 19 (Vite) + React, Vite, ESLin (002-dceoy-site-design)
 

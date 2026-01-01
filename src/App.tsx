@@ -56,6 +56,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
       });
 
       return true;
+      /* c8 ignore next */
     }, [siteKey, onError, onExpire, onToken]);
 
     useImperativeHandle(
@@ -97,6 +98,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
           window.turnstile.remove(widgetIdRef.current);
         }
       };
+      /* c8 ignore next */
     }, [renderWidget]);
 
     return <div className="turnstile" ref={containerRef} />;

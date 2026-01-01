@@ -46,6 +46,16 @@ Notes:
 - `VITE_API_BASE_URL` should point to `http://localhost:8788` when using the Vite dev server.
 - For Vite dev server + Pages API, set `CORS_ALLOWED_ORIGINS` to `http://localhost:5173` in `.dev.vars`.
 
+## Testing
+
+```bash
+pnpm test
+```
+
+```bash
+pnpm test:coverage
+```
+
 ## Configuration & Secrets
 
 ### Frontend (Vite)
