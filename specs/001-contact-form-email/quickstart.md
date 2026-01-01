@@ -20,7 +20,7 @@ pnpm dev:pages
 ## Run Email Worker (local)
 
 ```bash
-pnpm dev:worker
+pnpm dev:workers
 ```
 
 ## Notes
