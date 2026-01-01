@@ -24,5 +24,5 @@
 ## Platform & Docs
 
 - [x] T013 [P] Add Pages and Worker Wrangler configs and dev vars examples in `wrangler.jsonc`, `worker/wrangler.jsonc`, `.dev.vars.example`, `worker/.dev.vars.example`.
-- [x] T014 Update dependencies and scripts in `package.json` for `dev:pages`, `dev:worker`, lint/typecheck.
+- [x] T014 Update dependencies and scripts in `package.json` for `dev:pages`, `dev:workers`, lint/typecheck.
 - [x] T015 Update README with setup, local dev, deployment, and implementation notes in `README.md`.

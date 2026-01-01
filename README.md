@@ -30,7 +30,7 @@ pnpm dev
 ```
 
 ```bash
-pnpm dev:worker
+pnpm dev:workers
 ```
 
 ```bash
@@ -41,7 +41,7 @@ pnpm dev:pages
 Notes:
 
 - `pnpm dev` serves the React app.
-- `pnpm dev:worker` runs the email Worker locally.
+- `pnpm dev:workers` runs the email Worker locally.
 - `pnpm dev:pages` serves Pages Functions (and static build output) on port `8788` and connects to the worker via `--service`.
 - `VITE_API_BASE_URL` should point to `http://localhost:8788` when using the Vite dev server.
 - For Vite dev server + Pages API, set `CORS_ALLOWED_ORIGINS` to `http://localhost:5173` in `.dev.vars`.
@@ -120,7 +120,7 @@ pnpm run deploy:pages
 ### 4) Worker deployment
 
 ```bash
-pnpm run deploy:worker
+pnpm run deploy:workers
 ```
 
 ### 5) Pages project bindings
