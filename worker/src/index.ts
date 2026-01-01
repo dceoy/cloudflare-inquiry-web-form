@@ -27,11 +27,16 @@ const jsonResponse = (body: Record<string, unknown>, status = 200) =>
   });
 
 const isNonEmpty = (value: string | undefined, max: number) =>
-  typeof value === "string" && value.trim().length > 0 && value.trim().length <= max;
+  typeof value === "string" &&
+  value.trim().length > 0 &&
+  value.trim().length <= max;
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    if (request.method !== "POST" || new URL(request.url).pathname !== "/internal/send") {
+    if (
+      request.method !== "POST" ||
+      new URL(request.url).pathname !== "/internal/send"
+    ) {
       return new Response("Not found", { status: 404 });
     }
 
@@ -56,7 +61,10 @@ export default {
     }
 
     if (!env.SENDER_ADDRESS || !env.DESTINATION_ADDRESS) {
-      return jsonResponse({ ok: false, error: "Missing email configuration" }, 500);
+      return jsonResponse(
+        { ok: false, error: "Missing email configuration" },
+        500,
+      );
     }
 
     const senderName = env.SENDER_NAME?.trim() || "Contact Form";
@@ -77,7 +85,7 @@ export default {
     const emailMessage = new EmailMessage(
       env.SENDER_ADDRESS,
       env.DESTINATION_ADDRESS,
-      mimeMessage.asRaw()
+      mimeMessage.asRaw(),
     );
 
     try {

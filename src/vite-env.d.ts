@@ -20,7 +20,7 @@ declare global {
           "error-callback"?: () => void;
           "expired-callback"?: () => void;
           "timeout-callback"?: () => void;
-        }
+        },
       ) => string;
       reset: (widgetId?: string) => void;
       remove: (widgetId: string) => void;

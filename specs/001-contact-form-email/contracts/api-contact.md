@@ -13,7 +13,7 @@
   "subject": "Subject line",
   "message": "Message body",
   "turnstileToken": "token",
-  "honeypot": "" 
+  "honeypot": ""
 }
 ```
 

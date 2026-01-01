@@ -1,5 +1,13 @@
 import type { ChangeEvent } from "react";
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./App.css";
 
 type FormState = {
@@ -10,7 +18,9 @@ type FormState = {
   honeypot: string;
 };
 
-type FormErrors = Partial<Record<keyof FormState | "turnstileToken" | "form", string>>;
+type FormErrors = Partial<
+  Record<keyof FormState | "turnstileToken" | "form", string>
+>;
 
 type TurnstileHandle = {
   reset: () => void;
@@ -57,7 +67,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
           }
         },
       }),
-      []
+      [],
     );
 
     useEffect(() => {
@@ -86,7 +96,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
     }, [renderWidget]);
 
     return <div className="turnstile" ref={containerRef} />;
-  }
+  },
 );
 
 TurnstileWidget.displayName = "TurnstileWidget";
@@ -105,7 +115,9 @@ function App() {
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [turnstileToken, setTurnstileToken] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
   const [submitError, setSubmitError] = useState("");
   const turnstileRef = useRef<TurnstileHandle | null>(null);
 
@@ -113,44 +125,41 @@ function App() {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
   const isSubmitting = status === "submitting";
 
-  const validate = useCallback(
-    (values: FormState, token: string) => {
-      const nextErrors: FormErrors = {};
+  const validate = useCallback((values: FormState, token: string) => {
+    const nextErrors: FormErrors = {};
 
-      if (!values.email.trim()) {
-        nextErrors.email = "Email is required.";
-      } else if (!emailPattern.test(values.email.trim())) {
-        nextErrors.email = "Enter a valid email address.";
-      }
+    if (!values.email.trim()) {
+      nextErrors.email = "Email is required.";
+    } else if (!emailPattern.test(values.email.trim())) {
+      nextErrors.email = "Enter a valid email address.";
+    }
 
-      if (!values.subject.trim()) {
-        nextErrors.subject = "Subject is required.";
-      }
+    if (!values.subject.trim()) {
+      nextErrors.subject = "Subject is required.";
+    }
 
-      if (!values.message.trim()) {
-        nextErrors.message = "Message is required.";
-      }
+    if (!values.message.trim()) {
+      nextErrors.message = "Message is required.";
+    }
 
-      if (values.name.trim().length > 100) {
-        nextErrors.name = "Name must be 100 characters or fewer.";
-      }
+    if (values.name.trim().length > 100) {
+      nextErrors.name = "Name must be 100 characters or fewer.";
+    }
 
-      if (values.subject.trim().length > 150) {
-        nextErrors.subject = "Subject must be 150 characters or fewer.";
-      }
+    if (values.subject.trim().length > 150) {
+      nextErrors.subject = "Subject must be 150 characters or fewer.";
+    }
 
-      if (values.message.trim().length > 2000) {
-        nextErrors.message = "Message must be 2000 characters or fewer.";
-      }
+    if (values.message.trim().length > 2000) {
+      nextErrors.message = "Message must be 2000 characters or fewer.";
+    }
 
-      if (!token) {
-        nextErrors.turnstileToken = "Please complete the verification challenge.";
-      }
+    if (!token) {
+      nextErrors.turnstileToken = "Please complete the verification challenge.";
+    }
 
-      return nextErrors;
-    },
-    []
-  );
+    return nextErrors;
+  }, []);
 
   const statusMessage = useMemo(() => {
     if (status === "success") {
@@ -162,7 +171,8 @@ function App() {
     return "";
   }, [status, submitError]);
 
-  const handleChange = (field: keyof FormState) =>
+  const handleChange =
+    (field: keyof FormState) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormState((prev) => ({ ...prev, [field]: event.target.value }));
     };
@@ -202,7 +212,9 @@ function App() {
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(payload?.error || "Unable to send your message right now.");
+        throw new Error(
+          payload?.error || "Unable to send your message right now.",
+        );
       }
 
       setStatus("success");
@@ -212,7 +224,9 @@ function App() {
       setErrors({});
     } catch (error) {
       setStatus("error");
-      setSubmitError(error instanceof Error ? error.message : "Unexpected error.");
+      setSubmitError(
+        error instanceof Error ? error.message : "Unexpected error.",
+      );
       setTurnstileToken("");
       turnstileRef.current?.reset();
     }
@@ -229,7 +243,10 @@ function App() {
 
   const handleTurnstileError = () => {
     setTurnstileToken("");
-    setErrors((prev) => ({ ...prev, turnstileToken: "Verification failed. Try again." }));
+    setErrors((prev) => ({
+      ...prev,
+      turnstileToken: "Verification failed. Try again.",
+    }));
   };
 
   return (
@@ -358,11 +375,16 @@ function App() {
             </div>
           ) : (
             <p className="field-error" role="alert">
-              Turnstile site key is missing. Set VITE_TURNSTILE_SITE_KEY to enable submissions.
+              Turnstile site key is missing. Set VITE_TURNSTILE_SITE_KEY to
+              enable submissions.
             </p>
           )}
 
-          <button type="submit" className="submit" disabled={isSubmitting || !siteKey}>
+          <button
+            type="submit"
+            className="submit"
+            disabled={isSubmitting || !siteKey}
+          >
             {isSubmitting ? "Sending..." : "Send message"}
           </button>
 

@@ -67,7 +67,9 @@ textarea {
   font-family: inherit;
   background: #f8f6f1;
   color: #102a2f;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 input:focus,
@@ -122,7 +124,10 @@ textarea.error {
   background: #102a2f;
   color: #f8f6f1;
   cursor: pointer;
-  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
 }
 
 .submit:hover:not(:disabled) {
