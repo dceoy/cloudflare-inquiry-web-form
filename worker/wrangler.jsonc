@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "contact-form-email-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-12-01",
+  "send_email": [
+    {
+      "name": "SEND_EMAIL",
+      "destination_address": "contact@example.com"
+    }
+  ],
+  "vars": {
+    "SENDER_ADDRESS": "no-reply@example.com",
+    "SENDER_NAME": "Contact Form",
+    "DESTINATION_ADDRESS": "contact@example.com"
+  }
+}
