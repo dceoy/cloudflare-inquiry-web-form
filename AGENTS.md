@@ -205,6 +205,7 @@ Follow Martin Fowler's Refactoring, Kent Beck's Tidy Code, and t_wada's TDD prin
 > "Make the change easy, then make the easy change." - Kent Beck
 
 ## Active Technologies
+
 - TypeScript 5.x (Vite + React) and TypeScript for Pages Functions + Hono, Zod, mimetext (existing), Resend HTTP API (no new SDK required) (005-pages-functions-email)
 
 - TypeScript (Vite + React 19, Hono + Zod) + React, Hono, Zod, mimetex (004-pages-functions)
