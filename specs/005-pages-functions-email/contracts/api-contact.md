@@ -3,9 +3,11 @@
 ## Request
 
 **Headers**
+
 - `Content-Type: application/json`
 
 **Body**
+
 ```json
 {
   "name": "Optional display name",
@@ -20,11 +22,13 @@
 ## Response
 
 **Success**
+
 ```json
 { "ok": true }
 ```
 
 **Error**
+
 ```json
 { "ok": false, "error": "message" }
 ```
