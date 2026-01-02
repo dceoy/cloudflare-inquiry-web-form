@@ -5,11 +5,11 @@ import { z } from "zod";
 
 type Bindings = {
   TURNSTILE_SECRET_KEY: string;
-  WORKER_SHARED_SECRET: string;
+  RESEND_API_KEY: string;
+  EMAIL_FROM: string;
+  EMAIL_TO: string;
+  EMAIL_REPLY_TO?: string;
   CORS_ALLOWED_ORIGINS?: string;
-  EMAIL_WORKER: {
-    fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
-  };
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -144,7 +144,12 @@ const handleContact = async (c: Context) => {
     return jsonError(c, 400, "Submission rejected.");
   }
 
-  if (!c.env.TURNSTILE_SECRET_KEY || !c.env.WORKER_SHARED_SECRET) {
+  if (
+    !c.env.TURNSTILE_SECRET_KEY ||
+    !c.env.RESEND_API_KEY ||
+    !c.env.EMAIL_FROM ||
+    !c.env.EMAIL_TO
+  ) {
     return jsonError(c, 500, "Server configuration error.");
   }
 
@@ -160,48 +165,56 @@ const handleContact = async (c: Context) => {
     return jsonError(c, 400, "Turnstile verification failed.");
   }
 
-  const workerRequest = {
+  const textBody = [
+    `Name: ${name?.trim() || "(not provided)"}`,
+    `Email: ${email.trim()}`,
+    "",
+    message.trim(),
+  ].join("\n");
+
+  const resendRequest = {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-worker-auth": c.env.WORKER_SHARED_SECRET,
+      authorization: `Bearer ${c.env.RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      name: name?.trim() || undefined,
-      email,
-      subject,
-      message,
+      from: c.env.EMAIL_FROM,
+      to: c.env.EMAIL_TO,
+      subject: `New inquiry: ${subject.trim()}`,
+      text: textBody,
+      reply_to: c.env.EMAIL_REPLY_TO ?? email.trim(),
     }),
   };
 
   const maxAttempts = 2;
-  let workerResponse: Response | null = null;
+  let resendResponse: Response | null = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      workerResponse = await fetchWithTimeout(
-        "https://email-worker.internal/internal/send",
-        workerRequest,
+      resendResponse = await fetchWithTimeout(
+        "https://api.resend.com/emails",
+        resendRequest,
         5000,
       );
 
-      if (workerResponse.ok) {
+      if (resendResponse.ok) {
         return c.json({ ok: true });
       }
 
-      if (workerResponse.status < 500) {
-        console.error("Email worker rejected request:", workerResponse.status);
+      if (resendResponse.status < 500) {
+        console.error("Resend rejected request:", resendResponse.status);
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
     } catch (error) {
       if (attempt === maxAttempts) {
-        console.error("Email worker request failed:", error);
+        console.error("Resend request failed:", error);
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
     }
   }
 
-  console.error("Email worker failed:", workerResponse?.status);
+  console.error("Resend failed:", resendResponse?.status);
   return jsonError(c, 502, "Unable to deliver message right now.");
 };
 
