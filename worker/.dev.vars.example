@@ -1,1 +1,4 @@
 WORKER_SHARED_SECRET=replace-with-shared-secret
+SENDER_ADDRESS=sender@example.com
+SENDER_NAME=Contact Form
+DESTINATION_ADDRESS=destination@example.com

@@ -7,12 +7,7 @@
   "send_email": [
     {
       "name": "SEND_EMAIL",
-      "destination_address": "REPLACE_WITH_DESTINATION@yourdomain.com"
+      "destination_address": "replace-with-destination@example.com"
     }
-  ],
-  "vars": {
-    "SENDER_ADDRESS": "REPLACE_WITH_SENDER@yourdomain.com",
-    "SENDER_NAME": "Contact Form",
-    "DESTINATION_ADDRESS": "REPLACE_WITH_DESTINATION@yourdomain.com"
-  }
+  ]
 }
