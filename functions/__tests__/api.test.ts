@@ -87,7 +87,9 @@ describe("POST /api/contact", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const response = await onRequest(createContext(createRequest(validPayload)));
+    const response = await onRequest(
+      createContext(createRequest(validPayload)),
+    );
     const json = await response.json();
 
     expect(response.status).toBe(200);
@@ -106,7 +108,9 @@ describe("POST /api/contact", () => {
   it("rejects invalid payloads", async () => {
     vi.stubGlobal(
       "fetch",
-      createMockFetch([() => Promise.resolve(jsonResponse(200, { success: true }))]),
+      createMockFetch([
+        () => Promise.resolve(jsonResponse(200, { success: true })),
+      ]),
     );
 
     const response = await onRequest(
@@ -115,7 +119,10 @@ describe("POST /api/contact", () => {
     const json = await response.json();
 
     expect(response.status).toBe(422);
-    expect(json).toEqual({ ok: false, error: "Please provide valid contact details." });
+    expect(json).toEqual({
+      ok: false,
+      error: "Please provide valid contact details.",
+    });
   });
 
   it("returns 400 when Turnstile verification fails", async () => {
@@ -125,11 +132,16 @@ describe("POST /api/contact", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const response = await onRequest(createContext(createRequest(validPayload)));
+    const response = await onRequest(
+      createContext(createRequest(validPayload)),
+    );
     const json = await response.json();
 
     expect(response.status).toBe(400);
-    expect(json).toEqual({ ok: false, error: "Turnstile verification failed." });
+    expect(json).toEqual({
+      ok: false,
+      error: "Turnstile verification failed.",
+    });
   });
 
   it("retries on Resend 5xx responses", async () => {
@@ -141,7 +153,9 @@ describe("POST /api/contact", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const response = await onRequest(createContext(createRequest(validPayload)));
+    const response = await onRequest(
+      createContext(createRequest(validPayload)),
+    );
     const json = await response.json();
 
     expect(response.status).toBe(200);
