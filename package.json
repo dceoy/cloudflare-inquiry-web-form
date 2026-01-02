@@ -11,7 +11,7 @@
     "deploy:pages": "wrangler pages deploy dist",
     "deploy:workers": "wrangler deploy --config worker/wrangler.jsonc",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md,html,htm}'",
     "typecheck": "tsc -b",
     "preview": "vite preview",
