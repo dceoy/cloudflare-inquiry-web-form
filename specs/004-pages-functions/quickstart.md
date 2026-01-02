@@ -11,10 +11,9 @@
 2. Set required secrets/vars for Pages Functions (example names):
 
 - `TURNSTILE_SECRET_KEY`
-   - `WORKER_SHARED_SECRET`
+  - `WORKER_SHARED_SECRET`
 
 3. Set required secrets/vars for the Email Worker:
-
    - `WORKER_SHARED_SECRET`
    - `SENDER_ADDRESS`
    - `SENDER_NAME` (optional)
