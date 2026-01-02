@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:pages": "wrangler pages dev dist --port 8788 --service EMAIL_WORKER=contact-form-email-worker",
+    "dev:pages": "wrangler pages dev dist --port 8788 --service EMAIL_WORKER=inquiry-form-email-worker",
     "dev:workers": "wrangler dev --config worker/wrangler.jsonc --port 8790",
     "build": "tsc -b && vite build",
     "deploy:pages": "wrangler pages deploy dist",

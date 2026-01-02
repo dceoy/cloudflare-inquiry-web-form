@@ -127,7 +127,7 @@ pnpm run deploy:workers
 
 In the Pages project settings:
 
-- Add a Service Binding: `EMAIL_WORKER` → `contact-form-email-worker`
+- Add a Service Binding: `EMAIL_WORKER` → `inquiry-form-email-worker`
 - Add env vars/secrets:
   - `TURNSTILE_SECRET_KEY`
   - `WORKER_SHARED_SECRET`
@@ -144,7 +144,7 @@ Docs:
 - [ ] Set `VITE_TURNSTILE_SITE_KEY` in Pages environment variables
 - [ ] Set `TURNSTILE_SECRET_KEY` in Pages secrets
 - [ ] Set `WORKER_SHARED_SECRET` in Pages + Worker secrets
-- [ ] Create Service Binding `EMAIL_WORKER` → `contact-form-email-worker`
+- [ ] Create Service Binding `EMAIL_WORKER` → `inquiry-form-email-worker`
 
 ## Implementation Notes
 

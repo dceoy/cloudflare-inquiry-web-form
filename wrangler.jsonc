@@ -6,7 +6,7 @@
   "services": [
     {
       "binding": "EMAIL_WORKER",
-      "service": "contact-form-email-worker"
+      "service": "inquiry-form-email-worker"
     }
   ]
 }
