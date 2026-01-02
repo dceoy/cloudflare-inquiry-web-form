@@ -1,3 +1,6 @@
 TURNSTILE_SECRET_KEY=replace-with-turnstile-secret
-WORKER_SHARED_SECRET=replace-with-shared-secret
+RESEND_API_KEY=replace-with-resend-api-key
+EMAIL_FROM=sender@example.com
+EMAIL_TO=destination@example.com
+EMAIL_REPLY_TO=reply-to@example.com
 CORS_ALLOWED_ORIGINS=http://localhost:5173
