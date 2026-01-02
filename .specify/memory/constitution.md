@@ -12,7 +12,7 @@ No secrets in git history. All sensitive values are provided via environment var
 
 ### III. Cloudflare-Native Architecture
 
-Frontend is static on Cloudflare Pages. Server logic runs in Pages Functions (Hono) and delegates email sending to a separate Worker via Service Binding. Direct email sending from Pages Functions is not allowed.
+Frontend is static on Cloudflare Pages. Server logic runs in Pages Functions (Hono) and may either delegate email sending to a Worker via Service Binding or send email directly from Pages Functions via an external provider API when Worker usage is not desired.
 
 ### IV. Minimal, Type-Safe Dependencies
 
@@ -38,4 +38,4 @@ Every deployable feature includes clear local-dev steps, production setup, and r
 
 The constitution supersedes other guidance. Amendments require updating this file and noting any impacted templates or workflows.
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
+**Version**: 1.1.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-02

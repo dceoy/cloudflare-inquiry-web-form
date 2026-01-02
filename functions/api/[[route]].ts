@@ -101,7 +101,22 @@ const verifyTurnstile = async (
   return parsed.data;
 };
 
-app.post("/contact", async (c) => {
+const fetchWithTimeout = async (
+  input: RequestInfo,
+  init: RequestInit,
+  timeoutMs: number,
+) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
+const handleContact = async (c: Context) => {
   applyCors(c);
   c.header("Cache-Control", "no-store");
   const contentType = c.req.header("content-type");
@@ -145,37 +160,60 @@ app.post("/contact", async (c) => {
     return jsonError(c, 400, "Turnstile verification failed.");
   }
 
-  let workerResponse: Response;
-  try {
-    workerResponse = await c.env.EMAIL_WORKER.fetch(
-      "https://email-worker.internal/internal/send",
-      {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "x-worker-auth": c.env.WORKER_SHARED_SECRET,
-        },
-        body: JSON.stringify({
-          name: name?.trim() || undefined,
-          email,
-          subject,
-          message,
-        }),
-      },
-    );
-  } catch {
-    return jsonError(c, 502, "Unable to deliver message right now.");
+  const workerRequest = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-worker-auth": c.env.WORKER_SHARED_SECRET,
+    },
+    body: JSON.stringify({
+      name: name?.trim() || undefined,
+      email,
+      subject,
+      message,
+    }),
+  };
+
+  const maxAttempts = 2;
+  let workerResponse: Response | null = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      workerResponse = await fetchWithTimeout(
+        "https://email-worker.internal/internal/send",
+        workerRequest,
+        5000,
+      );
+
+      if (workerResponse.ok) {
+        return c.json({ ok: true });
+      }
+
+      if (workerResponse.status < 500) {
+        console.error("Email worker rejected request:", workerResponse.status);
+        return jsonError(c, 502, "Unable to deliver message right now.");
+      }
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        console.error("Email worker request failed:", error);
+        return jsonError(c, 502, "Unable to deliver message right now.");
+      }
+    }
   }
 
-  if (!workerResponse.ok) {
-    console.error("Email worker failed:", workerResponse.status);
-    return jsonError(c, 502, "Unable to deliver message right now.");
-  }
+  console.error("Email worker failed:", workerResponse?.status);
+  return jsonError(c, 502, "Unable to deliver message right now.");
+};
 
-  return c.json({ ok: true });
-});
+app.post("/contact", handleContact);
+app.post("/api/contact", handleContact);
 
 app.options("/contact", (c) => {
+  applyCors(c);
+  return c.body(null, 204);
+});
+
+app.options("/api/contact", (c) => {
   applyCors(c);
   return c.body(null, 204);
 });
