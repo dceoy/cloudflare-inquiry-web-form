@@ -205,6 +205,7 @@ Follow Martin Fowler's Refactoring, Kent Beck's Tidy Code, and t_wada's TDD prin
 > "Make the change easy, then make the easy change." - Kent Beck
 
 ## Active Technologies
+
 - TypeScript (Vite + React 19, Hono + Zod) + React, Hono, Zod, mimetex (004-pages-functions)
 
 - TypeScript (Vite + React 19) + Vite, React, Cloudflare Pages Functions (Hono) (003-unit-tests-coverage)
