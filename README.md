@@ -5,7 +5,7 @@ Single-page contact form built with Vite + React. Submissions are validated in a
 ## Architecture
 
 - **Frontend**: Vite + React (static on Cloudflare Pages)
-- **API**: Cloudflare Pages Functions with Hono at `/api/contact`
+- **API**: Cloudflare Pages Functions with Hono at `/api/contact` (also `/contact`)
 - **Email**: Resend HTTP API
 - **Security**: Turnstile verification + server-side validation
 
