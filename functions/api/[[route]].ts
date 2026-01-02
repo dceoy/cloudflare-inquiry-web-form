@@ -10,6 +10,9 @@ type Bindings = {
   EMAIL_TO: string;
   EMAIL_REPLY_TO?: string;
   CORS_ALLOWED_ORIGINS?: string;
+  RESEND_MAX_RETRIES?: string;
+  RESEND_TIMEOUT_MS?: string;
+  RESEND_RETRY_DELAY_MS?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -187,9 +190,9 @@ const handleContact = async (c: Context) => {
     }),
   };
 
-  const maxAttempts = 2;
-  const requestTimeoutMs = 5000;
-  const retryDelayMs = 100;
+  const maxAttempts = Number(c.env.RESEND_MAX_RETRIES) || 2;
+  const requestTimeoutMs = Number(c.env.RESEND_TIMEOUT_MS) || 5000;
+  const retryDelayMs = Number(c.env.RESEND_RETRY_DELAY_MS) || 100;
   let resendResponse: Response | null = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -205,15 +208,18 @@ const handleContact = async (c: Context) => {
       }
 
       if (resendResponse.status < 500) {
-        console.error("Resend rejected request:", resendResponse.status);
+        console.error("Resend rejected request", {
+          status: resendResponse.status,
+        });
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
 
       // 5xx error - retry if not last attempt
       if (attempt < maxAttempts) {
-        console.warn(
-          `Resend 5xx error (${resendResponse.status}), retrying...`,
-        );
+        console.warn("Resend 5xx error, retrying", {
+          status: resendResponse.status,
+          attempt,
+        });
         await new Promise((resolve) =>
           setTimeout(resolve, retryDelayMs * attempt),
         );
@@ -221,7 +227,10 @@ const handleContact = async (c: Context) => {
       }
     } catch (error) {
       if (attempt === maxAttempts) {
-        console.error("Resend request failed:", error);
+        console.error("Resend request failed", {
+          errorName: error instanceof Error ? error.name : "Unknown",
+          errorMessage: error instanceof Error ? error.message : String(error),
+        });
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
       // Add backoff delay before retry
@@ -231,7 +240,10 @@ const handleContact = async (c: Context) => {
     }
   }
 
-  console.error("Resend failed:", resendResponse?.status);
+  console.error("Resend failed after retries", {
+    status: resendResponse?.status,
+    attempts: maxAttempts,
+  });
   return jsonError(c, 502, "Unable to deliver message right now.");
 };
 
