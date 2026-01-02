@@ -63,8 +63,9 @@ const createMockFetch = (responses: Array<() => Promise<Response>>) => {
       return responses[0]();
     }
     if (url.includes("api.resend.com")) {
+      const response = responses[index + 1];
       index += 1;
-      return responses[index]();
+      return response();
     }
     return jsonResponse(500, { ok: false });
   });
@@ -160,6 +161,99 @@ describe("POST /api/contact", () => {
 
     expect(response.status).toBe(200);
     expect(json).toEqual({ ok: true });
+
+    const resendCalls = fetchMock.mock.calls.filter((call) =>
+      String(call[0]).includes("api.resend.com"),
+    );
+    expect(resendCalls).toHaveLength(2);
+  });
+
+  it("rejects when honeypot field is filled", async () => {
+    vi.stubGlobal(
+      "fetch",
+      createMockFetch([
+        () => Promise.resolve(jsonResponse(200, { success: true })),
+      ]),
+    );
+
+    const response = await onRequest(
+      createContext(
+        createRequest({ ...validPayload, honeypot: "spam-content" }),
+      ),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json).toEqual({
+      ok: false,
+      error: "Submission rejected.",
+    });
+  });
+
+  it("returns 500 when required env vars are missing", async () => {
+    vi.stubGlobal(
+      "fetch",
+      createMockFetch([
+        () => Promise.resolve(jsonResponse(200, { success: true })),
+      ]),
+    );
+
+    const response = await onRequest(
+      createContext(createRequest(validPayload), { RESEND_API_KEY: "" }),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json).toEqual({
+      ok: false,
+      error: "Server configuration error.",
+    });
+  });
+
+  it("handles Resend 4xx errors without retry", async () => {
+    const fetchMock = createMockFetch([
+      () => Promise.resolve(jsonResponse(200, { success: true })),
+      () => Promise.resolve(jsonResponse(400, { message: "Bad request" })),
+    ]);
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest(
+      createContext(createRequest(validPayload)),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(502);
+    expect(json).toEqual({
+      ok: false,
+      error: "Unable to deliver message right now.",
+    });
+
+    const resendCalls = fetchMock.mock.calls.filter((call) =>
+      String(call[0]).includes("api.resend.com"),
+    );
+    expect(resendCalls).toHaveLength(1);
+  });
+
+  it("returns error when max retries exhausted", async () => {
+    const fetchMock = createMockFetch([
+      () => Promise.resolve(jsonResponse(200, { success: true })),
+      () => Promise.resolve(jsonResponse(500, { message: "error" })),
+      () => Promise.resolve(jsonResponse(500, { message: "error" })),
+    ]);
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest(
+      createContext(createRequest(validPayload)),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(502);
+    expect(json).toEqual({
+      ok: false,
+      error: "Unable to deliver message right now.",
+    });
 
     const resendCalls = fetchMock.mock.calls.filter((call) =>
       String(call[0]).includes("api.resend.com"),

@@ -103,7 +103,7 @@ const verifyTurnstile = async (
 
 const fetchWithTimeout = async (
   input: RequestInfo,
-  init: RequestInit,
+  init: Omit<RequestInit, "signal">,
   timeoutMs: number,
 ) => {
   const controller = new AbortController();
@@ -188,6 +188,8 @@ const handleContact = async (c: Context) => {
   };
 
   const maxAttempts = 2;
+  const requestTimeoutMs = 5000;
+  const retryDelayMs = 100;
   let resendResponse: Response | null = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -195,7 +197,7 @@ const handleContact = async (c: Context) => {
       resendResponse = await fetchWithTimeout(
         "https://api.resend.com/emails",
         resendRequest,
-        5000,
+        requestTimeoutMs,
       );
 
       if (resendResponse.ok) {
@@ -206,11 +208,26 @@ const handleContact = async (c: Context) => {
         console.error("Resend rejected request:", resendResponse.status);
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
+
+      // 5xx error - retry if not last attempt
+      if (attempt < maxAttempts) {
+        console.warn(
+          `Resend 5xx error (${resendResponse.status}), retrying...`,
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, retryDelayMs * attempt),
+        );
+        continue;
+      }
     } catch (error) {
       if (attempt === maxAttempts) {
         console.error("Resend request failed:", error);
         return jsonError(c, 502, "Unable to deliver message right now.");
       }
+      // Add backoff delay before retry
+      await new Promise((resolve) =>
+        setTimeout(resolve, retryDelayMs * attempt),
+      );
     }
   }
 
@@ -218,6 +235,8 @@ const handleContact = async (c: Context) => {
   return jsonError(c, 502, "Unable to deliver message right now.");
 };
 
+// Support both /contact and /api/contact routes for backward compatibility
+// The /api/contact route is the canonical endpoint documented in README
 app.post("/contact", handleContact);
 app.post("/api/contact", handleContact);
 
