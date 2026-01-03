@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
+import App, { __test__ } from "../App";
 
 type TurnstileOptions = {
   sitekey: string;
@@ -57,6 +57,45 @@ const fillField = (label: string, value: string) => {
   fireEvent.change(screen.getByLabelText(label), {
     target: { value },
   });
+};
+
+const setMatchMedia = (matches: boolean) => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+};
+
+const setupLocalStorage = (initial: Record<string, string> = {}) => {
+  let store = { ...initial };
+  const localStorageMock = {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+
+  Object.defineProperty(window, "localStorage", {
+    value: localStorageMock,
+    writable: true,
+  });
+
+  return localStorageMock;
 };
 
 const triggerToken = async (options: TurnstileOptions, token: string) => {
@@ -512,5 +551,78 @@ describe("App", () => {
 
     await screen.findByText(/Your message has been sent\./i);
     expect(turnstile.reset).not.toHaveBeenCalled();
+  });
+
+  it("uses a stored theme preference on first load", () => {
+    setSiteKey("");
+    setupLocalStorage({ theme: "dark" });
+
+    render(<App />);
+
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(
+      screen.getByRole("button", { name: /switch to light mode/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("falls back to system theme when no stored preference exists", () => {
+    setSiteKey("");
+    setupLocalStorage();
+    setMatchMedia(true);
+
+    render(<App />);
+
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(
+      screen.getByRole("button", { name: /switch to light mode/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("defaults to light theme when matchMedia is unavailable", () => {
+    setSiteKey("");
+    setupLocalStorage();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).matchMedia = undefined;
+
+    render(<App />);
+
+    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(
+      screen.getByRole("button", { name: /switch to dark mode/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("toggles theme and persists selection with storage errors ignored", () => {
+    setSiteKey("");
+    const localStorageMock = setupLocalStorage();
+    setMatchMedia(false);
+
+    const setItemSpy = vi
+      .spyOn(localStorageMock, "setItem")
+      .mockImplementation(() => {
+        throw new Error("blocked");
+      });
+
+    render(<App />);
+
+    const toggle = screen.getByRole("button", {
+      name: /switch to dark mode/i,
+    });
+    fireEvent.click(toggle);
+    fireEvent.click(
+      screen.getByRole("button", { name: /switch to light mode/i }),
+    );
+
+    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(setItemSpy).toHaveBeenCalled();
+  });
+
+  it("returns null stored theme when window is unavailable", () => {
+    const originalWindow = window;
+    vi.stubGlobal("window", undefined as unknown as Window);
+
+    expect(__test__.getStoredTheme()).toBeNull();
+
+    vi.stubGlobal("window", originalWindow);
   });
 });
