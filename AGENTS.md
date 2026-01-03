@@ -205,6 +205,7 @@ Follow Martin Fowler's Refactoring, Kent Beck's Tidy Code, and t_wada's TDD prin
 > "Make the change easy, then make the easy change." - Kent Beck
 
 ## Active Technologies
+
 - TypeScript 5.x, React 19 + React, Vite (no new dependencies) (007-dynamic-background)
 
 - TypeScript 5.x, React 19, Vite + React, Vite (no new dependencies) (006-dark-mode)
