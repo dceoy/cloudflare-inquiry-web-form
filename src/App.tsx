@@ -8,6 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
+import type { Theme } from "./theme";
+import { getInitialTheme } from "./theme";
 import "./App.css";
 
 type FormState = {
@@ -117,45 +119,7 @@ const initialFormState: FormState = {
   honeypot: "",
 };
 
-type Theme = "light" | "dark";
-
 const themeStorageKey = "theme";
-
-const isTheme = (value: string | null): value is Theme =>
-  value === "light" || value === "dark";
-
-const getStoredTheme = (): Theme | null => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const stored = window.localStorage.getItem(themeStorageKey);
-    return isTheme(stored) ? stored : null;
-  } catch {
-    return null;
-  }
-};
-
-const getSystemTheme = (): Theme => {
-  if (typeof window === "undefined" || !window.matchMedia) {
-    return "light";
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-};
-
-const getInitialTheme = (): { theme: Theme; source: "stored" | "system" } => {
-  const storedTheme = getStoredTheme();
-
-  if (storedTheme) {
-    return { theme: storedTheme, source: "stored" };
-  }
-
-  return { theme: getSystemTheme(), source: "system" };
-};
 
 function App() {
   const initialTheme = useMemo(() => getInitialTheme(), []);
@@ -510,9 +474,5 @@ function App() {
     </div>
   );
 }
-
-export const __test__ = {
-  getStoredTheme,
-};
 
 export default App;
