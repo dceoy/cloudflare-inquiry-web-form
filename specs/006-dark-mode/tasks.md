@@ -5,8 +5,8 @@
 
 ## Phase 1: Shared foundations
 
-- [X] T001 [P] Update theme tokens + background variables in `src/index.css`
-- [X] T002 [P] Align component styles to theme tokens in `src/App.css`
+- [x] T001 [P] Update theme tokens + background variables in `src/index.css`
+- [x] T002 [P] Align component styles to theme tokens in `src/App.css`
 
 ---
 
@@ -16,7 +16,7 @@
 
 **Independent Test**: Toggle the theme control and confirm the UI palette updates without reload.
 
-- [X] T003 [US1] Add theme state and toggle control in `src/App.tsx` (depends on T001, T002)
+- [x] T003 [US1] Add theme state and toggle control in `src/App.tsx` (depends on T001, T002)
 
 ---
 
@@ -26,7 +26,7 @@
 
 **Independent Test**: Clear storage, set OS to dark, reload, confirm dark theme is default.
 
-- [X] T004 [US2] Implement system preference initialization logic in `src/App.tsx` (depends on T003)
+- [x] T004 [US2] Implement system preference initialization logic in `src/App.tsx` (depends on T003)
 
 ---
 
@@ -36,8 +36,8 @@
 
 **Independent Test**: Select dark, reload, confirm dark remains.
 
-- [X] T005 [US3] Persist theme to `localStorage` with error handling in `src/App.tsx` (depends on T004)
-- [X] T006 [US3] Apply `data-theme` on `document.documentElement` in `src/App.tsx` (depends on T005)
+- [x] T005 [US3] Persist theme to `localStorage` with error handling in `src/App.tsx` (depends on T004)
+- [x] T006 [US3] Apply `data-theme` on `document.documentElement` in `src/App.tsx` (depends on T005)
 
 ---
 
