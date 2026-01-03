@@ -117,7 +117,52 @@ const initialFormState: FormState = {
   honeypot: "",
 };
 
+type Theme = "light" | "dark";
+
+const themeStorageKey = "theme";
+
+const isTheme = (value: string | null): value is Theme =>
+  value === "light" || value === "dark";
+
+const getStoredTheme = (): Theme | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = window.localStorage.getItem(themeStorageKey);
+    return isTheme(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+};
+
+const getSystemTheme = (): Theme => {
+  if (typeof window === "undefined" || !window.matchMedia) {
+    return "light";
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
+const getInitialTheme = (): { theme: Theme; source: "stored" | "system" } => {
+  const storedTheme = getStoredTheme();
+
+  if (storedTheme) {
+    return { theme: storedTheme, source: "stored" };
+  }
+
+  return { theme: getSystemTheme(), source: "system" };
+};
+
 function App() {
+  const initialTheme = useMemo(() => getInitialTheme(), []);
+  const [theme, setTheme] = useState<Theme>(initialTheme.theme);
+  const [hasUserPreference, setHasUserPreference] = useState(
+    initialTheme.source === "stored",
+  );
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -130,6 +175,22 @@ function App() {
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
   const isSubmitting = status === "submitting";
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    if (!hasUserPreference || typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(themeStorageKey, theme);
+    } catch {
+      // Ignore storage errors and keep in-memory theme.
+    }
+  }, [hasUserPreference, theme]);
 
   const validate = useCallback((values: FormState, token: string) => {
     const nextErrors: FormErrors = {};
@@ -255,11 +316,46 @@ function App() {
     }));
   };
 
+  const handleThemeToggle = () => {
+    setHasUserPreference(true);
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  };
+
+  const themeToggleLabel =
+    theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+
   return (
     <div className="page">
       <main className="panel">
         <header className="header">
-          <p className="eyebrow">Contact / Inquiry</p>
+          <div className="header-row">
+            <p className="eyebrow">Contact / Inquiry</p>
+            <button
+              type="button"
+              className="theme-toggle"
+              aria-pressed={theme === "dark"}
+              aria-label={themeToggleLabel}
+              onClick={handleThemeToggle}
+            >
+              <span className="theme-toggle-icon" aria-hidden="true">
+                {theme === "dark" ? (
+                  <svg viewBox="0 0 24 24" role="presentation">
+                    <path
+                      d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" role="presentation">
+                    <path
+                      d="M12 3.5a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V4.5a1 1 0 0 1 1-1Zm0 13a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM5.4 6.8a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 1 1-1.4 1.4L5.4 8.2a1 1 0 0 1 0-1.4Zm11.7 0a1 1 0 0 1 1.4 0 1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 0 1-1.4-1.4l1.1-1.1ZM3.5 12a1 1 0 0 1 1-1H6a1 1 0 1 1 0 2H4.5a1 1 0 0 1-1-1Zm13 0a1 1 0 0 1 1-1H19.5a1 1 0 1 1 0 2H17.5a1 1 0 0 1-1-1Zm-9.7 4.7a1 1 0 0 1 1.4 0 1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 1 1-1.4-1.4l1.1-1.1Zm10.3 0 1.1 1.1a1 1 0 1 1-1.4 1.4l-1.1-1.1a1 1 0 1 1 1.4-1.4ZM12 18.5a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                )}
+              </span>
+            </button>
+          </div>
           <h1>Send us a note</h1>
           <p className="subhead">
             Share the details and we will reply within one business day.
@@ -417,5 +513,9 @@ function App() {
     </div>
   );
 }
+
+export const __test__ = {
+  getStoredTheme,
+};
 
 export default App;
