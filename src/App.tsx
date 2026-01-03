@@ -341,7 +341,7 @@ function App() {
                 value={formState.name}
                 onChange={handleChange("name")}
                 className={errors.name ? "error" : ""}
-                placeholder="Jane Doe"
+                placeholder="Satoshi Nakamoto"
               />
               {errors.name && (
                 <p className="field-error" role="alert">
@@ -361,7 +361,7 @@ function App() {
                 value={formState.email}
                 onChange={handleChange("email")}
                 className={errors.email ? "error" : ""}
-                placeholder="jane@example.com"
+                placeholder="satoshi.nakamoto@example.com"
                 required
               />
               {errors.email && (
@@ -381,7 +381,7 @@ function App() {
                 value={formState.subject}
                 onChange={handleChange("subject")}
                 className={errors.subject ? "error" : ""}
-                placeholder="How can we help?"
+                placeholder="How can I help?"
                 required
               />
               {errors.subject && (
@@ -401,7 +401,7 @@ function App() {
                 value={formState.message}
                 onChange={handleChange("message")}
                 className={errors.message ? "error" : ""}
-                placeholder="Tell us about your inquiry..."
+                placeholder="Tell me about your inquiry..."
                 required
               />
               <div className="field-meta">
