@@ -6,7 +6,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App, { __test__ } from "../App";
+import App from "../App";
+import { getStoredTheme } from "../theme";
 
 type TurnstileOptions = {
   sitekey: string;
@@ -621,7 +622,7 @@ describe("App", () => {
     const originalWindow = window;
     vi.stubGlobal("window", undefined as unknown as Window);
 
-    expect(__test__.getStoredTheme()).toBeNull();
+    expect(getStoredTheme()).toBeNull();
 
     vi.stubGlobal("window", originalWindow);
   });
