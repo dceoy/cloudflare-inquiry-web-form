@@ -45,6 +45,39 @@ jobs:
     uses: dceoy/gh-actions-for-devops/.github/workflows/typescript-lint-and-scan.yml@main
     with:
       package-path: .
+  typescript-test:
+    if: >
+      github.event_name == 'push'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash -euo pipefail {0}
+        working-directory: .
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          persist-credentials: true
+      - name: Setup pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061  # v4.2.0
+        with:
+          version: latest
+      - name: Setup Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f  # v6.1.0
+        with:
+          node-version: latest
+          cache: pnpm
+      - name: Install dependencies
+        run: >
+          pnpm install
+      - name: Run tests
+        run: >
+          pnpm test
   github-codeql-analysis:
     if: >
       github.event_name == 'push'
@@ -61,9 +94,13 @@ jobs:
     if: >
       github.event_name == 'pull_request'
       && github.event.pull_request.draft == false
-      && (! endswith(github.event.pull_request.user.login, '[bot]'))
+      && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
       && (! startsWith(github.head_ref, 'dependabot/'))
       && (! startsWith(github.head_ref, 'renovate/'))
+      && (! (failure() || cancelled()))
+    needs:
+      - typescript-lint-and-scan
+      - typescript-test
     permissions:
       contents: read
       pull-requests: write
@@ -104,36 +141,3 @@ jobs:
       unconditional: true
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  typescript-test:
-    if: >
-      github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
-    permissions:
-      contents: read
-    defaults:
-      run:
-        shell: bash -euo pipefail {0}
-        working-directory: .
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          persist-credentials: true
-      - name: Setup pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061  # v4.2.0
-        with:
-          version: latest
-      - name: Setup Node.js
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f  # v6.1.0
-        with:
-          node-version: latest
-          cache: pnpm
-      - name: Install dependencies
-        run: >
-          pnpm install
-      - name: Run tests
-        run: >
-          pnpm test
