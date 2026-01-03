@@ -356,10 +356,7 @@ function App() {
               </span>
             </button>
           </div>
-          <h1>Send us a note</h1>
-          <p className="subhead">
-            Share the details and we will reply within one business day.
-          </p>
+          <h1>Send a message</h1>
           <ul className="header-list">
             <li>Required fields are marked with *</li>
           </ul>
