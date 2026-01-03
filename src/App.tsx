@@ -321,9 +321,7 @@ function App() {
             </button>
           </div>
           <h1>Send a message</h1>
-          <ul className="header-list">
-            <li>Required fields are marked with *</li>
-          </ul>
+          <p className="subhead">Required fields are marked with *</p>
         </header>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
