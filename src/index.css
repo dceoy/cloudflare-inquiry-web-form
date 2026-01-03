@@ -29,6 +29,12 @@
   --bg-accent: rgba(30, 75, 106, 0.08);
   --bg-grid-strong: rgba(15, 23, 42, 0.035);
   --bg-grid-light: rgba(15, 23, 42, 0.025);
+  --bg-wash-1: rgba(30, 75, 106, 0.22);
+  --bg-wash-2: rgba(159, 122, 76, 0.22);
+  --bg-wash-3: rgba(64, 130, 109, 0.18);
+  --bg-orb-1: rgba(30, 75, 106, 0.26);
+  --bg-orb-2: rgba(176, 69, 56, 0.18);
+  --bg-orb-3: rgba(31, 111, 74, 0.2);
   --toggle-ink: #707070;
 }
 
@@ -53,6 +59,12 @@
   --bg-accent: rgba(122, 195, 240, 0.12);
   --bg-grid-strong: rgba(148, 163, 184, 0.08);
   --bg-grid-light: rgba(148, 163, 184, 0.05);
+  --bg-wash-1: rgba(122, 195, 240, 0.25);
+  --bg-wash-2: rgba(34, 116, 173, 0.22);
+  --bg-wash-3: rgba(90, 211, 141, 0.18);
+  --bg-orb-1: rgba(122, 195, 240, 0.25);
+  --bg-orb-2: rgba(240, 140, 122, 0.18);
+  --bg-orb-3: rgba(91, 211, 141, 0.22);
   --toggle-ink: #9e9e9e;
 }
 
@@ -73,7 +85,10 @@ body {
   min-height: 100vh;
   background-color: var(--bg);
   background-image:
-    linear-gradient(120deg, var(--bg-accent), transparent 60%),
+    radial-gradient(circle at 12% 10%, var(--bg-wash-1), transparent 55%),
+    radial-gradient(circle at 82% 18%, var(--bg-wash-2), transparent 52%),
+    radial-gradient(circle at 30% 90%, var(--bg-wash-3), transparent 60%),
+    linear-gradient(120deg, var(--bg-accent), transparent 55%),
     repeating-linear-gradient(
       0deg,
       var(--bg-grid-strong),
@@ -88,6 +103,72 @@ body {
       transparent 1px,
       transparent 32px
     );
+  background-size: 120% 120%, 130% 130%, 140% 140%, 100% 100%, 100% 100%, 100% 100%;
+  background-position: 0% 0%, 100% 20%, 20% 100%, 0% 0%, 0% 0%, 0% 0%;
+  position: relative;
+  overflow-x: hidden;
+  animation: background-drift 28s ease-in-out infinite alternate;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20vh -10vw;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+  mix-blend-mode: normal;
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 20% 35%, var(--bg-orb-1), transparent 45%),
+    radial-gradient(circle at 75% 20%, var(--bg-orb-2), transparent 40%),
+    radial-gradient(circle at 65% 80%, var(--bg-orb-3), transparent 45%);
+  filter: blur(8px);
+  animation: orb-float 22s ease-in-out infinite;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 15% 85%, rgba(255, 255, 255, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 60%, rgba(255, 255, 255, 0.08), transparent 50%);
+  filter: blur(14px);
+  animation: orb-float 30s ease-in-out infinite reverse;
+}
+
+@keyframes background-drift {
+  0% {
+    background-position: 0% 0%, 100% 20%, 20% 100%, 0% 0%, 0% 0%, 0% 0%;
+  }
+  100% {
+    background-position: 8% 4%, 92% 28%, 32% 92%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+@keyframes orb-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-2%, 2%, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(2%, -2%, 0) scale(1.01);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+    background-size: 110% 110%, 120% 120%, 130% 130%, 100% 100%, 100% 100%, 100% 100%;
+  }
+
+  body::before,
+  body::after {
+    animation: none;
+  }
 }
 
 button {
