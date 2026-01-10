@@ -35,44 +35,19 @@ on:
         description: Choose the workflow to run
         default: lint-and-test
 jobs:
-  typescript-lint-and-scan:
+  typescript-lint-and-test:
     if: >
       github.event_name == 'push'
       || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/typescript-lint-and-scan.yml@main
+    uses: dceoy/gh-actions-for-devops/.github/workflows/typescript-package-script.yml@main
     with:
+      package-script: lint,typecheck,format:check,test
       package-path: .
-  typescript-test:
-    if: >
-      github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
-    permissions:
-      contents: read
-    defaults:
-      run:
-        shell: bash -euo pipefail {0}
-        working-directory: .
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          persist-credentials: true
-      - name: Setup Node.js
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f  # v6.1.0
-        with:
-          node-version: latest
-      - name: Install dependencies
-        run: >
-          npm install -g pnpm && pnpm install
-      - name: Run tests
-        run: >
-          pnpm test
+      node-version: latest
+      audit: true
   github-codeql-analysis:
     if: >
       github.event_name == 'push'
@@ -94,8 +69,7 @@ jobs:
       && (! startsWith(github.head_ref, 'renovate/'))
       && (! (failure() || cancelled()))
     needs:
-      - typescript-lint-and-scan
-      - typescript-test
+      - typescript-lint-and-test
     permissions:
       contents: read
       pull-requests: write
@@ -126,7 +100,7 @@ jobs:
     if: >
       github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
     needs:
-      - typescript-lint-and-scan
+      - typescript-lint-and-test
     uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main
     permissions:
       contents: write

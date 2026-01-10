@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md,html,htm}'",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md,html,htm}\"",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "test": "vitest run --coverage",
