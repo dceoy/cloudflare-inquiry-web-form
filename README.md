@@ -75,54 +75,48 @@ Set via Cloudflare Pages env vars/secrets or `.dev.vars`:
 
 ## Deployment
 
-### 1) Turnstile
+For detailed step-by-step deployment instructions, see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
 
-- Create a Turnstile widget for your domain.
-- Set `VITE_TURNSTILE_SITE_KEY` (frontend) and `TURNSTILE_SECRET_KEY` (Pages Functions).
-- Server-side validation uses the Siteverify API.
+### Quick Summary
 
-Docs: https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+1. **Turnstile Setup**
+   - Create a Turnstile widget for your domain
+   - Get site key (public) and secret key (private)
+   - Docs: https://developers.cloudflare.com/turnstile/
 
-### 2) Resend
+2. **Resend Setup**
+   - Create a Resend account and get API key
+   - Verify your sender domain
+   - Docs: https://resend.com/docs
 
-- Create a Resend API key.
-- Verify the sender domain and set `EMAIL_FROM`.
-- Set `EMAIL_TO` for the destination mailbox.
+3. **Cloudflare Pages**
+   - Connect your Git repository
+   - Build command: `pnpm run build`
+   - Build output directory: `dist`
+   - Add environment variables (see below)
 
-### 3) Pages deployment
+4. **Required Environment Variables**
 
-Cloudflare Pages should deploy the `dist/` output automatically. In the Pages build settings:
+   In your Pages project settings, add:
 
-- Build command: `pnpm run build`
-- Build output directory: `dist`
-- Deploy command: leave blank (do not use `wrangler deploy` in a Pages project)
-
-If you are deploying from CI outside Pages, use:
-
-```bash
-pnpm run deploy:pages
-```
-
-### 4) Pages project bindings
-
-In the Pages project settings, add env vars/secrets:
-
-- `TURNSTILE_SECRET_KEY`
-- `RESEND_API_KEY`
-- `EMAIL_FROM`
-- `EMAIL_TO`
-- `VITE_TURNSTILE_SITE_KEY`
-
-Docs:
-
-- https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+   | Variable                  | Type     | Purpose                            |
+   | ------------------------- | -------- | ---------------------------------- |
+   | `VITE_TURNSTILE_SITE_KEY` | Variable | Turnstile public key (frontend)    |
+   | `TURNSTILE_SECRET_KEY`    | Secret   | Turnstile private key (API)        |
+   | `RESEND_API_KEY`          | Secret   | Resend API key (starts with `re_`) |
+   | `EMAIL_FROM`              | Variable | Sender address (verified domain)   |
+   | `EMAIL_TO`                | Variable | Destination for form submissions   |
 
 ### Deployment Checklist
 
-- [ ] Set `VITE_TURNSTILE_SITE_KEY` in Pages environment variables
-- [ ] Set `TURNSTILE_SECRET_KEY` in Pages secrets
-- [ ] Set `RESEND_API_KEY` in Pages secrets
-- [ ] Set `EMAIL_FROM` and `EMAIL_TO` in Pages environment variables
+- [ ] Turnstile widget created with site and secret keys
+- [ ] Resend account created with verified domain and API key
+- [ ] Pages project connected to Git repository
+- [ ] Build settings configured (`pnpm run build` → `dist`)
+- [ ] All required environment variables set in Pages dashboard
+- [ ] Test form submission after deployment
+
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions, troubleshooting, and production best practices.**
 
 ## Implementation Notes
 
