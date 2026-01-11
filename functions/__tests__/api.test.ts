@@ -73,6 +73,8 @@ const createMockFetch = (responses: Array<() => Promise<Response>>) => {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
 afterEach(() => {
