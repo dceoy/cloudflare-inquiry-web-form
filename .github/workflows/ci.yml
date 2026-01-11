@@ -44,7 +44,7 @@ jobs:
       contents: read
     uses: dceoy/gh-actions-for-devops/.github/workflows/typescript-package-script.yml@main
     with:
-      package-script: lint,typecheck,format:check,test
+      package-scripts: lint,typecheck,format:check,test
       package-path: .
       node-version: latest
       audit: true

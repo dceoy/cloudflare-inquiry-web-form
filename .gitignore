@@ -160,8 +160,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Serena MCP
+# AI agent files
 .serena/
+.claude/settings.local.json
 
 # Python virtual environment
 .venv/
