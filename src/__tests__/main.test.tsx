@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const renderMock = vi.fn();
 const createRootMock = vi.fn(() => ({ render: renderMock }));
@@ -12,6 +12,12 @@ vi.mock("../App", () => ({
 }));
 
 describe("main", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it("renders the app into the root element", async () => {
     const root = document.createElement("div");
     root.id = "root";
@@ -25,5 +31,13 @@ describe("main", () => {
       document.getElementById("root"),
     );
     expect(renderMock).toHaveBeenCalled();
+  });
+
+  it("throws error when root element is missing", async () => {
+    // Arrange: No root element in DOM
+    vi.resetModules();
+
+    // Act & Assert: Should throw when root is null
+    await expect(import("../main")).rejects.toThrow();
   });
 });
