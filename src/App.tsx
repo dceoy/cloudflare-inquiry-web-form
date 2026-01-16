@@ -423,7 +423,9 @@ function App() {
                 required
               />
               <div className="field-meta">
-                <span>{formState.message.length}/{maxFieldLengths.message}</span>
+                <span>
+                  {formState.message.length}/{maxFieldLengths.message}
+                </span>
               </div>
               {errors.message && (
                 <p className="field-error" role="alert">
