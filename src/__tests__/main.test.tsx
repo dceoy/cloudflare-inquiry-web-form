@@ -13,7 +13,9 @@ vi.mock("../App", () => ({
 
 describe("main", () => {
   it("renders the app into the root element", async () => {
-    document.body.innerHTML = '<div id="root"></div>';
+    const root = document.createElement("div");
+    root.id = "root";
+    document.body.appendChild(root);
 
     vi.resetModules();
 
