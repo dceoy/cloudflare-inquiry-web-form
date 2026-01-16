@@ -54,15 +54,6 @@ pnpm test
 - Vite config lives in `vite.config.ts`; TypeScript settings in `tsconfig*.json`.
 - The app is set up for modern React with the React Compiler enabled by the Vite template.
 
-## Serena MCP Usage (Prioritize When Available)
-
-- **If Serena MCP is available, use it first.** Treat Serena MCP tools as the primary interface over local commands or ad-hoc scripts.
-- **Glance at the Serena MCP docs/help before calling a tool** to confirm tool names, required args, and limits.
-- **Use the MCP-exposed tools for supported actions** (e.g., reading/writing files, running tasks, fetching data) instead of re-implementing workflows.
-- **Never hardcode secrets.** Reference environment variables or the MCP's configured credential store; avoid printing tokens or sensitive paths.
-- **If Serena MCP isn't enabled or lacks a needed capability, say so and propose a safe fallback.** Mention enabling it via `.mcp.json` when relevant.
-- **Be explicit and reproducible.** Name the exact MCP tool and arguments you intend to use in your steps.
-
 ## Spec-Kit Feature Development Workflow (Required)
 
 **IMPORTANT: Always use Spec-Kit for all feature development.** This structured workflow ensures consistency, quality, and maintainability from specification through implementation.
