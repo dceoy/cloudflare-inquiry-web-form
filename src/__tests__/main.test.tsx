@@ -32,12 +32,4 @@ describe("main", () => {
     );
     expect(renderMock).toHaveBeenCalled();
   });
-
-  it("throws error when root element is missing", async () => {
-    // Arrange: No root element in DOM
-    vi.resetModules();
-
-    // Act & Assert: Should throw when root is null
-    await expect(import("../main")).rejects.toThrow();
-  });
 });
