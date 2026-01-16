@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const renderMock = vi.fn();
 const createRootMock = vi.fn(() => ({ render: renderMock }));
@@ -12,8 +12,16 @@ vi.mock("../App", () => ({
 }));
 
 describe("main", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it("renders the app into the root element", async () => {
-    document.body.innerHTML = '<div id="root"></div>';
+    const root = document.createElement("div");
+    root.id = "root";
+    document.body.appendChild(root);
 
     vi.resetModules();
 
