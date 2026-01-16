@@ -110,6 +110,11 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
 TurnstileWidget.displayName = "TurnstileWidget";
 
 const emailPattern = /^[^\s@]{1,64}@[^\s@]{1,255}$/;
+const maxFieldLengths = {
+  name: 100,
+  subject: 150,
+  message: 2000,
+};
 
 const initialFormState: FormState = {
   name: "",
@@ -120,6 +125,53 @@ const initialFormState: FormState = {
 };
 
 const themeStorageKey = "theme";
+
+const trimValue = (value: string) => value.trim();
+
+const getTrimmedValues = (values: FormState) => ({
+  name: trimValue(values.name),
+  email: trimValue(values.email),
+  subject: trimValue(values.subject),
+  message: trimValue(values.message),
+  honeypot: values.honeypot,
+});
+
+const validateForm = (values: FormState, token: string) => {
+  const nextErrors: FormErrors = {};
+  const trimmed = getTrimmedValues(values);
+
+  if (!trimmed.email) {
+    nextErrors.email = "Email is required.";
+  } else if (!emailPattern.test(trimmed.email)) {
+    nextErrors.email = "Enter a valid email address.";
+  }
+
+  if (!trimmed.subject) {
+    nextErrors.subject = "Subject is required.";
+  }
+
+  if (!trimmed.message) {
+    nextErrors.message = "Message is required.";
+  }
+
+  if (trimmed.name.length > maxFieldLengths.name) {
+    nextErrors.name = "Name must be 100 characters or fewer.";
+  }
+
+  if (trimmed.subject.length > maxFieldLengths.subject) {
+    nextErrors.subject = "Subject must be 150 characters or fewer.";
+  }
+
+  if (trimmed.message.length > maxFieldLengths.message) {
+    nextErrors.message = "Message must be 2000 characters or fewer.";
+  }
+
+  if (!token) {
+    nextErrors.turnstileToken = "Please complete the verification challenge.";
+  }
+
+  return nextErrors;
+};
 
 function App() {
   const initialTheme = useMemo(() => getInitialTheme(), []);
@@ -156,42 +208,6 @@ function App() {
     }
   }, [hasUserPreference, theme]);
 
-  const validate = useCallback((values: FormState, token: string) => {
-    const nextErrors: FormErrors = {};
-
-    if (!values.email.trim()) {
-      nextErrors.email = "Email is required.";
-    } else if (!emailPattern.test(values.email.trim())) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-
-    if (!values.subject.trim()) {
-      nextErrors.subject = "Subject is required.";
-    }
-
-    if (!values.message.trim()) {
-      nextErrors.message = "Message is required.";
-    }
-
-    if (values.name.trim().length > 100) {
-      nextErrors.name = "Name must be 100 characters or fewer.";
-    }
-
-    if (values.subject.trim().length > 150) {
-      nextErrors.subject = "Subject must be 150 characters or fewer.";
-    }
-
-    if (values.message.trim().length > 2000) {
-      nextErrors.message = "Message must be 2000 characters or fewer.";
-    }
-
-    if (!token) {
-      nextErrors.turnstileToken = "Please complete the verification challenge.";
-    }
-
-    return nextErrors;
-  }, []);
-
   const statusMessage = useMemo(() => {
     if (status === "success") {
       return "Your message has been sent. We'll be in touch soon.";
@@ -201,6 +217,11 @@ function App() {
     }
     return "";
   }, [status, submitError]);
+
+  const resetTurnstile = useCallback(() => {
+    setTurnstileToken("");
+    turnstileRef.current?.reset();
+  }, []);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -214,7 +235,7 @@ function App() {
       return;
     }
 
-    const validationErrors = validate(formState, turnstileToken);
+    const validationErrors = validateForm(formState, turnstileToken);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -225,18 +246,19 @@ function App() {
     setSubmitError("");
 
     try {
+      const trimmedValues = getTrimmedValues(formState);
       const response = await fetch(`${apiBaseUrl}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formState.name.trim() || undefined,
-          email: formState.email.trim(),
-          subject: formState.subject.trim(),
-          message: formState.message.trim(),
+          name: trimmedValues.name || undefined,
+          email: trimmedValues.email,
+          subject: trimmedValues.subject,
+          message: trimmedValues.message,
           turnstileToken,
-          honeypot: formState.honeypot,
+          honeypot: trimmedValues.honeypot,
         }),
       });
 
@@ -250,16 +272,14 @@ function App() {
 
       setStatus("success");
       setFormState(initialFormState);
-      setTurnstileToken("");
-      turnstileRef.current?.reset();
+      resetTurnstile();
       setErrors({});
     } catch (error) {
       setStatus("error");
       setSubmitError(
         error instanceof Error ? error.message : "Unexpected error.",
       );
-      setTurnstileToken("");
-      turnstileRef.current?.reset();
+      resetTurnstile();
     }
   };
 
@@ -335,7 +355,7 @@ function App() {
                 name="name"
                 type="text"
                 autoComplete="name"
-                maxLength={100}
+                maxLength={maxFieldLengths.name}
                 value={formState.name}
                 onChange={handleChange("name")}
                 className={errors.name ? "error" : ""}
@@ -375,7 +395,7 @@ function App() {
                 id="subject"
                 name="subject"
                 type="text"
-                maxLength={150}
+                maxLength={maxFieldLengths.subject}
                 value={formState.subject}
                 onChange={handleChange("subject")}
                 className={errors.subject ? "error" : ""}
@@ -395,7 +415,7 @@ function App() {
                 id="message"
                 name="message"
                 rows={6}
-                maxLength={2000}
+                maxLength={maxFieldLengths.message}
                 value={formState.message}
                 onChange={handleChange("message")}
                 className={errors.message ? "error" : ""}
@@ -403,7 +423,7 @@ function App() {
                 required
               />
               <div className="field-meta">
-                <span>{formState.message.length}/2000</span>
+                <span>{formState.message.length}/{maxFieldLengths.message}</span>
               </div>
               {errors.message && (
                 <p className="field-error" role="alert">
