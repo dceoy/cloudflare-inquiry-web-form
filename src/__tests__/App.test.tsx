@@ -99,6 +99,18 @@ const setupLocalStorage = (initial: Record<string, string> = {}) => {
   return localStorageMock;
 };
 
+const waitForTurnstileOptions = async (
+  getOptions: () => TurnstileOptions | null,
+): Promise<TurnstileOptions> => {
+  return waitFor(() => {
+    const options = getOptions();
+    if (!options) {
+      throw new Error("Turnstile options not ready");
+    }
+    return options;
+  });
+};
+
 const triggerToken = async (options: TurnstileOptions, token: string) => {
   await act(async () => {
     options.callback(token);
@@ -167,13 +179,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     await triggerToken(options, "token-123");
 
@@ -210,13 +216,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Name", "Jane Doe");
     fillField("Email *", "jane@example.com");
@@ -250,13 +250,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
@@ -284,13 +278,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
@@ -314,13 +302,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
@@ -344,13 +326,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
@@ -382,13 +358,7 @@ describe("App", () => {
 
     const { container } = render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
@@ -413,13 +383,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fireEvent.click(screen.getByRole("button", { name: /send message/i }));
 
@@ -442,13 +406,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     await triggerToken(options, "token-123");
     await triggerExpire(options);
@@ -534,13 +492,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const options = await waitFor(() => {
-      const value = getOptions();
-      if (!value) {
-        throw new Error("Turnstile options not ready");
-      }
-      return value;
-    });
+    const options = await waitForTurnstileOptions(getOptions);
 
     fillField("Email *", "jane@example.com");
     fillField("Subject *", "Hello");
