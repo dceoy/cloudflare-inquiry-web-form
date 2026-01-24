@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import type { Theme } from "./theme";
-import { getInitialTheme } from "./theme";
+import { getInitialTheme, themeStorageKey } from "./theme";
 import "./App.css";
 
 type FormState = {
@@ -124,15 +124,11 @@ const initialFormState: FormState = {
   honeypot: "",
 };
 
-const themeStorageKey = "theme";
-
-const trimValue = (value: string) => value.trim();
-
 const getTrimmedValues = (values: FormState) => ({
-  name: trimValue(values.name),
-  email: trimValue(values.email),
-  subject: trimValue(values.subject),
-  message: trimValue(values.message),
+  name: values.name.trim(),
+  email: values.email.trim(),
+  subject: values.subject.trim(),
+  message: values.message.trim(),
   honeypot: values.honeypot,
 });
 
