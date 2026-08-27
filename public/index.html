@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Get in Touch</h1>
+    <p>Have a question or inquiry? We'd love to hear from you.</p>
+
+    <form id="contact-form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email <span aria-label="required">*</span></label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject <span aria-label="required">*</span></label>
+        <input type="text" id="subject" name="subject" required maxlength="150">
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message <span aria-label="required">*</span></label>
+        <textarea id="message" name="message" required maxlength="2000" rows="6"></textarea>
+      </div>
+
+      <!-- Cloudflare Turnstile widget -->
+      <!-- IMPORTANT: Replace data-sitekey with your real production sitekey before deploying to production -->
+      <div class="form-group">
+        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div>
+      </div>
+
+      <button type="submit" id="submit-btn">Send Message</button>
+    </form>
+
+    <div id="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
