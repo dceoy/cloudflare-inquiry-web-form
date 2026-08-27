@@ -5,6 +5,10 @@
   "description": "Minimal Cloudflare-native inquiry form",
   "type": "module",
   "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "audit": "pnpm audit",
+    "audit:fix": "pnpm audit --fix=override"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dceoy/cloudflare-inquiry-web-form.git"
