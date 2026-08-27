@@ -1,0 +1,19 @@
+{
+  "name": "cloudflare-inquiry-web-form",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Minimal Cloudflare-native inquiry form",
+  "type": "module",
+  "packageManager": "pnpm@11.22.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dceoy/cloudflare-inquiry-web-form.git"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "inquiry-form",
+    "turnstile",
+    "email"
+  ],
+  "license": "AGPL-3.0"
+}
