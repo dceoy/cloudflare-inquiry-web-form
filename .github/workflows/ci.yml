@@ -15,15 +15,36 @@ on:
 permissions:
   contents: read
 jobs:
-  package-lint-and-test:
+  package-lock-generate:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
-    uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@main  # zizmor: ignore[unpinned-uses]
-    with:
-      package-scripts: format:check,lint,typecheck,test
-      package-path: .
-      node-version: latest
-      audit: true
+    env:
+      PNPM_CONFIG_MINIMUM_RELEASE_AGE: '10080'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        with:
+          node-version: latest
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86  # v6.0.10
+        with:
+          version: 11.22.0
+      - name: Regenerate lockfile
+        run: |
+          rm -f pnpm-lock.yaml
+          pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: pnpm-lock-policy
+          path: pnpm-lock.yaml
+          retention-days: 1
   github-actions-lint-and-scan:
     permissions:
       contents: read
