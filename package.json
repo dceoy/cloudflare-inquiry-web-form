@@ -7,7 +7,14 @@
   "packageManager": "pnpm@11.22.0",
   "scripts": {
     "audit": "pnpm audit",
-    "audit:fix": "pnpm audit --fix=override"
+    "audit:fix": "pnpm audit --fix=override",
+    "lint": "oxlint --node-plugin .",
+    "lint:fix": "oxlint --node-plugin --fix .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "all": "pnpm run format && pnpm run lint:fix && pnpm run typecheck && pnpm run audit:fix && pnpm run test"
   },
   "repository": {
     "type": "git",
@@ -19,5 +26,10 @@
     "turnstile",
     "email"
   ],
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.7",
+    "oxlint": "^1.77.0",
+    "typescript": "^5.7.0"
+  }
 }
