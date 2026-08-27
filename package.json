@@ -8,8 +8,8 @@
   "scripts": {
     "audit": "pnpm audit",
     "audit:fix": "pnpm audit --fix=override",
-    "lint": "oxlint --node-plugin .",
-    "lint:fix": "oxlint --node-plugin --fix .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
