@@ -1,8 +1,8 @@
 // Cloudflare Workers configuration for the inquiry web form.
 //
-// EMAIL_FROM, EMAIL_TO, and the send_email binding addresses below are
-// placeholders (RFC 2606 "example.com"). Replace them with your verified
-// sender and destination before deploying — see README.md.
+// EMAIL_FROM and the send_email binding addresses below are placeholders
+// (RFC 2606 "example.com"). Replace them with your verified sender and
+// destination before deploying — see README.md.
 {
   "name": "cloudflare-inquiry-web-form",
   "main": "src/index.ts",
@@ -12,8 +12,7 @@
     "run_worker_first": ["/api/*"]
   },
   "vars": {
-    "EMAIL_FROM": "inquiries@example.com",
-    "EMAIL_TO": "team@example.com"
+    "EMAIL_FROM": "inquiries@example.com"
   },
   "send_email": [
     {

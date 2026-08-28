@@ -4,7 +4,6 @@ import { type Env, type EmailMessage, handleContactRequest } from "./index.ts";
 
 const BASE_ENV = {
   EMAIL_FROM: "inquiries@example.com",
-  EMAIL_TO: "team@example.com",
   TURNSTILE_SECRET_KEY: "test-secret",
 };
 
@@ -137,7 +136,7 @@ test("a complete success sends exactly one notification email and returns 200", 
 
   const sent = email.calls[0];
   assert.equal(sent.from, BASE_ENV.EMAIL_FROM);
-  assert.equal(sent.to, BASE_ENV.EMAIL_TO);
+  assert.equal("to" in sent, false);
   assert.equal(sent.replyTo, VALID_BODY.email);
   assert.equal(sent.subject, `New inquiry: ${VALID_BODY.subject}`);
   assert.match(sent.text, /Name: Ada Lovelace/);

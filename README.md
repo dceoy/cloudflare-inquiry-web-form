@@ -18,7 +18,7 @@ Before deploying to a real Cloudflare account:
 
 1. Copy `.dev.vars.example` to `.dev.vars` for local development — it pre-fills `TURNSTILE_SECRET_KEY` with Cloudflare's public testing secret (`1x0000000000000000000000000000000AA`).
 2. Before deploying for production, update `wrangler.jsonc`:
-   - Replace placeholder `EMAIL_FROM` and `EMAIL_TO` variables with your verified sender and recipient addresses (currently `inquiries@example.com` and `team@example.com`). These values are used both as Worker `vars` and in the `send_email` binding configuration.
+   - Replace the placeholder `EMAIL_FROM` variable and `send_email.destination_address` with your verified sender and recipient addresses (currently `inquiries@example.com` and `team@example.com`). The binding owns the fixed notification recipient.
    - Replace the Turnstile testing sitekey `1x00000000000000000000AA` in `public/index.html` with your real production sitekey.
 
 ## Local development

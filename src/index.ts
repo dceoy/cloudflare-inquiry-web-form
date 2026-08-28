@@ -1,6 +1,6 @@
 export interface EmailMessage {
   from: string;
-  to: string;
+  to?: string;
   subject: string;
   text: string;
   replyTo?: string;
@@ -12,7 +12,6 @@ export interface EmailSender {
 
 export interface Env {
   EMAIL_FROM: string;
-  EMAIL_TO: string;
   TURNSTILE_SECRET_KEY: string;
   EMAIL: EmailSender;
 }
@@ -188,7 +187,6 @@ async function sendNotification(
   try {
     await env.EMAIL.send({
       from: env.EMAIL_FROM,
-      to: env.EMAIL_TO,
       subject: `New inquiry: ${fields.subject}`,
       text,
       replyTo: fields.email,
@@ -204,7 +202,7 @@ export async function handleContactRequest(
   env: Env,
   verifyFetch: typeof fetch = fetch,
 ): Promise<Response> {
-  if (!env.TURNSTILE_SECRET_KEY || !env.EMAIL_FROM || !env.EMAIL_TO) {
+  if (!env.TURNSTILE_SECRET_KEY || !env.EMAIL_FROM) {
     return jsonResponse(500, { error: "Server misconfigured" });
   }
 
