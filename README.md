@@ -28,7 +28,7 @@ pnpm install
 pnpm dev
 ```
 
-This runs `wrangler dev`, which simulates Turnstile validation and email sending by default — no real requests are sent to Cloudflare services, and no actual emails are delivered. To opt into real email delivery during local development (for testing your verified addresses), use `remote: true` in your `wrangler.toml` or pass `--remote` to `wrangler dev`, but note this **sends real email** — use with care.
+This runs `wrangler dev`, which simulates the Email Service binding locally (emails are logged and not delivered) but still sends real requests to Cloudflare's Turnstile Siteverify endpoint. To opt into real email delivery during local development (for testing your verified addresses), set `remote: true` on the `EMAIL` binding in `wrangler.jsonc` or pass `--remote` to `wrangler dev`, but note this **sends real email** — use with care.
 
 ## Production secret
 

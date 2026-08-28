@@ -99,6 +99,42 @@ function validateFields(body: unknown): ContactFields | null {
   return { name, email, subject, message, turnstileToken };
 }
 
+async function readBodyWithinLimit(request: Request): Promise<string | null> {
+  if (!request.body) {
+    return "";
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      totalBytes += value.byteLength;
+      if (totalBytes > MAX_REQUEST_BYTES) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const body = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(body);
+}
+
 async function verifyTurnstile(
   token: string,
   secret: string,
@@ -185,9 +221,19 @@ export async function handleContactRequest(
     return jsonResponse(415, { error: "Unsupported content type" });
   }
 
+  let requestBody: string | null;
+  try {
+    requestBody = await readBodyWithinLimit(request);
+  } catch {
+    return jsonResponse(400, { error: "Invalid request" });
+  }
+  if (requestBody === null) {
+    return jsonResponse(400, { error: "Invalid request" });
+  }
+
   let parsedBody: unknown;
   try {
-    parsedBody = JSON.parse(await request.text());
+    parsedBody = JSON.parse(requestBody);
   } catch {
     return jsonResponse(400, { error: "Invalid request" });
   }

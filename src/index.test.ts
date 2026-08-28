@@ -24,6 +24,14 @@ function makeRequest(body: unknown): Request {
   });
 }
 
+function makeRawRequest(body: string): Request {
+  return new Request("https://example.com/api/contact", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body,
+  });
+}
+
 function makeEmailSender(fail: boolean) {
   const calls: EmailMessage[] = [];
   return {
@@ -59,6 +67,22 @@ test("invalid payload is rejected before Turnstile or email are contacted", asyn
     env,
     siteverify.fn,
   );
+
+  assert.equal(res.status, 400);
+  assert.equal(siteverify.calls.length, 0);
+  assert.equal(email.calls.length, 0);
+});
+
+test("an oversized body without Content-Length is rejected before parsing", async () => {
+  const email = makeEmailSender(false);
+  const siteverify = makeSiteverifyFetch({ success: true });
+  const env: Env = { ...BASE_ENV, EMAIL: email };
+  const request = makeRawRequest(
+    JSON.stringify(VALID_BODY) + " ".repeat(16 * 1024),
+  );
+
+  assert.equal(request.headers.has("content-length"), false);
+  const res = await handleContactRequest(request, env, siteverify.fn);
 
   assert.equal(res.status, 400);
   assert.equal(siteverify.calls.length, 0);
