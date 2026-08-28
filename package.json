@@ -13,7 +13,9 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
     "all": "pnpm run format && pnpm run lint:fix && pnpm run typecheck && pnpm run audit:fix && pnpm run test"
   },
   "repository": {
@@ -29,7 +31,9 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
+    "@types/node": "^22.15.0",
     "oxlint": "^1.77.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "wrangler": "^4.83.0"
   }
 }
