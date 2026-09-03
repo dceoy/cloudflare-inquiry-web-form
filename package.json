@@ -31,7 +31,7 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
-    "@types/node": "^22.15.0",
+    "@types/node": "^26.4.0",
     "oxlint": "^1.77.0",
     "typescript": "^5.7.0",
     "wrangler": "^4.83.0"
