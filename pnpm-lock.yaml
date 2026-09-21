@@ -9,19 +9,19 @@ importers:
   .:
     devDependencies:
       '@biomejs/biome':
-        specifier: ^2.5.7
+        specifier: ^2.5.9
         version: 2.5.9
       '@types/node':
         specifier: ^26.5.1
         version: 26.5.1
       oxlint:
-        specifier: ^1.77.0
+        specifier: ^1.79.0
         version: 1.79.0
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
       wrangler:
-        specifier: ^4.83.0
+        specifier: ^4.124.0
         version: 4.124.0
 
 packages:
