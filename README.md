@@ -13,6 +13,7 @@ Before deploying to a real Cloudflare account:
 - Onboard and verify a sender domain or address in Cloudflare Email Service (under "Send Email" settings) — the Worker will use this to deliver notifications.
 - Verify the destination email address that will receive inquiry notifications (also in Email Service settings).
 - Create a Cloudflare Turnstile sitekey for bot protection (free tier available).
+- Ensure `dceoy.com` is an active zone in the Cloudflare account used for deployment.
 
 ## Configuration
 
@@ -20,6 +21,8 @@ Before deploying to a real Cloudflare account:
 2. Before deploying for production, update `wrangler.jsonc`:
    - Replace the placeholder `EMAIL_FROM` variable and `send_email.destination_address` with your verified sender and recipient addresses (currently `inquiries@example.com` and `team@example.com`). The binding owns the fixed notification recipient.
    - Replace the Turnstile testing sitekey `1x00000000000000000000AA` in `public/index.html` with your real production sitekey.
+
+The Worker is configured with `inquiry.dceoy.com` as a Cloudflare Custom Domain. Wrangler manages the domain binding during deployment, and `workers.dev` is disabled so production traffic uses the custom domain.
 
 ## Local development
 
@@ -46,7 +49,13 @@ Paste the production secret value when prompted. Do not commit secrets to versio
 pnpm deploy
 ```
 
-This runs `wrangler deploy`. After deployment, configure a custom domain/DNS in the Cloudflare dashboard pointing to your Worker.
+This runs `wrangler deploy`. The configured Custom Domain publishes the Worker at:
+
+```text
+https://inquiry.dceoy.com/
+```
+
+Cloudflare manages the DNS record and TLS certificate for the Custom Domain. Do not create a conflicting A, AAAA, or CNAME record for `inquiry.dceoy.com`.
 
 ## Security notes
 
