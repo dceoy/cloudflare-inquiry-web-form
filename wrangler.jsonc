@@ -20,5 +20,11 @@
   "vars": {
     "EMAIL_FROM": "inquiry@dceoy.com",
     "EMAIL_TO": "your-address@dceoy.com"
+  },
+  "previews": {
+    "vars": {
+      "EMAIL_FROM": "inquiry@preview.invalid",
+      "EMAIL_TO": "preview@invalid.example"
+    }
   }
 }
