@@ -10,13 +10,14 @@ One Worker (`src/index.ts`) handles `POST /api/contact`, validates input, verifi
 
 1. In [Resend Domains](https://resend.com/domains), add `dceoy.com` as a sending domain and verify the DNS records Resend provides. Keep the existing Google Workspace MX for `dceoy.com` intact; Resend's return-path records use a separate subdomain. Check existing SPF/DMARC records before adding any TXT record at the same name.
 2. In [Resend API Keys](https://resend.com/api-keys), create a key restricted to **Sending access** and the verified domain.
-3. Set `EMAIL_FROM` and `EMAIL_TO` in `wrangler.jsonc`: `EMAIL_FROM` must be on your verified sending domain (for example `inquiry@dceoy.com`); `EMAIL_TO` is your Google Workspace mailbox. This address remains fixed in Worker configuration and is never taken from form input. Ensure `inquiry@dceoy.com` is a Workspace alias if it should receive direct replies.
+3. Set `EMAIL_FROM` in `wrangler.jsonc` to an address on the verified sending domain (for example `inquiry@dceoy.com`). Configure `EMAIL_TO`, the Google Workspace notification mailbox, as a production Worker secret so the recipient address is not stored in Git. Ensure `inquiry@dceoy.com` is a Workspace alias if it should receive direct replies.
 4. Create a Turnstile widget for `inquiry.dceoy.com`; replace the test sitekey in `public/index.html` with its production sitekey.
-5. Set both production Worker secrets (through **Workers & Pages → cloudflare-inquiry-web-form → Settings → Variables and Secrets**, or Wrangler):
+5. Set the production Worker secrets (through **Workers & Pages → cloudflare-inquiry-web-form → Settings → Variables and Secrets**, or Wrangler):
 
 ```bash
 pnpm exec wrangler secret put RESEND_API_KEY
 pnpm exec wrangler secret put TURNSTILE_SECRET_KEY
+pnpm exec wrangler secret put EMAIL_TO
 ```
 
 Never commit these secrets. Configure them on the production Worker before deploying the branch. Resend domain verification, the API key and the production Turnstile widget must be ready before live submissions can succeed.
@@ -43,6 +44,6 @@ Cloudflare Workers Builds use Wrangler Previews for pull requests. The `previews
 ## Security notes
 
 - Turnstile validation occurs before calling Resend.
-- Only the configured `EMAIL_TO` address receives mail; the Resend key is a Worker secret and should be restricted to sending from this domain.
+- Only the configured `EMAIL_TO` address receives mail; the production recipient is stored as a Worker secret and the Resend key is restricted to sending from this domain.
 - Resend acceptance indicates API submission, not final delivery. Use Resend's delivery logs for troubleshooting.
 - The only Worker endpoint is same-origin `/api/contact`; no CORS configuration is needed.
