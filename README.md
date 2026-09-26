@@ -11,7 +11,7 @@ One Worker (`src/index.ts`) handles `POST /api/contact`, validates input, verifi
 1. In [Resend Domains](https://resend.com/domains), add `dceoy.com` as a sending domain and verify the DNS records Resend provides. Keep the existing Google Workspace MX for `dceoy.com` intact; Resend's return-path records use a separate subdomain. Check existing SPF/DMARC records before adding any TXT record at the same name.
 2. In [Resend API Keys](https://resend.com/api-keys), create a key restricted to **Sending access** and the verified domain.
 3. Set `EMAIL_FROM` and `EMAIL_TO` in `wrangler.jsonc`: `EMAIL_FROM` must be on your verified sending domain (for example `inquiry@dceoy.com`); `EMAIL_TO` is your Google Workspace mailbox. This address remains fixed in Worker configuration and is never taken from form input. Ensure `inquiry@dceoy.com` is a Workspace alias if it should receive direct replies.
-4. Create a Turnstile widget for `inquiry.dceoy.com`; replace the test sitekey in `public/index.html` with its production sitekey.
+4. The existing Turnstile widget sitekey is configured in `public/index.html` for `inquiry.dceoy.com`. The form sends the `contact` action, and the Worker accepts Siteverify responses only for that action and the hostname allowlist in `wrangler.jsonc`.
 5. Set both production Worker secrets (through **Workers & Pages → cloudflare-inquiry-web-form → Settings → Variables and Secrets**, or Wrangler):
 
 ```bash
@@ -23,7 +23,7 @@ Never commit these secrets. Configure them on the production Worker before deplo
 
 ## Local development
 
-Copy `.dev.vars.example` to `.dev.vars` and set a Resend API key for testing. The example includes Cloudflare's public Turnstile testing secret. **Local submissions call the live Resend API and send real email**; use a test recipient and sending domain if needed.
+Copy `.dev.vars.example` to `.dev.vars` and set a Resend API key for testing. The page switches to Cloudflare's public Turnstile test sitekey on `localhost` and `127.0.0.1`; the example includes its matching test secret and local hostname allowlist. **Local submissions call the live Resend API and send real email**; use a test recipient and sending domain if needed.
 
 ```bash
 pnpm install
@@ -42,7 +42,7 @@ Cloudflare Workers Builds use Wrangler Previews for pull requests. The `previews
 
 ## Security notes
 
-- Turnstile validation occurs before calling Resend.
+- Turnstile validation occurs before calling Resend and requires `success: true`, the `contact` action, and an exact hostname match in `TURNSTILE_HOSTNAMES`.
 - Only the configured `EMAIL_TO` address receives mail; the Resend key is a Worker secret and should be restricted to sending from this domain.
 - Resend acceptance indicates API submission, not final delivery. Use Resend's delivery logs for troubleshooting.
 - The only Worker endpoint is same-origin `/api/contact`; no CORS configuration is needed.
