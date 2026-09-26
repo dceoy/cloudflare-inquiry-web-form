@@ -1,7 +1,6 @@
 // Cloudflare Workers configuration for the inquiry web form.
 //
-// EMAIL_FROM and EMAIL_TO are placeholders. Set them to addresses on your
-// verified Resend sending domain and Google Workspace mailbox before deploying.
+// Secret values are configured separately on the Worker and are never stored in Git.
 {
   "name": "cloudflare-inquiry-web-form",
   "main": "src/index.ts",
@@ -18,14 +17,13 @@
     "directory": "./public",
     "run_worker_first": ["/api/*"]
   },
-  "vars": {
-    "EMAIL_FROM": "inquiry@dceoy.com",
-    "EMAIL_TO": "your-address@dceoy.com"
+  "secrets": {
+    "required": [
+      "RESEND_API_KEY",
+      "TURNSTILE_SECRET_KEY",
+      "EMAIL_FROM",
+      "EMAIL_TO"
+    ]
   },
-  "previews": {
-    "vars": {
-      "EMAIL_FROM": "inquiry@preview.invalid",
-      "EMAIL_TO": "preview@invalid.example"
-    }
-  }
+  "previews": {}
 }
