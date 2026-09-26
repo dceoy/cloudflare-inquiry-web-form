@@ -38,6 +38,8 @@ pnpm deploy
 
 The Custom Domain in `wrangler.jsonc` publishes the Worker at `https://inquiry.dceoy.com/`. Cloudflare manages DNS and TLS for the Worker route; avoid a conflicting A, AAAA or CNAME record. Submit one test inquiry and check delivery to the configured Workspace mailbox and the message's Reply-To address.
 
+Cloudflare Workers Builds use Wrangler Previews for pull requests. The `previews.vars` values in `wrangler.jsonc` use reserved `.invalid` / `.example` addresses so Preview submissions cannot send to the production mailbox. To test email delivery from a Preview, configure a separate test sender, recipient, and Preview-only Resend key; do not reuse production email credentials.
+
 ## Security notes
 
 - Turnstile validation occurs before calling Resend.
