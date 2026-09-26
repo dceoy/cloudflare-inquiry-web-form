@@ -1,7 +1,7 @@
 // Cloudflare Workers configuration for the inquiry web form.
 //
-// EMAIL_FROM and EMAIL_TO are placeholders. Set them to addresses on your
-// verified Resend sending domain and Google Workspace mailbox before deploying.
+// EMAIL_FROM is public configuration for the verified Resend sending domain.
+// EMAIL_TO is configured separately as a production Worker secret.
 {
   "name": "cloudflare-inquiry-web-form",
   "main": "src/index.ts",
@@ -19,8 +19,7 @@
     "run_worker_first": ["/api/*"]
   },
   "vars": {
-    "EMAIL_FROM": "inquiry@dceoy.com",
-    "EMAIL_TO": "your-address@dceoy.com"
+    "EMAIL_FROM": "inquiry@dceoy.com"
   },
   "previews": {
     "vars": {
