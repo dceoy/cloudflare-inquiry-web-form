@@ -1,19 +1,8 @@
-export interface EmailMessage {
-  from: string;
-  to?: string;
-  subject: string;
-  text: string;
-  replyTo?: string;
-}
-
-export interface EmailSender {
-  send(message: EmailMessage): Promise<unknown>;
-}
-
 export interface Env {
   EMAIL_FROM: string;
+  EMAIL_TO: string;
+  RESEND_API_KEY: string;
   TURNSTILE_SECRET_KEY: string;
-  EMAIL: EmailSender;
 }
 
 interface ContactFields {
@@ -25,6 +14,7 @@ interface ContactFields {
 }
 
 const MAX_REQUEST_BYTES = 16 * 1024;
+const RESEND_URL = "https://api.resend.com/emails";
 const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 // Matches "local@domain.tld" while rejecting whitespace and CR/LF, since this
@@ -177,6 +167,7 @@ async function verifyTurnstile(
 async function sendNotification(
   env: Env,
   fields: ContactFields,
+  sendFetch: typeof fetch,
 ): Promise<boolean> {
   const text = [
     `Name: ${fields.name || "(not provided)"}`,
@@ -185,13 +176,21 @@ async function sendNotification(
     fields.message,
   ].join("\n");
   try {
-    await env.EMAIL.send({
-      from: env.EMAIL_FROM,
-      subject: `New inquiry: ${fields.subject}`,
-      text,
-      replyTo: fields.email,
+    const response = await sendFetch(RESEND_URL, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to: [env.EMAIL_TO],
+        subject: `New inquiry: ${fields.subject}`,
+        text,
+        reply_to: fields.email,
+      }),
     });
-    return true;
+    return response.ok;
   } catch {
     return false;
   }
@@ -201,8 +200,14 @@ export async function handleContactRequest(
   request: Request,
   env: Env,
   verifyFetch: typeof fetch = fetch,
+  sendFetch: typeof fetch = fetch,
 ): Promise<Response> {
-  if (!env.TURNSTILE_SECRET_KEY || !env.EMAIL_FROM) {
+  if (
+    !env.TURNSTILE_SECRET_KEY ||
+    !env.RESEND_API_KEY ||
+    !env.EMAIL_FROM ||
+    !env.EMAIL_TO
+  ) {
     return jsonResponse(500, { error: "Server misconfigured" });
   }
 
@@ -255,7 +260,7 @@ export async function handleContactRequest(
     return jsonResponse(400, { error: "Verification failed" });
   }
 
-  const sent = await sendNotification(env, fields);
+  const sent = await sendNotification(env, fields, sendFetch);
   if (!sent) {
     return jsonResponse(502, { error: "Failed to send message" });
   }
