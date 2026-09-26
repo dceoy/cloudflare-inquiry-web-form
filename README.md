@@ -1,4 +1,4 @@
-# Cloudflare Inquiry Web Form
+# cloudflare-inquiry-web-form
 
 A minimal inquiry form on Cloudflare Workers with Turnstile verification and notification email through the Resend REST API.
 
