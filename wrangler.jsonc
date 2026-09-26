@@ -1,7 +1,6 @@
 // Cloudflare Workers configuration for the inquiry web form.
 //
-// EMAIL_FROM is public configuration for the verified Resend sending domain.
-// EMAIL_TO is configured separately as a production Worker secret.
+// EMAIL_FROM and EMAIL_TO are configured separately as Worker secrets.
 {
   "name": "cloudflare-inquiry-web-form",
   "main": "src/index.ts",
@@ -17,14 +16,5 @@
   "assets": {
     "directory": "./public",
     "run_worker_first": ["/api/*"]
-  },
-  "vars": {
-    "EMAIL_FROM": "inquiry@dceoy.com"
-  },
-  "previews": {
-    "vars": {
-      "EMAIL_FROM": "inquiry@preview.invalid",
-      "EMAIL_TO": "preview@invalid.example"
-    }
   }
 }
