@@ -25,9 +25,10 @@ Never commit these secrets. Configure them on the production Worker before deplo
 
 ## Local development
 
-Copy `.dev.vars.example` to `.dev.vars` and set a Resend API key for testing. The example includes Cloudflare's public Turnstile testing secret. **Local submissions call the live Resend API and send real email**; use a test recipient and sending domain if needed.
+Copy `.dev.vars.example` to `.dev.vars`, then replace the Resend API key and both example email addresses with non-production test values. `EMAIL_FROM` must use a sending domain accepted by the test Resend key, and `EMAIL_TO` should be a test recipient. The example includes Cloudflare's public Turnstile testing secret. **Local submissions call the live Resend API and can send real email**, so do not use production credentials or a production recipient.
 
 ```bash
+cp .dev.vars.example .dev.vars
 pnpm install
 pnpm dev
 ```
