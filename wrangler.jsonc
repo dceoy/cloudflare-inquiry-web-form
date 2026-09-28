@@ -32,5 +32,24 @@
     "vars": {
       "TURNSTILE_HOSTNAMES": ""
     }
+  },
+  "env": {
+    "local": {
+      "assets": {
+        "directory": "./public",
+        "run_worker_first": ["/api/*"]
+      },
+      "secrets": {
+        "required": [
+          "RESEND_API_KEY",
+          "TURNSTILE_SECRET_KEY",
+          "EMAIL_FROM",
+          "EMAIL_TO"
+        ]
+      },
+      "vars": {
+        "TURNSTILE_HOSTNAMES": "localhost,127.0.0.1"
+      }
+    }
   }
 }

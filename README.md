@@ -25,7 +25,7 @@ Never commit these secrets. Configure them on the production Worker before deplo
 
 ## Local development
 
-Copy `.dev.vars.example` to `.dev.vars`, then replace the Resend API key and both example email addresses with non-production test values. `EMAIL_FROM` must use a sending domain accepted by the test Resend key, and `EMAIL_TO` should be a test recipient. The page switches to Cloudflare's public Turnstile test sitekey on `localhost` and `127.0.0.1`; the example includes its matching test secret and local hostname allowlist. **Local submissions call the live Resend API and can send real email**, so do not use production credentials or a production recipient.
+Copy `.dev.vars.example` to `.dev.vars`, then replace the Resend API key and both example email addresses with non-production test values. `EMAIL_FROM` must use a sending domain accepted by the test Resend key, and `EMAIL_TO` should be a test recipient. The page switches to Cloudflare's public Turnstile test sitekey on `localhost` and `127.0.0.1`; the example includes its matching test secret. The `pnpm dev` script selects Wrangler's `local` environment, which provides the local hostname allowlist; `.dev.vars.example` contains only the keys listed in `secrets.required`. **Local submissions call the live Resend API and can send real email**, so do not use production credentials or a production recipient.
 
 ```bash
 cp .dev.vars.example .dev.vars
