@@ -3,6 +3,7 @@ export interface Env {
   EMAIL_TO: string;
   RESEND_API_KEY: string;
   TURNSTILE_SECRET_KEY: string;
+  TURNSTILE_HOSTNAMES: string;
 }
 
 interface ContactFields {
@@ -17,6 +18,8 @@ const MAX_REQUEST_BYTES = 16 * 1024;
 const RESEND_URL = "https://api.resend.com/emails";
 const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const TURNSTILE_ACTION = "contact";
+const SITEVERIFY_TIMEOUT_MS = 10_000;
 // Matches "local@domain.tld" while rejecting whitespace and CR/LF, since this
 // value is also used as the notification email's Reply-To header.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -127,6 +130,7 @@ async function readBodyWithinLimit(request: Request): Promise<string | null> {
 async function verifyTurnstile(
   token: string,
   secret: string,
+  allowedHostnames: Set<string>,
   remoteIp: string | null,
   verifyFetch: typeof fetch,
 ): Promise<"success" | "rejected" | "upstream-error"> {
@@ -141,7 +145,9 @@ async function verifyTurnstile(
   try {
     response = await verifyFetch(SITEVERIFY_URL, {
       method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
       body: form,
+      signal: AbortSignal.timeout(SITEVERIFY_TIMEOUT_MS),
     });
   } catch {
     return "upstream-error";
@@ -157,11 +163,17 @@ async function verifyTurnstile(
     return "upstream-error";
   }
 
-  const success =
-    typeof data === "object" &&
-    data !== null &&
-    (data as Record<string, unknown>).success === true;
-  return success ? "success" : "rejected";
+  if (typeof data !== "object" || data === null) {
+    return "rejected";
+  }
+  const result = data as Record<string, unknown>;
+  const hostname =
+    typeof result.hostname === "string" ? result.hostname.toLowerCase() : "";
+  return result.success === true &&
+    result.action === TURNSTILE_ACTION &&
+    allowedHostnames.has(hostname)
+    ? "success"
+    : "rejected";
 }
 
 async function sendNotification(
@@ -202,8 +214,15 @@ export async function handleContactRequest(
   verifyFetch: typeof fetch = fetch,
   sendFetch: typeof fetch = fetch,
 ): Promise<Response> {
+  const allowedHostnames = new Set(
+    (env.TURNSTILE_HOSTNAMES ?? "")
+      .split(",")
+      .map((hostname) => hostname.trim().toLowerCase())
+      .filter(Boolean),
+  );
   if (
     !env.TURNSTILE_SECRET_KEY ||
+    allowedHostnames.size === 0 ||
     !env.RESEND_API_KEY ||
     !env.EMAIL_FROM ||
     !env.EMAIL_TO
@@ -250,6 +269,7 @@ export async function handleContactRequest(
   const verdict = await verifyTurnstile(
     fields.turnstileToken,
     env.TURNSTILE_SECRET_KEY,
+    allowedHostnames,
     remoteIp,
     verifyFetch,
   );
