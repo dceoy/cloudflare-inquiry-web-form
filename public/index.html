@@ -33,9 +33,12 @@
       </div>
 
       <!-- Cloudflare Turnstile widget -->
-      <!-- IMPORTANT: Replace data-sitekey with your real production sitekey before deploying to production -->
       <div class="form-group">
-        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div>
+        <div
+          class="cf-turnstile"
+          data-sitekey="0x4AAAAAAFEslFCbpCfaCy6Q"
+          data-action="contact"
+        ></div>
       </div>
 
       <button type="submit" id="submit-btn">Send Message</button>
@@ -44,6 +47,13 @@
     <div id="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 
+  <script>
+    if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+      const turnstile = document.querySelector(".cf-turnstile");
+      turnstile.dataset.sitekey = "1x00000000000000000000AA";
+      turnstile.dataset.action = "test";
+    }
+  </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="app.js" defer></script>
 </body>

@@ -7,6 +7,20 @@ const BASE_ENV = {
   EMAIL_TO: "owner@dceoy.com",
   RESEND_API_KEY: "re_test_key",
   TURNSTILE_SECRET_KEY: "test-secret",
+  TURNSTILE_HOSTNAMES: "inquiry.dceoy.com",
+  TURNSTILE_ACTION: "contact",
+};
+
+const VALID_SITEVERIFY_RESULT = {
+  success: true,
+  action: "contact",
+  hostname: "inquiry.dceoy.com",
+};
+
+const LOCAL_ENV = {
+  ...BASE_ENV,
+  TURNSTILE_HOSTNAMES: "localhost,127.0.0.1,dummy-key.example.com",
+  TURNSTILE_ACTION: "test",
 };
 
 const VALID_BODY = {
@@ -18,7 +32,7 @@ const VALID_BODY = {
 };
 
 function makeRequest(body: unknown): Request {
-  return new Request("https://example.com/api/contact", {
+  return new Request("https://inquiry.dceoy.com/api/contact", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
@@ -26,7 +40,7 @@ function makeRequest(body: unknown): Request {
 }
 
 function makeRawRequest(body: string): Request {
-  return new Request("https://example.com/api/contact", {
+  return new Request("https://inquiry.dceoy.com/api/contact", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body,
@@ -48,7 +62,11 @@ function makeResendFetch(status: number | "network-error") {
   return { calls, fn: fn as typeof fetch };
 }
 
-function makeSiteverifyFetch(outcome: { success: boolean } | "network-error") {
+function makeSiteverifyFetch(
+  outcome:
+    | { success: boolean; action?: string; hostname?: string }
+    | "network-error",
+) {
   const calls: unknown[] = [];
   const fn = async (): Promise<Response> => {
     calls.push(true);
@@ -62,7 +80,7 @@ function makeSiteverifyFetch(outcome: { success: boolean } | "network-error") {
 
 test("invalid payload is rejected before Turnstile or email are contacted", async () => {
   const email = makeResendFetch(200);
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const env: Env = { ...BASE_ENV };
 
   const res = await handleContactRequest(
@@ -79,7 +97,7 @@ test("invalid payload is rejected before Turnstile or email are contacted", asyn
 
 test("an oversized body without Content-Length is rejected before parsing", async () => {
   const email = makeResendFetch(200);
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const env: Env = { ...BASE_ENV };
   const request = makeRawRequest(
     JSON.stringify(VALID_BODY) + " ".repeat(16 * 1024),
@@ -109,9 +127,103 @@ test("a rejected Turnstile challenge blocks the email send", async () => {
   assert.equal(email.calls.length, 0);
 });
 
+test("a successful Siteverify response with the wrong action is rejected", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch({
+    success: true,
+    action: "login",
+    hostname: "inquiry.dceoy.com",
+  });
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 400);
+  assert.equal(email.calls.length, 0);
+});
+
+test("a successful Siteverify response from an unapproved hostname is rejected", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch({
+    success: true,
+    action: "contact",
+    hostname: "attacker.example",
+  });
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 400);
+  assert.equal(email.calls.length, 0);
+});
+
+test("missing Turnstile hostname configuration fails closed", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV, TURNSTILE_HOSTNAMES: "  , " },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 500);
+  assert.equal(siteverify.calls.length, 0);
+  assert.equal(email.calls.length, 0);
+});
+
+for (const hostname of ["localhost", "127.0.0.1", "dummy-key.example.com"]) {
+  test(`a local Turnstile test response for ${hostname} is accepted`, async () => {
+    const email = makeResendFetch(200);
+    const siteverify = makeSiteverifyFetch({
+      success: true,
+      action: "test",
+      hostname,
+    });
+
+    const res = await handleContactRequest(
+      makeRequest(VALID_BODY),
+      LOCAL_ENV,
+      siteverify.fn,
+      email.fn,
+    );
+
+    assert.equal(res.status, 200);
+    assert.equal(email.calls.length, 1);
+  });
+}
+
+test("local Turnstile test configuration rejects the production action", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch({
+    success: true,
+    action: "contact",
+    hostname: "localhost",
+  });
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    LOCAL_ENV,
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 400);
+  assert.equal(email.calls.length, 0);
+});
+
 test("an email send failure after Turnstile success returns a generic 502", async () => {
   const email = makeResendFetch(422);
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const env: Env = { ...BASE_ENV };
 
   const res = await handleContactRequest(
@@ -128,7 +240,7 @@ test("an email send failure after Turnstile success returns a generic 502", asyn
 
 test("a complete success sends exactly one notification email and returns 200", async () => {
   const email = makeResendFetch(200);
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const env: Env = { ...BASE_ENV };
 
   const res = await handleContactRequest(
@@ -161,7 +273,7 @@ test("a complete success sends exactly one notification email and returns 200", 
 
 test("missing Resend credentials fails closed", async () => {
   const email = makeResendFetch(200);
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const res = await handleContactRequest(
     makeRequest(VALID_BODY),
     { ...BASE_ENV, RESEND_API_KEY: "" },
@@ -175,7 +287,7 @@ test("missing Resend credentials fails closed", async () => {
 
 test("a Resend network failure returns a generic 502", async () => {
   const email = makeResendFetch("network-error");
-  const siteverify = makeSiteverifyFetch({ success: true });
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const res = await handleContactRequest(
     makeRequest(VALID_BODY),
     { ...BASE_ENV },
