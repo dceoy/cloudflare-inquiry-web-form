@@ -4,6 +4,7 @@ export interface Env {
   RESEND_API_KEY: string;
   TURNSTILE_SECRET_KEY: string;
   TURNSTILE_HOSTNAMES: string;
+  TURNSTILE_ACTION: string;
 }
 
 interface ContactFields {
@@ -18,7 +19,6 @@ const MAX_REQUEST_BYTES = 16 * 1024;
 const RESEND_URL = "https://api.resend.com/emails";
 const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-const TURNSTILE_ACTION = "contact";
 const SITEVERIFY_TIMEOUT_MS = 10_000;
 // Matches "local@domain.tld" while rejecting whitespace and CR/LF, since this
 // value is also used as the notification email's Reply-To header.
@@ -130,6 +130,7 @@ async function readBodyWithinLimit(request: Request): Promise<string | null> {
 async function verifyTurnstile(
   token: string,
   secret: string,
+  expectedAction: string,
   allowedHostnames: Set<string>,
   remoteIp: string | null,
   verifyFetch: typeof fetch,
@@ -170,7 +171,7 @@ async function verifyTurnstile(
   const hostname =
     typeof result.hostname === "string" ? result.hostname.toLowerCase() : "";
   return result.success === true &&
-    result.action === TURNSTILE_ACTION &&
+    result.action === expectedAction &&
     allowedHostnames.has(hostname)
     ? "success"
     : "rejected";
@@ -222,6 +223,7 @@ export async function handleContactRequest(
   );
   if (
     !env.TURNSTILE_SECRET_KEY ||
+    !env.TURNSTILE_ACTION ||
     allowedHostnames.size === 0 ||
     !env.RESEND_API_KEY ||
     !env.EMAIL_FROM ||
@@ -269,6 +271,7 @@ export async function handleContactRequest(
   const verdict = await verifyTurnstile(
     fields.turnstileToken,
     env.TURNSTILE_SECRET_KEY,
+    env.TURNSTILE_ACTION,
     allowedHostnames,
     remoteIp,
     verifyFetch,

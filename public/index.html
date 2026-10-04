@@ -49,8 +49,9 @@
 
   <script>
     if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
-      document.querySelector(".cf-turnstile").dataset.sitekey =
-        "1x00000000000000000000AA";
+      const turnstile = document.querySelector(".cf-turnstile");
+      turnstile.dataset.sitekey = "1x00000000000000000000AA";
+      turnstile.dataset.action = "test";
     }
   </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

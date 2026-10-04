@@ -22,7 +22,7 @@ type WranglerConfig = {
   vars: Record<string, string>;
 };
 
-test("pnpm dev uses local Turnstile hostname settings", () => {
+test("pnpm dev uses local Turnstile test settings", () => {
   const configText = readFileSync(
     new URL("../wrangler.jsonc", import.meta.url),
     "utf8",
@@ -48,8 +48,14 @@ test("pnpm dev uses local Turnstile hostname settings", () => {
   assert.equal(packageJson.scripts.dev, "wrangler dev --env local");
   assert.deepEqual(local?.assets, config.assets);
   assert.deepEqual(local?.secrets, config.secrets);
-  assert.equal(local?.vars.TURNSTILE_HOSTNAMES, "localhost,127.0.0.1");
+  assert.equal(
+    local?.vars.TURNSTILE_HOSTNAMES,
+    "localhost,127.0.0.1,dummy-key.example.com",
+  );
+  assert.equal(local?.vars.TURNSTILE_ACTION, "test");
   assert.deepEqual(devVarNames, [...config.secrets.required].sort());
   assert.equal(config.vars.TURNSTILE_HOSTNAMES, "inquiry.dceoy.com");
+  assert.equal(config.vars.TURNSTILE_ACTION, "contact");
   assert.equal(config.previews.vars.TURNSTILE_HOSTNAMES, "");
+  assert.equal(config.previews.vars.TURNSTILE_ACTION, "contact");
 });

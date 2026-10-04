@@ -8,12 +8,19 @@ const BASE_ENV = {
   RESEND_API_KEY: "re_test_key",
   TURNSTILE_SECRET_KEY: "test-secret",
   TURNSTILE_HOSTNAMES: "inquiry.dceoy.com",
+  TURNSTILE_ACTION: "contact",
 };
 
 const VALID_SITEVERIFY_RESULT = {
   success: true,
   action: "contact",
   hostname: "inquiry.dceoy.com",
+};
+
+const LOCAL_ENV = {
+  ...BASE_ENV,
+  TURNSTILE_HOSTNAMES: "localhost,127.0.0.1,dummy-key.example.com",
+  TURNSTILE_ACTION: "test",
 };
 
 const VALID_BODY = {
@@ -171,6 +178,46 @@ test("missing Turnstile hostname configuration fails closed", async () => {
 
   assert.equal(res.status, 500);
   assert.equal(siteverify.calls.length, 0);
+  assert.equal(email.calls.length, 0);
+});
+
+for (const hostname of ["localhost", "127.0.0.1", "dummy-key.example.com"]) {
+  test(`a local Turnstile test response for ${hostname} is accepted`, async () => {
+    const email = makeResendFetch(200);
+    const siteverify = makeSiteverifyFetch({
+      success: true,
+      action: "test",
+      hostname,
+    });
+
+    const res = await handleContactRequest(
+      makeRequest(VALID_BODY),
+      LOCAL_ENV,
+      siteverify.fn,
+      email.fn,
+    );
+
+    assert.equal(res.status, 200);
+    assert.equal(email.calls.length, 1);
+  });
+}
+
+test("local Turnstile test configuration rejects the production action", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch({
+    success: true,
+    action: "contact",
+    hostname: "localhost",
+  });
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    LOCAL_ENV,
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 400);
   assert.equal(email.calls.length, 0);
 });
 

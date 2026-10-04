@@ -11,7 +11,7 @@ One Worker (`src/index.ts`) handles `POST /api/contact`, validates input, verifi
 1. In [Resend Domains](https://resend.com/domains), add `dceoy.com` as a sending domain and verify the DNS records Resend provides. Keep the existing Google Workspace MX for `dceoy.com` intact; Resend's return-path records use a separate subdomain. Check existing SPF/DMARC records before adding any TXT record at the same name.
 2. In [Resend API Keys](https://resend.com/api-keys), create a key restricted to **Sending access** and the verified domain.
 3. Configure both email addresses as production Worker secrets: `EMAIL_FROM` must be an address on the verified sending domain (for example `inquiry@dceoy.com`), and `EMAIL_TO` must be the Google Workspace notification mailbox. Neither address is stored in Git. Ensure the `EMAIL_FROM` address is a Workspace alias if it should receive direct replies.
-4. The existing Turnstile widget sitekey is configured in `public/index.html` for `inquiry.dceoy.com`. The form sends the `contact` action, and the Worker accepts Siteverify responses only for that action and the hostname allowlist in `wrangler.jsonc`.
+4. The existing Turnstile widget sitekey is configured in `public/index.html` for `inquiry.dceoy.com`. Production expects the `contact` action and the hostname allowlist in `wrangler.jsonc`.
 5. Set the production Worker secrets (through **Workers & Pages → cloudflare-inquiry-web-form → Settings → Variables and Secrets**, or Wrangler):
 
 ```bash
@@ -25,7 +25,7 @@ Never commit these secrets. Configure them on the production Worker before deplo
 
 ## Local development
 
-Copy `.dev.vars.example` to `.dev.vars`, then replace the Resend API key and both example email addresses with non-production test values. `EMAIL_FROM` must use a sending domain accepted by the test Resend key, and `EMAIL_TO` should be a test recipient. The page switches to Cloudflare's public Turnstile test sitekey on `localhost` and `127.0.0.1`; the example includes its matching test secret. The `pnpm dev` script selects Wrangler's `local` environment, which provides the local hostname allowlist; `.dev.vars.example` contains only the keys listed in `secrets.required`. **Local submissions call the live Resend API and can send real email**, so do not use production credentials or a production recipient.
+Copy `.dev.vars.example` to `.dev.vars`, then replace the Resend API key and both example email addresses with non-production test values. `EMAIL_FROM` must use a sending domain accepted by the test Resend key, and `EMAIL_TO` should be a test recipient. The page switches to Cloudflare's public Turnstile test sitekey on `localhost` and `127.0.0.1`. Wrangler's `local` environment expects the test `action` and allows the exact Siteverify hostnames `localhost`, `127.0.0.1`, and `dummy-key.example.com`; `.dev.vars.example` contains only the required local credentials. The `pnpm dev` script selects this environment. **Local submissions call the live Resend API and can send real email**, so do not use production credentials or a production recipient.
 
 ```bash
 cp .dev.vars.example .dev.vars
@@ -46,7 +46,7 @@ Cloudflare Workers Builds use Wrangler Previews for pull requests. Preview deplo
 ## Security notes
 
 - `EMAIL_FROM` and `EMAIL_TO` are stored as Worker secrets rather than committed to Git.
-- Turnstile validation occurs before calling Resend and requires `success: true`, the `contact` action, and an exact hostname match in `TURNSTILE_HOSTNAMES`.
+- Turnstile validation occurs before calling Resend and requires `success: true`, the configured `TURNSTILE_ACTION`, and an exact hostname match in `TURNSTILE_HOSTNAMES`; production uses `contact`, while local development uses `test`.
 - Only the configured `EMAIL_TO` address receives mail; the Resend key is restricted to sending from the configured verified domain.
 - Resend acceptance indicates API submission, not final delivery. Use Resend's delivery logs for troubleshooting.
 - The only Worker endpoint is same-origin `/api/contact`; no CORS configuration is needed.

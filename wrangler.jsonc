@@ -26,11 +26,13 @@
     ]
   },
   "vars": {
-    "TURNSTILE_HOSTNAMES": "inquiry.dceoy.com"
+    "TURNSTILE_HOSTNAMES": "inquiry.dceoy.com",
+    "TURNSTILE_ACTION": "contact"
   },
   "previews": {
     "vars": {
-      "TURNSTILE_HOSTNAMES": ""
+      "TURNSTILE_HOSTNAMES": "",
+      "TURNSTILE_ACTION": "contact"
     }
   },
   "env": {
@@ -48,7 +50,8 @@
         ]
       },
       "vars": {
-        "TURNSTILE_HOSTNAMES": "localhost,127.0.0.1"
+        "TURNSTILE_HOSTNAMES": "localhost,127.0.0.1,dummy-key.example.com",
+        "TURNSTILE_ACTION": "test"
       }
     }
   }
