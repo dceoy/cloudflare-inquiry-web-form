@@ -10,8 +10,8 @@
     "audit:fix": "pnpm audit --fix=override",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
+    "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
+    "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"src/**/*.test.ts\"",
     "dev": "wrangler dev --env local",
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
     "@types/node": "^26.6.1",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.83.0",
     "typescript": "^7.0.2",
     "wrangler": "^4.149.0"
