@@ -55,7 +55,10 @@ test("pnpm dev uses local Turnstile test settings", () => {
     "localhost,127.0.0.1,dummy-key.example.com",
   );
   assert.equal(local?.vars["TURNSTILE_ACTION"], "test");
-  assert.deepEqual(devVarNames, [...config.secrets.required].toSorted((a, b) => a.localeCompare(b)));
+  assert.deepEqual(
+    devVarNames,
+    [...config.secrets.required].toSorted((a, b) => a.localeCompare(b)),
+  );
   assert.equal(config.vars["TURNSTILE_HOSTNAMES"], "inquiry.dceoy.com");
   assert.equal(config.vars["TURNSTILE_ACTION"], "contact");
   assert.equal(config.previews.vars["TURNSTILE_HOSTNAMES"], "");

@@ -23,6 +23,7 @@ const SITEVERIFY_TIMEOUT_MS = 10_000;
 // Matches "local@domain.tld" while rejecting whitespace and CR/LF, since this
 // value is also used as the notification email's Reply-To header.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SUBJECT_NEWLINE_RE = /[\r\n]/u;
 
 function jsonResponse(
   status: number,
@@ -72,7 +73,7 @@ function validateFields(body: unknown): ContactFields | null {
     return null;
   }
   const subject = record["subject"].trim();
-  if (subject.length < 1 || subject.length > 150 || /[\r\n]/.test(subject)) {
+  if (subject.length < 1 || subject.length > 150 || SUBJECT_NEWLINE_RE.test(subject)) {
     return null;
   }
 
@@ -298,7 +299,7 @@ export async function handleContactRequest(
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname !== "/api/contact") {
       return jsonResponse(404, { error: "Not found" });

@@ -4,13 +4,7 @@
     "indentWidth": 2
   },
   "files": {
-    "includes": [
-      "**",
-      "!**/*.md",
-      "!**/*.mdx",
-      "!!**/*.yaml",
-      "!!**/*.yml"
-    ]
+    "includes": ["**", "!**/*.md", "!**/*.mdx", "!!**/*.yaml", "!!**/*.yml"]
   },
   "linter": {
     "enabled": true,
@@ -21,15 +15,17 @@
       },
       "style": {
         "noExcessiveLinesPerFile": "off",
-        "useExportsLast": "off"
+        "useExportsLast": "off",
+        "noDefaultExport": "off"
+      },
+      "correctness": {
+        "useQwikValidLexicalScope": "off"
       }
     }
   },
   "overrides": [
     {
-      "includes": [
-        "src/**/*.test.ts"
-      ],
+      "includes": ["src/**/*.test.ts"],
       "linter": {
         "rules": {
           "correctness": {
@@ -38,6 +34,35 @@
           "style": {
             "useConsistentTestIt": "off",
             "useNamingConvention": "off"
+          },
+          "suspicious": {
+            "useAwait": "off"
+          },
+          "performance": {
+            "useTopLevelRegex": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/index.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useMaxParams": "off"
+          },
+          "suspicious": {
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["public/**/*.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useBaseline": "off"
           }
         }
       }
