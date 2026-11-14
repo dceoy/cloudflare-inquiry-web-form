@@ -259,7 +259,7 @@ test("a complete success sends exactly one notification email and returns 200", 
   assert.equal(sent.url, "https://api.resend.com/emails");
   assert.equal(sent.init.method, "POST");
   assert.equal(
-    (sent.init.headers as Record<string, string>).authorization,
+    (sent.init.headers as Record<string, string>)["authorization"],
     "Bearer re_test_key",
   );
   const payload = JSON.parse(sent.init.body as string);

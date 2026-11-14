@@ -4,13 +4,7 @@
     "indentWidth": 2
   },
   "files": {
-    "includes": [
-      "**",
-      "!**/*.md",
-      "!**/*.mdx",
-      "!!**/*.yaml",
-      "!!**/*.yml"
-    ]
+    "includes": ["**", "!**/*.md", "!**/*.mdx", "!!**/*.yaml", "!!**/*.yml"]
   },
   "linter": {
     "enabled": true,

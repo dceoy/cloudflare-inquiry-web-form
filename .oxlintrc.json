@@ -8,13 +8,7 @@
     "style": "error",
     "restriction": "error"
   },
-  "plugins": [
-    "import",
-    "oxc",
-    "promise",
-    "typescript",
-    "unicorn"
-  ],
+  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"],
   "options": {
     "typeAware": true,
     "denyWarnings": true,

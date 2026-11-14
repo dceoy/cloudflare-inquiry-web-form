@@ -46,44 +46,44 @@ function validateFields(body: unknown): ContactFields | null {
   const record = body as Record<string, unknown>;
 
   let name = "";
-  if (record.name !== undefined) {
-    if (typeof record.name !== "string") {
+  if (record["name"] !== undefined) {
+    if (typeof record["name"] !== "string") {
       return null;
     }
-    name = record.name.trim();
+    name = record["name"].trim();
     if (name.length > 100) {
       return null;
     }
   }
 
-  if (typeof record.email !== "string") {
+  if (typeof record["email"] !== "string") {
     return null;
   }
-  const email = record.email.trim();
+  const email = record["email"].trim();
   if (email.length === 0 || email.length > 320 || !EMAIL_RE.test(email)) {
     return null;
   }
 
-  if (typeof record.subject !== "string") {
+  if (typeof record["subject"] !== "string") {
     return null;
   }
-  const subject = record.subject.trim();
+  const subject = record["subject"].trim();
   if (subject.length < 1 || subject.length > 150 || /[\r\n]/.test(subject)) {
     return null;
   }
 
-  if (typeof record.message !== "string") {
+  if (typeof record["message"] !== "string") {
     return null;
   }
-  const message = record.message.trim();
+  const message = record["message"].trim();
   if (message.length < 1 || message.length > 2000) {
     return null;
   }
 
-  if (typeof record.turnstileToken !== "string") {
+  if (typeof record["turnstileToken"] !== "string") {
     return null;
   }
-  const turnstileToken = record.turnstileToken;
+  const turnstileToken = record["turnstileToken"];
   if (turnstileToken.length < 1 || turnstileToken.length > 2048) {
     return null;
   }
@@ -169,9 +169,9 @@ async function verifyTurnstile(
   }
   const result = data as Record<string, unknown>;
   const hostname =
-    typeof result.hostname === "string" ? result.hostname.toLowerCase() : "";
-  return result.success === true &&
-    result.action === expectedAction &&
+    typeof result["hostname"] === "string" ? result["hostname"].toLowerCase() : "";
+  return result["success"] === true &&
+    result["action"] === expectedAction &&
     allowedHostnames.has(hostname)
     ? "success"
     : "rejected";
