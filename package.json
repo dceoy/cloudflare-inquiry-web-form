@@ -8,8 +8,8 @@
   "scripts": {
     "audit": "pnpm audit",
     "audit:fix": "pnpm audit --fix=override",
-    "lint": "oxlint . && biome lint . --error-on-warnings",
-    "lint:fix": "oxlint --fix . && biome lint --write .",
+    "lint": "oxlint src && biome lint . --error-on-warnings",
+    "lint:fix": "oxlint --fix src && biome lint --write .",
     "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
