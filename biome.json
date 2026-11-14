@@ -4,12 +4,43 @@
     "indentWidth": 2
   },
   "files": {
-    "includes": ["**", "!**/*.md", "!**/*.mdx", "!!**/*.yaml", "!!**/*.yml"]
+    "includes": [
+      "**",
+      "!**/*.md",
+      "!**/*.mdx",
+      "!!**/*.yaml",
+      "!!**/*.yml"
+    ]
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "all"
+      "preset": "all",
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        "noExcessiveLinesPerFile": "off",
+        "useExportsLast": "off"
+      }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "src/**/*.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
+          },
+          "style": {
+            "useConsistentTestIt": "off",
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    }
+  ]
 }

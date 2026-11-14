@@ -54,11 +54,7 @@ function makeResendFetch(status: number | "network-error") {
     init?: RequestInit,
   ): Promise<Response> => {
     const requestUrl =
-      typeof url === "string"
-        ? url
-        : url instanceof URL
-          ? url.href
-          : url.url;
+      typeof url === "string" ? url : url instanceof URL ? url.href : url.url;
     calls.push({ url: requestUrl, init: init ?? {} });
     if (status === "network-error") {
       throw new Error("send failed");

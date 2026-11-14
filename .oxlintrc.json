@@ -8,13 +8,7 @@
     "style": "off",
     "restriction": "off"
   },
-  "plugins": [
-    "import",
-    "oxc",
-    "promise",
-    "typescript",
-    "unicorn"
-  ],
+  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"],
   "options": {
     "typeAware": true,
     "denyWarnings": true,
@@ -22,9 +16,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.test.ts"
-      ],
+      "files": ["**/*.test.ts"],
       "rules": {
         "typescript/no-floating-promises": "off",
         "typescript/no-unsafe-type-assertion": "off"

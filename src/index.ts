@@ -173,7 +173,9 @@ async function verifyTurnstile(
   }
   const result = data;
   const hostname =
-    typeof result["hostname"] === "string" ? result["hostname"].toLowerCase() : "";
+    typeof result["hostname"] === "string"
+      ? result["hostname"].toLowerCase()
+      : "";
   return result["success"] === true &&
     result["action"] === expectedAction &&
     allowedHostnames.has(hostname)
