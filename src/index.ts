@@ -73,7 +73,11 @@ function validateFields(body: unknown): ContactFields | null {
     return null;
   }
   const subject = record["subject"].trim();
-  if (subject.length < 1 || subject.length > 150 || SUBJECT_NEWLINE_RE.test(subject)) {
+  if (
+    subject.length < 1 ||
+    subject.length > 150 ||
+    SUBJECT_NEWLINE_RE.test(subject)
+  ) {
     return null;
   }
 
@@ -299,7 +303,7 @@ export async function handleContactRequest(
 }
 
 export default {
-  fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname !== "/api/contact") {
       return jsonResponse(404, { error: "Not found" });
@@ -311,6 +315,6 @@ export default {
         { Allow: "POST" },
       );
     }
-    return handleContactRequest(request, env);
+    return await handleContactRequest(request, env);
   },
 };
