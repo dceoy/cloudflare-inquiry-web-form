@@ -53,13 +53,19 @@ function makeResendFetch(status: number | "network-error") {
     url: string | URL | Request,
     init?: RequestInit,
   ): Promise<Response> => {
-    calls.push({ url: String(url), init: init ?? {} });
+    const requestUrl =
+      typeof url === "string"
+        ? url
+        : url instanceof URL
+          ? url.href
+          : url.url;
+    calls.push({ url: requestUrl, init: init ?? {} });
     if (status === "network-error") {
       throw new Error("send failed");
     }
     return new Response(JSON.stringify({ id: "email-id" }), { status });
   };
-  return { calls, fn: fn as typeof fetch };
+  return { calls, fn };
 }
 
 function makeSiteverifyFetch(
@@ -234,7 +240,12 @@ test("an email send failure after Turnstile success returns a generic 502", asyn
   );
 
   assert.equal(res.status, 502);
-  const responseBody = (await res.json()) as { error: unknown };
+  const responseBody: unknown = await res.json();
+  assert.ok(
+    typeof responseBody === "object" &&
+      responseBody !== null &&
+      "error" in responseBody,
+  );
   assert.equal(typeof responseBody.error, "string");
 });
 
@@ -259,14 +270,25 @@ test("a complete success sends exactly one notification email and returns 200", 
   assert.equal(sent.url, "https://api.resend.com/emails");
   assert.equal(sent.init.method, "POST");
   assert.equal(
-    (sent.init.headers as Record<string, string>)["authorization"],
+    new Headers(sent.init.headers).get("authorization"),
     "Bearer re_test_key",
   );
-  const payload = JSON.parse(sent.init.body as string);
+  assert.ok(typeof sent.init.body === "string");
+  const payload: unknown = JSON.parse(sent.init.body);
+  assert.ok(
+    typeof payload === "object" &&
+      payload !== null &&
+      "from" in payload &&
+      "to" in payload &&
+      "reply_to" in payload &&
+      "subject" in payload &&
+      "text" in payload,
+  );
   assert.equal(payload.from, BASE_ENV.EMAIL_FROM);
   assert.deepEqual(payload.to, [BASE_ENV.EMAIL_TO]);
   assert.equal(payload.reply_to, VALID_BODY.email);
   assert.equal(payload.subject, `New inquiry: ${VALID_BODY.subject}`);
+  assert.ok(typeof payload.text === "string");
   assert.match(payload.text, /Name: Ada Lovelace/);
   assert.match(payload.text, /Email: ada@example\.com/);
   assert.match(payload.text, /Hello, I have a question\./);

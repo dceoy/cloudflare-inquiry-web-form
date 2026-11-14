@@ -39,11 +39,15 @@ function jsonResponse(
   });
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function validateFields(body: unknown): ContactFields | null {
-  if (typeof body !== "object" || body === null) {
+  if (!isRecord(body)) {
     return null;
   }
-  const record = body as Record<string, unknown>;
+  const record = body;
 
   let name = "";
   if (record["name"] !== undefined) {
@@ -164,10 +168,10 @@ async function verifyTurnstile(
     return "upstream-error";
   }
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return "rejected";
   }
-  const result = data as Record<string, unknown>;
+  const result = data;
   const hostname =
     typeof result["hostname"] === "string" ? result["hostname"].toLowerCase() : "";
   return result["success"] === true &&

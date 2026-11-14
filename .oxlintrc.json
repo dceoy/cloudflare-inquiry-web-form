@@ -26,8 +26,12 @@
         "**/*.test.ts"
       ],
       "rules": {
-        "typescript/no-floating-promises": "off"
+        "typescript/no-floating-promises": "off",
+        "typescript/no-unsafe-type-assertion": "off"
       }
     }
-  ]
+  ],
+  "rules": {
+    "no-await-in-loop": "off"
+  }
 }

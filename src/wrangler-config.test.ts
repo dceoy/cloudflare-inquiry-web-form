@@ -43,7 +43,7 @@ test("pnpm dev uses local Turnstile test settings", () => {
     .trim()
     .split(/\r?\n/)
     .map((line) => line.slice(0, line.indexOf("=")))
-    .sort();
+    .toSorted();
 
   assert.equal(packageJson.scripts.dev, "wrangler dev --env local");
   assert.deepEqual(local?.assets, config.assets);
@@ -53,7 +53,7 @@ test("pnpm dev uses local Turnstile test settings", () => {
     "localhost,127.0.0.1,dummy-key.example.com",
   );
   assert.equal(local?.vars["TURNSTILE_ACTION"], "test");
-  assert.deepEqual(devVarNames, [...config.secrets.required].sort());
+  assert.deepEqual(devVarNames, [...config.secrets.required].toSorted());
   assert.equal(config.vars["TURNSTILE_HOSTNAMES"], "inquiry.dceoy.com");
   assert.equal(config.vars["TURNSTILE_ACTION"], "contact");
   assert.equal(config.previews.vars["TURNSTILE_HOSTNAMES"], "");
