@@ -255,6 +255,7 @@ test("a complete success sends exactly one notification email and returns 200", 
   assert.equal(email.calls.length, 1);
 
   const sent = email.calls[0];
+  assert.ok(sent);
   assert.equal(sent.url, "https://api.resend.com/emails");
   assert.equal(sent.init.method, "POST");
   assert.equal(
