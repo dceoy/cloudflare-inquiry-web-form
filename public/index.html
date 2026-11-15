@@ -18,17 +18,17 @@
       </div>
 
       <div class="form-group">
-        <label for="email">Email <span aria-label="required">*</span></label>
+        <label for="email">Email <span aria-hidden="true">*</span></label>
         <input type="email" id="email" name="email" required>
       </div>
 
       <div class="form-group">
-        <label for="subject">Subject <span aria-label="required">*</span></label>
+        <label for="subject">Subject <span aria-hidden="true">*</span></label>
         <input type="text" id="subject" name="subject" required maxlength="150">
       </div>
 
       <div class="form-group">
-        <label for="message">Message <span aria-label="required">*</span></label>
+        <label for="message">Message <span aria-hidden="true">*</span></label>
         <textarea id="message" name="message" required maxlength="2000" rows="6"></textarea>
       </div>
 
@@ -48,7 +48,8 @@
   </div>
 
   <script>
-    if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+    "use strict";
+    if (["localhost", "127.0.0.1"].includes(globalThis.location.hostname)) {
       const turnstile = document.querySelector(".cf-turnstile");
       turnstile.dataset.sitekey = "1x00000000000000000000AA";
       turnstile.dataset.action = "test";

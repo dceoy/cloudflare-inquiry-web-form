@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-type WranglerConfig = {
+interface WranglerConfig {
   assets: {
     directory: string;
     run_worker_first: string[];
@@ -20,14 +20,16 @@ type WranglerConfig = {
   previews: { vars: Record<string, string> };
   secrets: { required: string[] };
   vars: Record<string, string>;
-};
+}
+
+const NEWLINE_RE = /\r?\n/u;
 
 test("pnpm dev uses local Turnstile test settings", () => {
   const configText = readFileSync(
     new URL("../wrangler.jsonc", import.meta.url),
     "utf8",
   )
-    .split(/\r?\n/)
+    .split(NEWLINE_RE)
     .filter((line) => !line.startsWith("//"))
     .join("\n");
   const config = JSON.parse(configText) as WranglerConfig;
@@ -41,21 +43,24 @@ test("pnpm dev uses local Turnstile test settings", () => {
   const local = config.env?.local;
   const devVarNames = devVars
     .trim()
-    .split(/\r?\n/)
+    .split(NEWLINE_RE)
     .map((line) => line.slice(0, line.indexOf("=")))
-    .sort();
+    .toSorted((a, b) => a.localeCompare(b));
 
   assert.equal(packageJson.scripts.dev, "wrangler dev --env local");
   assert.deepEqual(local?.assets, config.assets);
   assert.deepEqual(local?.secrets, config.secrets);
   assert.equal(
-    local?.vars.TURNSTILE_HOSTNAMES,
+    local?.vars["TURNSTILE_HOSTNAMES"],
     "localhost,127.0.0.1,dummy-key.example.com",
   );
-  assert.equal(local?.vars.TURNSTILE_ACTION, "test");
-  assert.deepEqual(devVarNames, [...config.secrets.required].sort());
-  assert.equal(config.vars.TURNSTILE_HOSTNAMES, "inquiry.dceoy.com");
-  assert.equal(config.vars.TURNSTILE_ACTION, "contact");
-  assert.equal(config.previews.vars.TURNSTILE_HOSTNAMES, "");
-  assert.equal(config.previews.vars.TURNSTILE_ACTION, "contact");
+  assert.equal(local?.vars["TURNSTILE_ACTION"], "test");
+  assert.deepEqual(
+    devVarNames,
+    [...config.secrets.required].toSorted((a, b) => a.localeCompare(b)),
+  );
+  assert.equal(config.vars["TURNSTILE_HOSTNAMES"], "inquiry.dceoy.com");
+  assert.equal(config.vars["TURNSTILE_ACTION"], "contact");
+  assert.equal(config.previews.vars["TURNSTILE_HOSTNAMES"], "");
+  assert.equal(config.previews.vars["TURNSTILE_ACTION"], "contact");
 });

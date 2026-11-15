@@ -23,6 +23,7 @@ const SITEVERIFY_TIMEOUT_MS = 10_000;
 // Matches "local@domain.tld" while rejecting whitespace and CR/LF, since this
 // value is also used as the notification email's Reply-To header.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SUBJECT_NEWLINE_RE = /[\r\n]/u;
 
 function jsonResponse(
   status: number,
@@ -39,51 +40,59 @@ function jsonResponse(
   });
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function validateFields(body: unknown): ContactFields | null {
-  if (typeof body !== "object" || body === null) {
+  if (!isRecord(body)) {
     return null;
   }
-  const record = body as Record<string, unknown>;
+  const record = body;
 
   let name = "";
-  if (record.name !== undefined) {
-    if (typeof record.name !== "string") {
+  if (record["name"] !== undefined) {
+    if (typeof record["name"] !== "string") {
       return null;
     }
-    name = record.name.trim();
+    name = record["name"].trim();
     if (name.length > 100) {
       return null;
     }
   }
 
-  if (typeof record.email !== "string") {
+  if (typeof record["email"] !== "string") {
     return null;
   }
-  const email = record.email.trim();
+  const email = record["email"].trim();
   if (email.length === 0 || email.length > 320 || !EMAIL_RE.test(email)) {
     return null;
   }
 
-  if (typeof record.subject !== "string") {
+  if (typeof record["subject"] !== "string") {
     return null;
   }
-  const subject = record.subject.trim();
-  if (subject.length < 1 || subject.length > 150 || /[\r\n]/.test(subject)) {
+  const subject = record["subject"].trim();
+  if (
+    subject.length < 1 ||
+    subject.length > 150 ||
+    SUBJECT_NEWLINE_RE.test(subject)
+  ) {
     return null;
   }
 
-  if (typeof record.message !== "string") {
+  if (typeof record["message"] !== "string") {
     return null;
   }
-  const message = record.message.trim();
+  const message = record["message"].trim();
   if (message.length < 1 || message.length > 2000) {
     return null;
   }
 
-  if (typeof record.turnstileToken !== "string") {
+  if (typeof record["turnstileToken"] !== "string") {
     return null;
   }
-  const turnstileToken = record.turnstileToken;
+  const turnstileToken = record["turnstileToken"];
   if (turnstileToken.length < 1 || turnstileToken.length > 2048) {
     return null;
   }
@@ -164,14 +173,16 @@ async function verifyTurnstile(
     return "upstream-error";
   }
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return "rejected";
   }
-  const result = data as Record<string, unknown>;
+  const result = data;
   const hostname =
-    typeof result.hostname === "string" ? result.hostname.toLowerCase() : "";
-  return result.success === true &&
-    result.action === expectedAction &&
+    typeof result["hostname"] === "string"
+      ? result["hostname"].toLowerCase()
+      : "";
+  return result["success"] === true &&
+    result["action"] === expectedAction &&
     allowedHostnames.has(hostname)
     ? "success"
     : "rejected";
@@ -304,6 +315,6 @@ export default {
         { Allow: "POST" },
       );
     }
-    return handleContactRequest(request, env);
+    return await handleContactRequest(request, env);
   },
 };

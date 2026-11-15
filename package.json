@@ -8,8 +8,8 @@
   "scripts": {
     "audit": "pnpm audit",
     "audit:fix": "pnpm audit --fix=override",
-    "lint": "oxlint .",
-    "lint:fix": "oxlint --fix .",
+    "lint": "oxlint src && biome lint . --error-on-warnings --max-diagnostics=250",
+    "lint:fix": "oxlint --fix src && biome lint --write .",
     "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
@@ -34,6 +34,7 @@
     "@types/node": "^26.6.6",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "7.0.2006",
     "typescript": "^7.0.2",
     "wrangler": "^4.159.0"
   },

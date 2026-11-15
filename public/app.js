@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
       email: document.getElementById("email").value,
       subject: document.getElementById("subject").value,
       message: document.getElementById("message").value,
-      turnstileToken: turnstileToken,
+      turnstileToken,
     };
 
     // Disable submit button during request
@@ -53,8 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.disabled = false;
 
       // Reset Turnstile widget for next submission
-      if (typeof turnstile !== "undefined") {
-        turnstile.reset();
+      if (typeof globalThis.turnstile !== "undefined") {
+        globalThis.turnstile.reset();
       }
     }
   });
