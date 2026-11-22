@@ -62,11 +62,31 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text);
-  background: var(--bg);
+  background-color: var(--bg);
+  /* Animated gradient matching dceoy.com (dceoy/dceoy.github.io style.css);
+     fork of "Pure CSS Gradient Background Animation" by Manuel Pinto,
+     https://codepen.io/P1N2O/pen/pyBNzX */
+  background-image: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient-background 30s ease infinite;
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: clamp(0.75rem, 4vw, 2rem);
+}
+
+@keyframes gradient-background {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @supports (min-height: 100dvh) {
@@ -268,6 +288,11 @@ button[aria-disabled="true"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
   button {
     transition: none;
   }
