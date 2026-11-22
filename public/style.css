@@ -290,6 +290,7 @@ button[aria-disabled="true"] {
 @media (prefers-reduced-motion: reduce) {
   body {
     animation: none;
+    background-position: 0% 50%;
   }
 
   button {
