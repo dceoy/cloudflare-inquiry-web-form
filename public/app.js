@@ -4,12 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contact-form");
   const submitBtn = document.getElementById("submit-btn");
   const statusEl = document.getElementById("status");
-  const fields = [...form.querySelectorAll("input, textarea")];
+  const fields = [...form.querySelectorAll("[data-error]")];
 
   // --- Field validation feedback (after interaction / attempted submit) ---
   // Visual state comes from CSS :user-invalid. Where it is unsupported,
-  // a class-based fallback driven by blur / input / invalid events is used.
+  // a class-based fallback mirrors native semantics: a field is flagged only
+  // after the user edited it and left it, or after a submit attempt.
   const hasUserInvalid = CSS.supports("selector(:user-invalid)");
+  const edited = new WeakSet();
   const touched = new WeakSet();
 
   const isUserInvalid = (el) =>
@@ -48,11 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
   for (const el of fields) {
     el.setAttribute("aria-invalid", "false");
     el.addEventListener("blur", () => {
-      touched.add(el);
+      // A bare tab-through without input is not an interaction.
+      if (edited.has(el)) {
+        touched.add(el);
+      }
       syncField(el);
     });
     // Typing may clear an error; it never creates one before blur.
     el.addEventListener("input", () => {
+      edited.add(el);
       if (el.getAttribute("aria-invalid") === "true" || touched.has(el)) {
         syncField(el);
       }
@@ -67,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("reset", () => {
     for (const el of fields) {
+      edited.delete(el);
       touched.delete(el);
     }
     // :user-invalid is cleared after the reset event completes.
@@ -131,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     submitBtn.setAttribute("aria-disabled", "true");
     form.setAttribute("aria-busy", "true");
-    setStatus("pending", "Sending your message…");
+    setStatus("pending", "Please wait…");
 
     try {
       const response = await fetch("/api/contact", {

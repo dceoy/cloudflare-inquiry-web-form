@@ -172,7 +172,7 @@ button:focus-visible {
   font-weight: 600;
 }
 
-:is(:user-invalid, .user-invalid-fallback) {
+:is(input, textarea):is(:user-invalid, .user-invalid-fallback) {
   border-color: var(--error);
   background-color: var(--error-bg);
 }
