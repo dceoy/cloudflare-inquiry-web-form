@@ -188,7 +188,40 @@ async function verifyTurnstile(
     : "rejected";
 }
 
-async function sendNotification(
+interface OutgoingEmail {
+  to: string;
+  subject: string;
+  text: string;
+  replyTo?: string;
+}
+
+async function sendEmail(
+  env: Env,
+  email: OutgoingEmail,
+  sendFetch: typeof fetch,
+): Promise<boolean> {
+  try {
+    const response = await sendFetch(RESEND_URL, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to: [email.to],
+        subject: email.subject,
+        text: email.text,
+        ...(email.replyTo ? { reply_to: email.replyTo } : {}),
+      }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+function sendNotification(
   env: Env,
   fields: ContactFields,
   sendFetch: typeof fetch,
@@ -199,25 +232,47 @@ async function sendNotification(
     "",
     fields.message,
   ].join("\n");
-  try {
-    const response = await sendFetch(RESEND_URL, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        from: env.EMAIL_FROM,
-        to: [env.EMAIL_TO],
-        subject: `New inquiry: ${fields.subject}`,
-        text,
-        reply_to: fields.email,
-      }),
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
+  return sendEmail(
+    env,
+    {
+      to: env.EMAIL_TO,
+      subject: `New inquiry: ${fields.subject}`,
+      text,
+      replyTo: fields.email,
+    },
+    sendFetch,
+  );
+}
+
+// Best-effort copy of the inquiry for the sender's own records. It is sent
+// only to the address validated in this same request and is built only from
+// the validated fields. No Reply-To is set, so replies go to the From address.
+function sendSenderCopy(
+  env: Env,
+  fields: ContactFields,
+  sendFetch: typeof fetch,
+): Promise<boolean> {
+  const text = [
+    "This is a copy of the inquiry you sent through our contact form.",
+    "",
+    `Name: ${fields.name || "(not provided)"}`,
+    `Email: ${fields.email}`,
+    `Subject: ${fields.subject}`,
+    "",
+    "Message:",
+    fields.message,
+    "",
+    "You received this email because this address was entered in the form. If you did not send this inquiry, you can ignore this email.",
+  ].join("\n");
+  return sendEmail(
+    env,
+    {
+      to: fields.email,
+      subject: `Copy of your inquiry: ${fields.subject}`,
+      text,
+    },
+    sendFetch,
+  );
 }
 
 export async function handleContactRequest(
@@ -297,6 +352,12 @@ export async function handleContactRequest(
   const sent = await sendNotification(env, fields, sendFetch);
   if (!sent) {
     return jsonResponse(502, { error: "Failed to send message" });
+  }
+
+  // The notification is authoritative: a failed copy never fails the request.
+  if (!(await sendSenderCopy(env, fields, sendFetch))) {
+    // biome-ignore lint/suspicious/noConsole: server-side log of a best-effort failure
+    console.error("Failed to send the sender copy email");
   }
 
   return jsonResponse(200, { ok: true });
