@@ -387,8 +387,12 @@ test("the sender copy goes only to the submitted address with the submitted cont
   assert.doesNotMatch(text, /token-123|owner@dceoy\.com|re_test_key/);
 });
 
-for (const outcome of [500, "network-error"] as const) {
-  test(`a failed sender copy (${outcome}) still returns success and is logged`, async (t: TestContext) => {
+for (const [outcome, expectedStatus] of [
+  [422, "422"],
+  [500, "500"],
+  ["network-error", "network"],
+] as const) {
+  test(`a failed sender copy (${outcome}) still returns success and logs its status`, async (t: TestContext) => {
     const logged = t.mock.method(console, "error", () => undefined);
     const email = makeSequencedResendFetch([200, outcome]);
     const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
@@ -404,9 +408,10 @@ for (const outcome of [500, "network-error"] as const) {
     assert.deepEqual(await res.json(), { ok: true });
     assert.equal(email.calls.length, 2);
     assert.equal(logged.mock.callCount(), 1);
-    // The log does not include the sender's address or message.
+    // The log names the status (or "network"), and carries no personal data.
     const logArgs = JSON.stringify(logged.mock.calls[0]?.arguments);
-    assert.doesNotMatch(logArgs, /ada@example\.com|Hello, I have/);
+    assert.ok(logArgs.includes(`(status: ${expectedStatus})`));
+    assert.doesNotMatch(logArgs, /ada@example\.com|Hello, I have|Ada/);
   });
 }
 

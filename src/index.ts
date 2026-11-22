@@ -195,11 +195,17 @@ interface OutgoingEmail {
   replyTo?: string;
 }
 
+// "status" is the Resend HTTP status, or "network" when the fetch threw.
+interface SendResult {
+  ok: boolean;
+  status: number | "network";
+}
+
 async function sendEmail(
   env: Env,
   email: OutgoingEmail,
   sendFetch: typeof fetch,
-): Promise<boolean> {
+): Promise<SendResult> {
   try {
     const response = await sendFetch(RESEND_URL, {
       method: "POST",
@@ -215,13 +221,13 @@ async function sendEmail(
         ...(email.replyTo ? { reply_to: email.replyTo } : {}),
       }),
     });
-    return response.ok;
+    return { ok: response.ok, status: response.status };
   } catch {
-    return false;
+    return { ok: false, status: "network" };
   }
 }
 
-function sendNotification(
+async function sendNotification(
   env: Env,
   fields: ContactFields,
   sendFetch: typeof fetch,
@@ -232,7 +238,7 @@ function sendNotification(
     "",
     fields.message,
   ].join("\n");
-  return sendEmail(
+  const result = await sendEmail(
     env,
     {
       to: env.EMAIL_TO,
@@ -242,6 +248,7 @@ function sendNotification(
     },
     sendFetch,
   );
+  return result.ok;
 }
 
 // Best-effort copy of the inquiry for the sender's own records. It is sent
@@ -251,7 +258,7 @@ function sendSenderCopy(
   env: Env,
   fields: ContactFields,
   sendFetch: typeof fetch,
-): Promise<boolean> {
+): Promise<SendResult> {
   const text = [
     "This is a copy of the inquiry you sent through our contact form.",
     "",
@@ -355,9 +362,14 @@ export async function handleContactRequest(
   }
 
   // The notification is authoritative: a failed copy never fails the request.
-  if (!(await sendSenderCopy(env, fields, sendFetch))) {
+  const copy = await sendSenderCopy(env, fields, sendFetch);
+  if (!copy.ok) {
+    // The status (or "network") distinguishes a rejected recipient (4xx) from
+    // an outage (5xx/network); it contains no personal data.
     // biome-ignore lint/suspicious/noConsole: server-side log of a best-effort failure
-    console.error("Failed to send the sender copy email");
+    console.error(
+      `Failed to send the sender copy email (status: ${copy.status})`,
+    );
   }
 
   return jsonResponse(200, { ok: true });
