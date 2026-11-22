@@ -9,7 +9,11 @@
 </head>
 <body>
   <main class="container">
-    <h1 id="form-title">Get in Touch</h1>
+    <div id="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Screen 1: input -->
+    <div id="screen-input" class="screen">
+    <h1 id="form-title" tabindex="-1">Get in Touch</h1>
     <p class="intro">Have a question or inquiry? We'd love to hear from you.</p>
     <p class="required-note">Fields marked <span aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
 
@@ -78,6 +82,22 @@
         </div>
       </div>
 
+      <button type="submit" id="review-btn">Review before sending</button>
+    </form>
+    </div>
+
+    <!-- Screen 2: confirm (hosts the Turnstile widget that guards the send) -->
+    <div id="screen-confirm" class="screen" hidden>
+      <h1 id="confirm-title" tabindex="-1">Review Your Message</h1>
+      <p class="intro">Please check the details below, then send your message.</p>
+
+      <dl class="summary" id="confirm-summary">
+        <div class="summary-item"><dt>Name</dt><dd data-value="name"></dd></div>
+        <div class="summary-item"><dt>Email</dt><dd data-value="email"></dd></div>
+        <div class="summary-item"><dt>Subject</dt><dd data-value="subject"></dd></div>
+        <div class="summary-item"><dt>Message</dt><dd data-value="message"></dd></div>
+      </dl>
+
       <!-- Cloudflare Turnstile widget -->
       <div class="form-group turnstile-wrap">
         <div
@@ -87,10 +107,26 @@
         ></div>
       </div>
 
-      <button type="submit" id="submit-btn">Send Message</button>
-    </form>
+      <div class="actions">
+        <button type="button" id="back-btn" class="button-secondary">Back</button>
+        <button type="button" id="send-btn">Send Message</button>
+      </div>
+    </div>
 
-    <div id="status" aria-live="polite" aria-atomic="true"></div>
+    <!-- Screen 3: done -->
+    <div id="screen-done" class="screen" hidden>
+      <h1 id="done-title" tabindex="-1">Message Sent</h1>
+      <p class="intro">Here is what you sent:</p>
+
+      <dl class="summary" id="done-summary">
+        <div class="summary-item"><dt>Name</dt><dd data-value="name"></dd></div>
+        <div class="summary-item"><dt>Email</dt><dd data-value="email"></dd></div>
+        <div class="summary-item"><dt>Subject</dt><dd data-value="subject"></dd></div>
+        <div class="summary-item"><dt>Message</dt><dd data-value="message"></dd></div>
+      </dl>
+
+      <button type="button" id="another-btn">Send another message</button>
+    </div>
   </main>
 
   <script>

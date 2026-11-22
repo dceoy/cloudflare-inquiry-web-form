@@ -2,7 +2,10 @@ const WHITESPACE = /\s+/u;
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contact-form");
-  const submitBtn = document.getElementById("submit-btn");
+  const sendBtn = document.getElementById("send-btn");
+  const backBtn = document.getElementById("back-btn");
+  const anotherBtn = document.getElementById("another-btn");
+  const confirmScreen = document.getElementById("screen-confirm");
   const statusEl = document.getElementById("status");
   const fields = [...form.querySelectorAll("[data-error]")];
 
@@ -112,9 +115,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let submitting = false;
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // --- Screens (in-page state only: one visible at a time) ---
+  const SCREENS = {
+    input: {
+      el: document.getElementById("screen-input"),
+      heading: "form-title",
+    },
+    confirm: { el: confirmScreen, heading: "confirm-title" },
+    done: { el: document.getElementById("screen-done"), heading: "done-title" },
+  };
 
+  // Show one screen and move focus to its heading so keyboard and
+  // screen-reader users land at the top of the new content.
+  const showScreen = (name) => {
+    for (const [key, screen] of Object.entries(SCREENS)) {
+      screen.el.hidden = key !== name;
+    }
+    document.getElementById(SCREENS[name].heading).focus();
+  };
+
+  const fillSummary = (id, values) => {
+    for (const el of document.querySelectorAll(`#${id} [data-value]`)) {
+      const value = values[el.dataset.value];
+      // Name is optional; show a placeholder instead of an empty entry.
+      el.textContent = value || "(not provided)";
+    }
+  };
+
+  const readValues = () => ({
+    name: document.getElementById("name").value || "",
+    email: document.getElementById("email").value,
+    subject: document.getElementById("subject").value,
+    message: document.getElementById("message").value,
+  });
+
+  // Step 1 -> 2: the browser only fires "submit" when native validation
+  // passes; otherwise it fires "invalid" on each failing field (handled
+  // above) and focuses the first one. Nothing is sent here.
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    fillSummary("confirm-summary", readValues());
+    setStatus();
+    showScreen("confirm");
+    // Start the guarded challenge fresh so its token is current at send time.
+    if (typeof globalThis.turnstile !== "undefined") {
+      globalThis.turnstile.reset();
+    }
+  });
+
+  // Step 2 -> 1: values are untouched in the form, ready for editing.
+  backBtn.addEventListener("click", () => {
+    if (submitting) {
+      return;
+    }
+    setStatus();
+    showScreen("input");
+  });
+
+  // Step 3 -> 1: fresh, empty form.
+  anotherBtn.addEventListener("click", () => {
+    form.reset();
+    setStatus();
+    showScreen("input");
+  });
+
+  // Step 2 -> 3: the one and only POST.
+  sendBtn.addEventListener("click", async () => {
     // Prevent duplicate submissions (aria-disabled keeps keyboard focus).
     if (submitting) {
       return;
@@ -128,16 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const turnstileToken = turnstileInput ? turnstileInput.value : "";
 
     // Build the payload
-    const payload = {
-      name: document.getElementById("name").value || "",
-      email: document.getElementById("email").value,
-      subject: document.getElementById("subject").value,
-      message: document.getElementById("message").value,
-      turnstileToken,
-    };
+    const values = readValues();
+    const payload = { ...values, turnstileToken };
 
-    submitBtn.setAttribute("aria-disabled", "true");
-    form.setAttribute("aria-busy", "true");
+    sendBtn.setAttribute("aria-disabled", "true");
+    backBtn.setAttribute("aria-disabled", "true");
+    confirmScreen.setAttribute("aria-busy", "true");
     setStatus("pending", "Please wait…");
 
     try {
@@ -150,11 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (response.ok) {
-        // Success
-        setStatus("success", "Thank you! Your message has been sent.");
+        // Success: summarize what was actually sent, then clear the form.
+        fillSummary("done-summary", values);
         form.reset();
+        setStatus("success", "Thank you! Your message has been sent.");
+        showScreen("done");
       } else {
-        // Error response
+        // Error response: stay on the confirm screen so the user can retry.
         setStatus(
           "error",
           "Something went wrong. Please try again later. Your message is still here.",
@@ -168,8 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     } finally {
       submitting = false;
-      submitBtn.removeAttribute("aria-disabled");
-      form.removeAttribute("aria-busy");
+      sendBtn.removeAttribute("aria-disabled");
+      backBtn.removeAttribute("aria-disabled");
+      confirmScreen.removeAttribute("aria-busy");
 
       // Reset Turnstile widget for next submission
       if (typeof globalThis.turnstile !== "undefined") {
