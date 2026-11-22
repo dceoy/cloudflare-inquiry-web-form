@@ -185,13 +185,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (submitting) {
       return;
     }
-    submitting = true;
 
     // Read the Turnstile token
     const turnstileInput = document.querySelector(
       '[name="cf-turnstile-response"]',
     );
     const turnstileToken = turnstileInput ? turnstileInput.value : "";
+
+    // The token is empty until the challenge (re)solves, e.g. right after the
+    // confirm screen opens. Don't POST; tell the user to wait and retry.
+    if (!turnstileToken) {
+      setStatus(
+        "error",
+        "Please complete the verification above, then send again.",
+      );
+      return;
+    }
+    submitting = true;
 
     // Build the payload
     const values = readValues();
