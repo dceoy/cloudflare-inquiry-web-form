@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { type TestContext, test } from "node:test";
 import { type Env, handleContactRequest } from "./index.ts";
 
 const BASE_ENV = {
@@ -62,6 +62,34 @@ function makeResendFetch(status: number | "network-error") {
     return new Response(JSON.stringify({ id: "email-id" }), { status });
   };
   return { calls, fn };
+}
+
+// Resend mock whose Nth call returns the Nth outcome (the last one repeats).
+function makeSequencedResendFetch(outcomes: Array<number | "network-error">) {
+  const calls: Array<{ url: string; init: RequestInit }> = [];
+  const fn = async (
+    url: string | URL | Request,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const requestUrl =
+      typeof url === "string" ? url : url instanceof URL ? url.href : url.url;
+    const outcome = outcomes[Math.min(calls.length, outcomes.length - 1)];
+    calls.push({ url: requestUrl, init: init ?? {} });
+    if (outcome === "network-error" || outcome === undefined) {
+      throw new Error("send failed");
+    }
+    return new Response(JSON.stringify({ id: "email-id" }), {
+      status: outcome,
+    });
+  };
+  return { calls, fn };
+}
+
+function parsePayload(
+  call: { init: RequestInit } | undefined,
+): Record<string, unknown> {
+  const body: unknown = call?.init.body;
+  return JSON.parse(typeof body === "string" ? body : "{}");
 }
 
 function makeSiteverifyFetch(
@@ -200,7 +228,8 @@ for (const hostname of ["localhost", "127.0.0.1", "dummy-key.example.com"]) {
     );
 
     assert.equal(res.status, 200);
-    assert.equal(email.calls.length, 1);
+    // Notification plus the sender copy.
+    assert.equal(email.calls.length, 2);
   });
 }
 
@@ -236,6 +265,8 @@ test("an email send failure after Turnstile success returns a generic 502", asyn
   );
 
   assert.equal(res.status, 502);
+  // The notification failed, so no sender copy is attempted.
+  assert.equal(email.calls.length, 1);
   const responseBody: unknown = await res.json();
   assert.ok(
     typeof responseBody === "object" &&
@@ -245,7 +276,7 @@ test("an email send failure after Turnstile success returns a generic 502", asyn
   assert.equal(typeof responseBody.error, "string");
 });
 
-test("a complete success sends exactly one notification email and returns 200", async () => {
+test("a complete success sends the notification and one sender copy and returns 200", async () => {
   const email = makeResendFetch(200);
   const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
   const env: Env = { ...BASE_ENV };
@@ -259,7 +290,7 @@ test("a complete success sends exactly one notification email and returns 200", 
 
   assert.equal(res.status, 200);
   assert.deepEqual(await res.json(), { ok: true });
-  assert.equal(email.calls.length, 1);
+  assert.equal(email.calls.length, 2);
 
   const sent = email.calls[0];
   assert.ok(sent);
@@ -314,4 +345,103 @@ test("a Resend network failure returns a generic 502", async () => {
     email.fn,
   );
   assert.equal(res.status, 502);
+});
+
+test("the sender copy goes only to the submitted address with the submitted content", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 200);
+  assert.equal(email.calls.length, 2);
+  const [notification, copy] = email.calls;
+  assert.deepEqual(parsePayload(notification)["to"], [BASE_ENV.EMAIL_TO]);
+
+  assert.ok(copy);
+  assert.equal(copy.url, "https://api.resend.com/emails");
+  assert.equal(
+    new Headers(copy.init.headers).get("authorization"),
+    "Bearer re_test_key",
+  );
+  const payload = parsePayload(copy);
+  assert.equal(payload["from"], BASE_ENV.EMAIL_FROM);
+  assert.deepEqual(payload["to"], [VALID_BODY.email]);
+  assert.equal("reply_to" in payload, false);
+  assert.equal(
+    payload["subject"],
+    `Copy of your inquiry: ${VALID_BODY.subject}`,
+  );
+  const text = payload["text"];
+  assert.ok(typeof text === "string");
+  assert.match(text, /Name: Ada Lovelace/);
+  assert.match(text, /Email: ada@example\.com/);
+  assert.match(text, /Subject: Question about pricing/);
+  assert.match(text, /Hello, I have a question\./);
+  // Never leaks the token, the owner address or the API key.
+  assert.doesNotMatch(text, /token-123|owner@dceoy\.com|re_test_key/);
+});
+
+for (const [outcome, expectedStatus] of [
+  [422, "422"],
+  [500, "500"],
+  ["network-error", "network"],
+] as const) {
+  test(`a failed sender copy (${outcome}) still returns success and logs its status`, async (t: TestContext) => {
+    const logged = t.mock.method(console, "error", () => undefined);
+    const email = makeSequencedResendFetch([200, outcome]);
+    const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
+
+    const res = await handleContactRequest(
+      makeRequest(VALID_BODY),
+      { ...BASE_ENV },
+      siteverify.fn,
+      email.fn,
+    );
+
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { ok: true });
+    assert.equal(email.calls.length, 2);
+    assert.equal(logged.mock.callCount(), 1);
+    // The log names the status (or "network"), and carries no personal data.
+    const logArgs = JSON.stringify(logged.mock.calls[0]?.arguments);
+    assert.ok(logArgs.includes(`(status: ${expectedStatus})`));
+    assert.doesNotMatch(logArgs, /ada@example\.com|Hello, I have|Ada/);
+  });
+}
+
+test("a notification failure sends no copy and keeps the 502", async () => {
+  const email = makeSequencedResendFetch([500, 200]);
+  const siteverify = makeSiteverifyFetch(VALID_SITEVERIFY_RESULT);
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 502);
+  assert.equal(email.calls.length, 1);
+  assert.deepEqual(parsePayload(email.calls[0])["to"], [BASE_ENV.EMAIL_TO]);
+});
+
+test("no sender copy is sent when Turnstile verification fails", async () => {
+  const email = makeResendFetch(200);
+  const siteverify = makeSiteverifyFetch({ success: false });
+
+  const res = await handleContactRequest(
+    makeRequest(VALID_BODY),
+    { ...BASE_ENV },
+    siteverify.fn,
+    email.fn,
+  );
+
+  assert.equal(res.status, 400);
+  assert.equal(email.calls.length, 0);
 });
