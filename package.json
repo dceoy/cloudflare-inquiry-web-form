@@ -8,8 +8,8 @@
   "scripts": {
     "audit": "pnpm audit",
     "audit:fix": "pnpm audit --fix=override",
-    "lint": "oxlint src && biome lint . --error-on-warnings --max-diagnostics=250",
-    "lint:fix": "oxlint --fix src && biome lint --write .",
+    "lint": "oxlint src && biome lint . --error-on-warnings --max-diagnostics=250 && markdownlint-cli2 '**/*.{md,mdx,markdown}'",
+    "lint:fix": "oxlint --fix src && biome lint --write . && markdownlint-cli2 --fix '**/*.{md,mdx,markdown}'",
     "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.6.7",
     "@types/node": "^26.6.6",
+    "markdownlint-cli2": "^0.24.1",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
     "oxlint-tsgolint": "7.0.2007",
