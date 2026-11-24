@@ -18,7 +18,7 @@ jobs:
   package-lint-and-test:
     permissions:
       contents: read
-    uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@b7d9e0c64d9cd6d7198da715b11a4648373e9a23  # v2.3.4
+    uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@a49d8c5289d9ac33c9eef275f0238dd6a8b306d5  # v2.3.5
     with:
       package-scripts: format:check,lint,typecheck,test
       package-path: .
@@ -28,7 +28,7 @@ jobs:
       contents: read
       actions: read
       security-events: write
-    uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@b7d9e0c64d9cd6d7198da715b11a4648373e9a23  # v2.3.4
+    uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@a49d8c5289d9ac33c9eef275f0238dd6a8b306d5  # v2.3.5
     with:
       search-path: .github/workflows
   dependabot-auto-merge:
@@ -37,7 +37,7 @@ jobs:
     needs:
       - package-lint-and-test
       - github-actions-lint-and-scan
-    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@b7d9e0c64d9cd6d7198da715b11a4648373e9a23  # v2.3.4
+    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@a49d8c5289d9ac33c9eef275f0238dd6a8b306d5  # v2.3.5
     permissions:
       contents: write
       pull-requests: write
