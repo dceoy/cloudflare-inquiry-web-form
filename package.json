@@ -1,9 +1,10 @@
 {
   "name": "cloudflare-inquiry-web-form",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Minimal Cloudflare-native inquiry form",
   "type": "module",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "audit": "pnpm audit",
     "audit:fix": "pnpm audit --fix=override",
