@@ -13,11 +13,13 @@ interface WranglerConfig {
         directory: string;
         run_worker_first: string[];
       };
+      send_email: { name: string }[];
       secrets: { required: string[] };
       vars: Record<string, string>;
     };
   };
   previews: { vars: Record<string, string> };
+  send_email: { name: string }[];
   secrets: { required: string[] };
   vars: Record<string, string>;
 }
@@ -50,6 +52,17 @@ test("pnpm dev uses local Turnstile test settings", () => {
   assert.equal(packageJson.scripts.dev, "wrangler dev --env local");
   assert.deepEqual(local?.assets, config.assets);
   assert.deepEqual(local?.secrets, config.secrets);
+  assert.deepEqual(config.send_email, [{ name: "EMAIL" }]);
+  assert.deepEqual(local?.send_email, config.send_email);
+  const intendedSecrets = ["EMAIL_FROM", "EMAIL_TO", "TURNSTILE_SECRET_KEY"];
+  assert.deepEqual(
+    [...config.secrets.required].toSorted((a, b) => a.localeCompare(b)),
+    intendedSecrets,
+  );
+  assert.deepEqual(
+    local?.secrets.required.toSorted((a, b) => a.localeCompare(b)),
+    intendedSecrets,
+  );
   assert.equal(
     local?.vars["TURNSTILE_HOSTNAMES"],
     "localhost,127.0.0.1,dummy-key.example.com",
