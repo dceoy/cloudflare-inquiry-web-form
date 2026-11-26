@@ -1,7 +1,19 @@
+interface OutboundEmail {
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+  replyTo?: string;
+}
+
+interface SendEmail {
+  send(message: OutboundEmail): Promise<{ messageId: string }>;
+}
+
 export interface Env {
+  EMAIL: SendEmail;
   EMAIL_FROM: string;
   EMAIL_TO: string;
-  RESEND_API_KEY: string;
   TURNSTILE_SECRET_KEY: string;
   TURNSTILE_HOSTNAMES: string;
   TURNSTILE_ACTION: string;
@@ -16,7 +28,6 @@ interface ContactFields {
 }
 
 const MAX_REQUEST_BYTES = 16 * 1024;
-const RESEND_URL = "https://api.resend.com/emails";
 const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const SITEVERIFY_TIMEOUT_MS = 10_000;
@@ -188,105 +199,143 @@ async function verifyTurnstile(
     : "rejected";
 }
 
-interface OutgoingEmail {
-  to: string;
-  subject: string;
-  text: string;
-  replyTo?: string;
+interface ResponseRecord {
+  readonly submitted: string;
+  readonly reference: string;
+  readonly name: string;
+  readonly email: string;
+  readonly subject: string;
+  readonly message: string;
 }
 
-// "status" is the Resend HTTP status, or "network" when the fetch threw.
-interface SendResult {
-  ok: boolean;
-  status: number | "network";
+const submittedFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Tokyo",
+  calendar: "gregory",
+  numberingSystem: "latn",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+function formatSubmittedAt(date: Date): string {
+  const parts = submittedFormatter.formatToParts(date);
+  const required = (type: Intl.DateTimeFormatPartTypes): string => {
+    const value = parts.find((part) => part.type === type)?.value;
+    if (value === undefined) {
+      throw new Error(`Missing date part: ${type}`);
+    }
+    return value;
+  };
+  return `${required("year")}-${required("month")}-${required("day")} ${required("hour")}:${required("minute")} JST`;
 }
+
+function buildResponseSection(record: ResponseRecord): string {
+  return [
+    `Submitted: ${record.submitted}`,
+    `Name\n${record.name}`,
+    `Email\n${record.email}`,
+    `Subject\n${record.subject}`,
+    `Message\n${record.message}`,
+  ].join("\n\n");
+}
+
+const SEND_ERROR_CODES = new Set([
+  "E_VALIDATION_ERROR",
+  "E_FIELD_MISSING",
+  "E_TOO_MANY_RECIPIENTS",
+  "E_TOO_MANY_ATTACHMENTS",
+  "E_SENDER_NOT_VERIFIED",
+  "E_SENDER_DOMAIN_NOT_AVAILABLE",
+  "E_SENDER_DOMAIN_NOT_CONFIGURED",
+  "E_EMAIL_SENDING_NOT_READY",
+  "E_RECIPIENT_NOT_ALLOWED",
+  "E_RECIPIENT_PLAN_RESTRICTED",
+  "E_RECIPIENT_SUPPRESSED",
+  "E_ACCOUNT_SUSPENDED",
+  "E_CONTENT_TOO_LARGE",
+  "E_DELIVERY_FAILED",
+  "E_RATE_LIMIT_EXCEEDED",
+  "E_DAILY_LIMIT_EXCEEDED",
+  "E_INTERNAL_SERVER_ERROR",
+  "E_HEADER_NOT_ALLOWED",
+  "E_HEADER_USE_API_FIELD",
+  "E_HEADER_VALUE_INVALID",
+  "E_HEADER_VALUE_TOO_LONG",
+  "E_HEADER_NAME_INVALID",
+  "E_HEADERS_TOO_LARGE",
+  "E_HEADERS_TOO_MANY",
+]);
+
+type SendResult = { ok: true } | { ok: false; code: string };
 
 async function sendEmail(
-  env: Env,
-  email: OutgoingEmail,
-  sendFetch: typeof fetch,
+  binding: SendEmail,
+  message: OutboundEmail,
 ): Promise<SendResult> {
   try {
-    const response = await sendFetch(RESEND_URL, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        from: env.EMAIL_FROM,
-        to: [email.to],
-        subject: email.subject,
-        text: email.text,
-        ...(email.replyTo ? { reply_to: email.replyTo } : {}),
-      }),
-    });
-    return { ok: response.ok, status: response.status };
-  } catch {
-    return { ok: false, status: "network" };
+    await binding.send(message);
+    return { ok: true };
+  } catch (error) {
+    if (
+      isRecord(error) &&
+      typeof error["code"] === "string" &&
+      SEND_ERROR_CODES.has(error["code"])
+    ) {
+      return { ok: false, code: error["code"] };
+    }
+    return {
+      ok: false,
+      code:
+        error instanceof TypeError && !(isRecord(error) && "code" in error)
+          ? "TYPE_ERROR"
+          : "UNKNOWN_SEND_ERROR",
+    };
   }
 }
 
-async function sendNotification(
+function sendNotification(
   env: Env,
-  fields: ContactFields,
-  sendFetch: typeof fetch,
-): Promise<boolean> {
-  const text = [
-    `Name: ${fields.name || "(not provided)"}`,
-    `Email: ${fields.email}`,
-    "",
-    fields.message,
-  ].join("\n");
-  const result = await sendEmail(
-    env,
-    {
-      to: env.EMAIL_TO,
-      subject: `New inquiry: ${fields.subject}`,
-      text,
-      replyTo: fields.email,
-    },
-    sendFetch,
-  );
-  return result.ok;
+  record: ResponseRecord,
+): Promise<SendResult> {
+  return sendEmail(env.EMAIL, {
+    from: env.EMAIL_FROM,
+    to: env.EMAIL_TO,
+    replyTo: record.email,
+    subject: `New inquiry response: ${record.subject}`,
+    text: [
+      "You have received a new response to the inquiry form (inquiry.dceoy.com).",
+      buildResponseSection(record),
+      `---\nReply to this email to reply to the sender.\nReference: ${record.reference}`,
+    ].join("\n\n"),
+  });
 }
 
-// Best-effort copy of the inquiry for the sender's own records. It is sent
-// only to the address validated in this same request and is built only from
-// the validated fields. No Reply-To is set, so replies go to the From address.
-function sendSenderCopy(
-  env: Env,
-  fields: ContactFields,
-  sendFetch: typeof fetch,
-): Promise<SendResult> {
-  const text = [
-    "This is a copy of the inquiry you sent through our contact form.",
-    "",
-    `Name: ${fields.name || "(not provided)"}`,
-    `Email: ${fields.email}`,
-    `Subject: ${fields.subject}`,
-    "",
-    "Message:",
-    fields.message,
-    "",
-    "You received this email because this address was entered in the form. If you did not send this inquiry, you can ignore this email.",
-  ].join("\n");
-  return sendEmail(
-    env,
-    {
-      to: fields.email,
-      subject: `Copy of your inquiry: ${fields.subject}`,
-      text,
-    },
-    sendFetch,
-  );
+function sendSenderCopy(env: Env, record: ResponseRecord): Promise<SendResult> {
+  return sendEmail(env.EMAIL, {
+    from: env.EMAIL_FROM,
+    to: record.email,
+    subject: `Your inquiry response: ${record.subject}`,
+    text: [
+      "Your inquiry has been received. This is a copy of your response.",
+      buildResponseSection(record),
+      `---\nYou received this email because this address was entered in the form.\nIf you did not send this inquiry, you can ignore this email.\nReference: ${record.reference}`,
+    ].join("\n\n"),
+  });
+}
+
+interface ContactDeps {
+  verifyFetch?: typeof fetch;
+  now?: () => Date;
+  randomUUID?: () => string;
 }
 
 export async function handleContactRequest(
   request: Request,
   env: Env,
-  verifyFetch: typeof fetch = fetch,
-  sendFetch: typeof fetch = fetch,
+  deps: ContactDeps = {},
 ): Promise<Response> {
   const allowedHostnames = new Set(
     (env.TURNSTILE_HOSTNAMES ?? "")
@@ -298,7 +347,7 @@ export async function handleContactRequest(
     !env.TURNSTILE_SECRET_KEY ||
     !env.TURNSTILE_ACTION ||
     allowedHostnames.size === 0 ||
-    !env.RESEND_API_KEY ||
+    typeof env.EMAIL?.send !== "function" ||
     !env.EMAIL_FROM ||
     !env.EMAIL_TO
   ) {
@@ -347,7 +396,7 @@ export async function handleContactRequest(
     env.TURNSTILE_ACTION,
     allowedHostnames,
     remoteIp,
-    verifyFetch,
+    deps.verifyFetch ?? fetch,
   );
   if (verdict === "upstream-error") {
     return jsonResponse(502, { error: "Verification service unavailable" });
@@ -356,20 +405,24 @@ export async function handleContactRequest(
     return jsonResponse(400, { error: "Verification failed" });
   }
 
-  const sent = await sendNotification(env, fields, sendFetch);
-  if (!sent) {
+  const record: ResponseRecord = {
+    submitted: formatSubmittedAt((deps.now ?? (() => new Date()))()),
+    reference: (deps.randomUUID ?? (() => crypto.randomUUID()))(),
+    name: fields.name || "(not provided)",
+    email: fields.email,
+    subject: fields.subject,
+    message: fields.message,
+  };
+  const sent = await sendNotification(env, record);
+  if (!sent.ok) {
     return jsonResponse(502, { error: "Failed to send message" });
   }
 
   // The notification is authoritative: a failed copy never fails the request.
-  const copy = await sendSenderCopy(env, fields, sendFetch);
+  const copy = await sendSenderCopy(env, record);
   if (!copy.ok) {
-    // The status (or "network") distinguishes a rejected recipient (4xx) from
-    // an outage (5xx/network); it contains no personal data.
     // biome-ignore lint/suspicious/noConsole: server-side log of a best-effort failure
-    console.error(
-      `Failed to send the sender copy email (status: ${copy.status})`,
-    );
+    console.error(`Failed to send the sender copy email (code: ${copy.code})`);
   }
 
   return jsonResponse(200, { ok: true });
