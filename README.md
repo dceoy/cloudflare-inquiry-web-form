@@ -6,6 +6,8 @@ A minimal inquiry form on Cloudflare Workers with Turnstile verification and Clo
 
 One Worker (`src/index.ts`) handles `POST /api/contact`, validates input, verifies Turnstile, then sends through the Cloudflare Email Sending `send_email` binding. No external email provider or API key is needed. Static files in `public/` are served by Workers Static Assets. The notification goes to `EMAIL_TO` with the submitter as Reply-To; a best-effort copy goes to the submitter.
 
+See the [C4 architecture diagrams and rendering instructions](docs/architecture/).
+
 ## Production setup
 
 1. Onboard `dceoy.com` to [Cloudflare Email Sending](https://developers.cloudflare.com/email-service/) and add the SPF, DKIM, and bounce DNS records Cloudflare provides. Keep the Google Workspace MX records intact; do not change apex MX or inbound routing.
